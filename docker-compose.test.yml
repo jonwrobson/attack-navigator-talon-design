@@ -1,0 +1,120 @@
+services:
+  # Main test runner - runs unit tests in isolated environment
+  app-test:
+    build:
+      context: .
+      target: test
+    container_name: attack-navigator-test
+    environment:
+      - NODE_ENV=test
+      - CHROME_BIN=/usr/bin/chromium
+      - RUNNING_IN_DOCKER=true
+    volumes:
+      - ./nav-app/coverage:/src/nav-app/coverage
+      - ./nav-app/test-results:/src/nav-app/test-results
+    command: npm run test:ci
+
+  # Application server for E2E testing
+  app-e2e:
+    build:
+      context: .
+      target: production
+    container_name: attack-navigator-e2e
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Selenium Grid Hub
+  selenium-hub:
+    image: selenium/hub:4.15.0
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+    environment:
+      - GRID_MAX_SESSION=3
+      - GRID_BROWSER_TIMEOUT=300
+      - GRID_TIMEOUT=300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # Chrome browser node
+  chrome:
+    image: selenium/node-chrome:4.15.0
+    container_name: selenium-chrome
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+    shm_size: 2gb
+
+  # Firefox browser node  
+  firefox:
+    image: selenium/node-firefox:4.15.0
+    container_name: selenium-firefox
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+    shm_size: 2gb
+
+  # E2E test runner with Cypress
+  e2e-tests:
+    build:
+      context: .
+      target: test
+    container_name: attack-navigator-e2e-tests
+    depends_on:
+      app-e2e:
+        condition: service_healthy
+    environment:
+      - CYPRESS_BASE_URL=http://app-e2e:4200
+      - RUNNING_IN_DOCKER=true
+    volumes:
+      - ./nav-app/cypress/screenshots:/src/nav-app/cypress/screenshots
+      - ./nav-app/cypress/videos:/src/nav-app/cypress/videos
+    command: npm run e2e:ci
+    profiles:
+      - e2e
+
+  # Cross-browser test runner with Selenium
+  selenium-tests:
+    build:
+      context: .
+      target: test
+    container_name: attack-navigator-selenium-tests
+    depends_on:
+      app-e2e:
+        condition: service_healthy
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SELENIUM_HUB=http://selenium-hub:4444/wd/hub
+      - CYPRESS_BASE_URL=http://app-e2e:4200
+      - RUNNING_IN_DOCKER=true
+    command: npm run test:selenium:grid
+    profiles:
+      - selenium
+
+networks:
+  default:
+    driver: bridge
