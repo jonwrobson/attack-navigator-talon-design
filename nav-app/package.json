@@ -17,7 +17,7 @@
     "test:watch": "ng test --watch=true",
     "lint": "ng lint",
   "e2e": "cypress run --headless",
-  "e2e:ci": "cypress run --headless",
+  "e2e:ci": "cypress run --headless --browser chrome --reporter junit",
   "e2e:headless": "cypress run --headless",
   "e2e:open": "cypress open",
     "test:docker:unit": "docker compose -f ../docker-compose.test.yml up --abort-on-container-exit --exit-code-from app-test app-test",
