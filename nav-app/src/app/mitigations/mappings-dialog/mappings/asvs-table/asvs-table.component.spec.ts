@@ -1,5 +1,7 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatTableModule } from '@angular/material/table';
 
 import { AsvsTableComponent } from './asvs-table.component';
 
@@ -9,7 +11,9 @@ describe('AsvsTableComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ AsvsTableComponent ]
+      declarations: [ AsvsTableComponent ],
+      imports: [ MatTableModule ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
     

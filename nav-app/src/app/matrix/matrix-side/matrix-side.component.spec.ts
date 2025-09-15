@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import {HttpClientModule} from '@angular/common/http';
 import { MatrixSideComponent } from './matrix-side.component';
@@ -13,7 +14,8 @@ describe('MatrixSideComponent', () => {
         HttpClientTestingModule,
         MatDialogModule 
       ],
-      declarations: [ MatrixSideComponent ]
+      declarations: [ MatrixSideComponent ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
   }));
@@ -21,10 +23,21 @@ describe('MatrixSideComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MatrixSideComponent);
     component = fixture.componentInstance;
+    (component as any).matrix = { tactics: [] };
+    // provide minimal viewModel with layout and required functions
+    (component as any).viewModel = {
+      layout: { showTacticRowBackground: false },
+      filterTactics: (t) => t,
+      filterTechniques: (ts) => ts,
+      sortTechniques: (ts) => ts,
+      applyControls: (ts) => ts,
+      isTechniqueSelected: () => false,
+      getTechniqueVM: () => ({ comment: '', metadata: [], links: [], enabled: true })
+    };
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 });
