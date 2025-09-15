@@ -5,7 +5,7 @@
 
 set -e
 
-echo "?? ATT&CK Navigator Test Verification Script"
+echo "📝 ATT&CK Navigator Test Verification Script"
 echo "============================================="
 
 # Colors for output
