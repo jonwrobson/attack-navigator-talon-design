@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Angular unit tests headless",
+			"type": "shell",
+			"command": "npm run test:ci",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc",
+				"$eslint - stylish"
+			],
+			"group": "build"
+		}
+	]
+}

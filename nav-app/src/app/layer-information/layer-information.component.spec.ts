@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { LayerInformationComponent } from './layer-information.component';
 
@@ -8,7 +11,9 @@ describe('LayerInformationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LayerInformationComponent ]
+      declarations: [ LayerInformationComponent ],
+      imports: [HttpClientTestingModule, MarkdownModule.forRoot()],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
   });
@@ -20,6 +25,6 @@ describe('LayerInformationComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 });

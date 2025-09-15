@@ -4,7 +4,7 @@ import { DataService } from "../data.service";
 import { ControlFramework } from "./control-framework";
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import config from '../../assets/config.json';
-import enterpriseAttackBundle from '../../assets/enterprise-bundle.json';
+import enterpriseAttackBundle from '../../assets/enterprise-attack.json';
 
 describe("ControlFramework", () => {
   let controlFrameworkClass: ControlFramework;
@@ -133,20 +133,20 @@ describe("ControlFramework", () => {
       dataService = service
       
       service.setUpURLs(config.versions as []);
-      let domain = dataService.getDomain("enterprise-attack-v9")
-      service.parseBundle(domain, enterpriseAttackBundle as []);
+  let domain = dataService.getDomain("enterprise-attack-9")
+  service.parseBundle(domain, [enterpriseAttackBundle] as any);
     }));
 
     it('should return null when given a null technique', () => {
-      let result = controlFrameworkClass.getTechniqueMapping(null, "enterprise-attack-v9")
+  let result = controlFrameworkClass.getTechniqueMapping(null, "enterprise-attack-9")
       expect(result).toBeNull();
     });
 
     it('should return an enriched technique when given a valid technique', () => {
-      const domain = dataService.getDomain('enterprise-attack-v9');
+  const domain = dataService.getDomain('enterprise-attack-9');
       let technique = domain.techniques.find(x => x.attackID == 'T1548');
       expect(technique).toBeTruthy();
-      let result = controlFrameworkClass.getTechniqueMapping(technique, "enterprise-attack-v9")
+  let result = controlFrameworkClass.getTechniqueMapping(technique, "enterprise-attack-9")
       expect(result).toBeTruthy();
       expect(result.Mappings).toBeTruthy();
       expect(result.Mappings.Asvs.length).toEqual(87);
@@ -180,12 +180,12 @@ describe("ControlFramework", () => {
       dataService = service
       
       service.setUpURLs(config.versions as []);
-      let domain = dataService.getDomain("enterprise-attack-v9")
-      service.parseBundle(domain, enterpriseAttackBundle as []);
+  let domain = dataService.getDomain("enterprise-attack-9")
+  service.parseBundle(domain, [enterpriseAttackBundle] as any);
     }));
 
     it('should be truthy', () => {
-      let result = controlFrameworkClass.getMitigations(dataService, "enterprise-attack-v9");
+  let result = controlFrameworkClass.getMitigations(dataService, "enterprise-attack-9");
       expect(result).toBeTruthy();
     });
 

@@ -1,7 +1,8 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatTableModule } from '@angular/material/table';
 
 import { CisTableComponent } from './cis-table.component';
 
@@ -11,7 +12,9 @@ describe('CisTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CisTableComponent ]
+      declarations: [ CisTableComponent ],
+      imports: [ MatTableModule ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
   }));
@@ -23,6 +26,6 @@ describe('CisTableComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 });

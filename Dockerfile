@@ -5,6 +5,8 @@ WORKDIR /src
 
 # Copy package files first for better caching
 COPY nav-app/package*.json /src/nav-app/
+# Also copy scripts needed by postinstall (runs during npm ci)
+COPY nav-app/patch-webpack.js /src/nav-app/
 WORKDIR /src/nav-app
 
 # Install dependencies
@@ -59,6 +61,9 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
+# Ensure Cypress binary is installed in the image
+RUN npx cypress install
+
 # Run tests (commented out to avoid failing build, run via docker-compose instead)
 # RUN npm run test:ci
 # RUN npm run lint
@@ -68,17 +73,14 @@ FROM node:18-bullseye-slim AS production
 
 WORKDIR /app
 
-# Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install curl for health checks and a lightweight static server
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
+  && npm install -g serve@14
 
 # Copy built application
 COPY --from=builder /src/nav-app/dist /app/dist
-COPY --from=builder /src/nav-app/package*.json /app/
 COPY --from=builder /src/layers /app/layers
 COPY --from=builder /src/*.md /app/
-
-# Install only production dependencies
-RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
 
 # Security: Create non-root user and set ownership
 RUN groupadd -r appuser && useradd -r -g appuser appuser
@@ -91,4 +93,5 @@ EXPOSE 4200
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:4200/ || exit 1
 
-CMD ["npm", "start"]
+# Serve the built app statically
+CMD ["serve", "-s", "dist", "-l", "4200"]

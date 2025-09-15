@@ -5,13 +5,20 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { DataService } from '../data.service';
 import { MitigationsComponent } from "./mitigations.component";
 import dataServiceConfig from '../../assets/config.json';
-import enterpriseAttackBundle from '../../assets/enterprise-bundle.json';
+import enterpriseAttackBundle from '../../assets/enterprise-attack.json';
 
 describe("MitigationsComponent", () => {
   let component: MitigationsComponent;
   let fixture: ComponentFixture<MitigationsComponent>;
 
-  let mockViewModel = jasmine.createSpyObj('ViewModel', { domain: [] })
+  let mockViewModel: any = { 
+    domain: [],
+    scoredMitigations: [],
+    mitigationTechnique: [],
+    clearSelectedTechniques: () => {},
+    selectTechniqueAcrossTactics: () => {},
+    domainVersionID: 'enterprise-attack-9'
+  }
   let dataService: DataService;
 
   beforeEach(async () => {
@@ -30,13 +37,13 @@ describe("MitigationsComponent", () => {
     component.viewModel = mockViewModel
     fixture.detectChanges();
 
-    service.setUpURLs(dataServiceConfig.versions as []);
-    let domain = dataService.getDomain("enterprise-attack-v9")
-    service.parseBundle(domain, enterpriseAttackBundle as []);
+  service.setUpURLs(dataServiceConfig.versions as []);
+  let domain = dataService.getDomain("enterprise-attack-9")
+  service.parseBundle(domain, [enterpriseAttackBundle] as any);
   }));
 
   it('should ...', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 
 })

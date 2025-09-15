@@ -21,7 +21,7 @@ describe('VersionUpgradeComponent', () => {
      },
      { 
      	provide: MAT_DIALOG_DATA, 
-     	useValue: {} 
+     	useValue: { currVersion: '4.3', vmVersion: '4.3', layerName: 'Unit Test Layer' } 
      }]
     })
     .compileComponents();
@@ -34,6 +34,6 @@ describe('VersionUpgradeComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 });

@@ -5,9 +5,11 @@ services:
       context: .
       target: test
     container_name: attack-navigator-test
+    profiles:
+      - unit
     environment:
       - NODE_ENV=test
-      - CHROME_BIN=/usr/bin/chromium
+      - CHROME_BIN=/usr/bin/google-chrome
       - RUNNING_IN_DOCKER=true
     volumes:
       - ./nav-app/coverage:/src/nav-app/coverage
@@ -20,6 +22,8 @@ services:
       context: .
       target: production
     container_name: attack-navigator-e2e
+    profiles:
+      - e2e
     ports:
       - "4200:4200"
     environment:
@@ -35,6 +39,8 @@ services:
   selenium-hub:
     image: selenium/hub:4.15.0
     container_name: selenium-hub
+    profiles:
+      - selenium
     ports:
       - "4444:4444"
     environment:
@@ -51,6 +57,8 @@ services:
   chrome:
     image: selenium/node-chrome:4.15.0
     container_name: selenium-chrome
+    profiles:
+      - selenium
     depends_on:
       selenium-hub:
         condition: service_healthy
@@ -66,6 +74,8 @@ services:
   firefox:
     image: selenium/node-firefox:4.15.0
     container_name: selenium-firefox
+    profiles:
+      - selenium
     depends_on:
       selenium-hub:
         condition: service_healthy
@@ -89,9 +99,12 @@ services:
     environment:
       - CYPRESS_BASE_URL=http://app-e2e:4200
       - RUNNING_IN_DOCKER=true
+      # Visual regression mode: actual by default; set to base to generate baselines
+      - CYPRESS_type=actual
     volumes:
       - ./nav-app/cypress/screenshots:/src/nav-app/cypress/screenshots
       - ./nav-app/cypress/videos:/src/nav-app/cypress/videos
+      - ./nav-app/cypress/snapshots:/src/nav-app/cypress/snapshots
     command: npm run e2e:ci
     profiles:
       - e2e

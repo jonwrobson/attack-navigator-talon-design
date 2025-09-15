@@ -49,8 +49,8 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
+  autoWatch: true,
+  browsers: ['ChromeHeadlessCI'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
@@ -64,7 +64,7 @@ module.exports = function (config) {
         ]
       }
     },
-    singleRun: false,
+  singleRun: false,
     restartOnFileChange: true,
     browserNoActivityTimeout: 60000,
     browserDisconnectTimeout: 60000,

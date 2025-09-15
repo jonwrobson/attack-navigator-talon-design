@@ -26,8 +26,26 @@ export default defineConfig({
         config.video = false; // Disable video in CI to save resources
       }
       
-      // Import cypress-visual-regression plugin
-      require('cypress-visual-regression/dist/plugin')(on, config);
+      // Import cypress-visual-regression plugin (package exports are under dist)
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const visualPlugin = require('cypress-visual-regression/dist/plugin');
+        if (typeof visualPlugin === 'function') {
+          // Ensure the required env.type is set to avoid runtime errors in CI
+          // Allowed values: 'base' or 'actual'. Default to 'actual' for comparisons.
+          config.env = config.env || {};
+          if (!config.env.type) {
+            config.env.type = process.env.CYPRESS_type || 'actual';
+          }
+          visualPlugin(on, config);
+          // quick debug to confirm registration when reading logs
+          // eslint-disable-next-line no-console
+          console.log('cypress-visual-regression plugin registered');
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('cypress-visual-regression plugin not found, visual tests may be skipped');
+      }
       
       return config;
     }

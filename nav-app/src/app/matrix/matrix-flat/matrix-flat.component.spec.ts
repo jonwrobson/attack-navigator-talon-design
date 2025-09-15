@@ -8,9 +8,16 @@ import { Tactic } from '../../data.service';
 describe('MatrixFlatComponent', () => {
   let component: MatrixFlatComponent;
   let fixture: ComponentFixture<MatrixFlatComponent>;
-  var mockViewModel = jasmine.createSpyObj('ViewModel', { showTacticRowBackground: false, legendItems: [], 
-    filterTactics: (): Tactic[] => { return new Array<Tactic>() } })
-  var mockMatrix = jasmine.createSpyObj('Matrix', { tactics: [] })
+  // Provide filterTactics as a function returning the tactics array per component expectations
+  const mockViewModel: any = { 
+    showTacticRowBackground: false, 
+    legendItems: [], 
+    filterTactics: (tactics: Tactic[]) => tactics,
+    filterTechniques: (techniques: any[]) => techniques,
+    hasTechniqueVM: () => false,
+    getTechniqueVM: () => ({ score: '' })
+  };
+  const mockMatrix: any = { tactics: [] };
 
 
   beforeEach(waitForAsync(() => {
@@ -30,6 +37,6 @@ describe('MatrixFlatComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    (expect(component) as any).toBeTruthy();
   });
 });
