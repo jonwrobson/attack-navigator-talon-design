@@ -46,7 +46,7 @@ jobs:
         name: unit-test-coverage
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: unit-test-results
@@ -141,7 +141,7 @@ jobs:
         CYPRESS_BASE_URL: http://localhost:4200
     
     - name: Upload Cypress artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: cypress-artifacts
