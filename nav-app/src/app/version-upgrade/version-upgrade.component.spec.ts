@@ -34,6 +34,6 @@ describe('VersionUpgradeComponent', () => {
   });
 
   it('should create', () => {
-    (expect(component) as any).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 });
