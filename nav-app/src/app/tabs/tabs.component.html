@@ -73,7 +73,7 @@
 
 <!-- New tab template -->
 <ng-template [ngIf]="activeTab && !activeTab.isDataTable">
-    <div class="newTab">
+    <section aria-label="Navigator Info" class="newTab">
         <div class="description">
             <div class="logo">
                 <h1><a href="http://attack.mitre.org">MITRE ATT&CK&reg; Navigator</a></h1>
@@ -89,20 +89,20 @@
             <div class="help-links-container">
                 <button mat-button (click)="openDialog('help')">help</button>
                 <button mat-button (click)="openDialog('changelog')">changelog</button>
-
-
-                <button mat-button (click)="select.open()" class="theme-select-container">
+                <div class="theme-select-container">
                     <mat-label>
                         theme ▾
                     </mat-label>
-                    <mat-select #select (selectionChange)="handleUserThemeChange($event.value)">
+                    <mat-select (selectionChange)="handleUserThemeChange($event.value)" aria-label="Theme selection">
                         <mat-option value="dark">dark</mat-option>
                         <mat-option value="light">light</mat-option>
                         <mat-option value="system">use system</mat-option>
                     </mat-select>
-                </button>
+                </div>
             </div>
         </div>
+        <a style='color: white;' href="https://talondesign.co.uk"><div style='padding:5px'>< Back To TalonDesign.co.uk</div></a>
+    </section>
         <mat-accordion class="headers-align">
 
             <!-- Create new layer interface -->
