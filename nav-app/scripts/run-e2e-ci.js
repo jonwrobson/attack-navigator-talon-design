@@ -84,59 +84,45 @@ async function runE2ECI() {
     // Step 1: Build the application
     console.log('Step 1: Building application...');
     await runCommand('npm', ['run', 'build']);
-    
+
     // Step 2: Kill any existing process on port 4200
     await killProcessOnPort(4200);
-    
+
     // Step 3: Start the server with no file watching for CI
     console.log('Step 2: Starting server without file watching...');
     serverProcess = spawn('ng', ['serve', '--host', '0.0.0.0', '--port', '4200', '--disable-host-check', '--poll', '0'], {
-      stdio: 'pipe',
+      stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
       detached: false
     });
 
-    // Handle server process output but filter out repetitive compilation messages
-    let lastMessage = '';
-    let repetitiveCount = 0;
-    
+    // Log ALL server output (stdout and stderr)
     serverProcess.stdout.on('data', (data) => {
-      const message = data.toString().trim();
-      if (message === lastMessage) {
-        repetitiveCount++;
-        if (repetitiveCount <= 3) { // Only show first few repetitions
-          console.log(`Server: ${message}`);
-        } else if (repetitiveCount === 4) {
-          console.log('Server: ... (suppressing repetitive compilation messages)');
-        }
-      } else {
-        repetitiveCount = 0;
-        lastMessage = message;
-        console.log(`Server: ${message}`);
-      }
+      process.stdout.write(`[SERVER STDOUT] ${data}`);
+    });
+    serverProcess.stderr.on('data', (data) => {
+      process.stderr.write(`[SERVER STDERR] ${data}`);
     });
 
-    serverProcess.stderr.on('data', (data) => {
-      const message = data.toString().trim();
-      if (!message.includes('Browser application bundle generation complete')) {
-        console.error(`Server Error: ${message}`);
-      }
-    });
-    
-    // Step 4: Wait for server to be ready (with shorter timeout since we already built)
-    console.log('Step 3: Waiting for server to be ready...');
-    await waitForServer('http://localhost:4200', 30000);
-    
+    // Step 4: Wait for server to be ready (try both localhost and 127.0.0.1)
+    console.log('Step 3: Waiting for server to be ready on http://localhost:4200...');
+    try {
+      await waitForServer('http://localhost:4200', 60000);
+    } catch (err1) {
+      console.warn('Failed to connect to http://localhost:4200, trying http://127.0.0.1:4200 ...');
+      await waitForServer('http://127.0.0.1:4200', 60000);
+    }
+
     // Give it an extra moment to fully stabilize
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Step 5: Run Cypress tests
     console.log('Step 4: Running Cypress E2E tests...');
     await runCommand('cypress', ['run', '--headless', '--browser', 'chrome', '--reporter', 'junit']);
-    
+
     console.log('E2E tests completed successfully!');
     clearTimeout(overallTimeout);
-    
+
   } catch (error) {
     console.error('E2E tests failed:', error.message);
     clearTimeout(overallTimeout);
@@ -151,7 +137,7 @@ async function runE2ECI() {
         serverProcess.kill('SIGTERM');
       }
     }
-    
+
     // Also kill any process on port 4200 as backup
     await killProcessOnPort(4200);
   }
