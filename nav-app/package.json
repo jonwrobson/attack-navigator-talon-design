@@ -29,8 +29,7 @@
     "test:selenium:grid": "npm run test:selenium -- --seleniumAddress=http://selenium-hub:4444/wd/hub",
     "test:all": "npm run test:ci && npm run e2e:ci && npm run test:selenium",
     "test:performance": "npm run build && npm run test:performance:run",
-    "test:performance:run": "playwright test tests/performance",
-    "postinstall": "node patch-webpack.js"
+    "test:performance:run": "playwright test tests/performance"
   },
   "dependencies": {
     "@angular/animations": "^17.3.10",
