@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/3ecbd4d0-fbaa-423d-b938-01c0827431b8/resourceGroups/talondesign/providers/Microsoft.Web/sites/talondesign",
+    "appService.deploySubpath": "."
+}

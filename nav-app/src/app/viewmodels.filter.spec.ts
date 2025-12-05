@@ -1,4 +1,4 @@
-import { Filter } from './viewmodels.service';
+import { Filter } from './classes';
 
 describe('Filter helpers', () => {
   it('initPlatformOptions, toggle, inFilter, serialize/deSerialize', () => {

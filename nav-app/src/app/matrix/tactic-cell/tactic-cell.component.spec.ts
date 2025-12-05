@@ -1,31 +1,36 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-
+import { TechniqueVM, ViewModel } from '../../classes';
+import { Tactic, Technique } from '../../classes/stix';
 import { TacticCellComponent } from './tactic-cell.component';
+import * as MockData from '../../../tests/utils/mock-data';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 describe('TacticCellComponent', () => {
-  let component: TacticCellComponent;
-  let fixture: ComponentFixture<TacticCellComponent>;
+    let component: TacticCellComponent;
+    let fixture: ComponentFixture<TacticCellComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ TacticCellComponent ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [MatTooltipModule],
+            declarations: [TacticCellComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TacticCellComponent);
-    component = fixture.componentInstance;
-    // provide minimal viewModel with layout expected by template
-    (component as any).viewModel = { layout: { showID: false, showName: true } };
-    (component as any).tactic = { attackID: 'TA0001', name: 'Initial Access' };
-    (component as any).tooltip = '';
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        let technique_list: Technique[] = [];
+        fixture = TestBed.createComponent(TacticCellComponent);
+        component = fixture.componentInstance;
+        component.viewModel = new ViewModel('layer', '33', 'enterprise-attack-13', null);
+        component.viewModel.domainVersionID = 'enterprise-attack-13';
+        let t1 = new Technique(MockData.T0000, [], null);
+        technique_list.push(t1);
+        let tvm_1 = new TechniqueVM('T1595^reconnaissance');
+        component.viewModel.setTechniqueVM(tvm_1);
+        component.tactic = new Tactic(MockData.TA0000, technique_list, null);
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    (expect(component) as any).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

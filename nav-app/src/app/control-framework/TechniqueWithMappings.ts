@@ -1,4 +1,4 @@
-import { Technique } from '../data.service';
+import { Technique } from '../classes/stix';
 import { TechniqueMappings } from "./TechniqueMappings";
 
 

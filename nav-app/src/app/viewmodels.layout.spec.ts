@@ -1,4 +1,4 @@
-import { LayoutOptions } from './viewmodels.service';
+import { LayoutOptions } from './classes';
 
 describe('LayoutOptions', () => {
   it('enforces valid layouts and toggles showName/showID with mini', () => {

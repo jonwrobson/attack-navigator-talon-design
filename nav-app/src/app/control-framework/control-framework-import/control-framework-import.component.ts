@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ViewModel } from '../../viewmodels.service';
-import * as Excel from 'exceljs/dist/es5/exceljs.browser';
+import { ViewModel } from '../../classes';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { NistItemFactory } from '../control-frameworks/nist-item-factory';
 import { OwaspAsvsFactory } from '../control-frameworks/asvs-owasp-item-factory';
 import { CisToNistItemFactory } from '../control-frameworks/cis-to-nist-item-factory';

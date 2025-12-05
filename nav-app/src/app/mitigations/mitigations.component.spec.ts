@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { inject } from '@angular/core/testing';
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { DataService } from '../data.service';
+import { DataService } from '../services/data.service';
 import { MitigationsComponent } from "./mitigations.component";
 import dataServiceConfig from '../../assets/config.json';
 import enterpriseAttackBundle from '../../assets/enterprise-attack.json';

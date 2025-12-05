@@ -1,4 +1,4 @@
-import { TechniqueVM, Metadata, Link } from './viewmodels.service';
+import { TechniqueVM, Metadata, Link } from './classes';
 
 describe('TechniqueVM helpers', () => {
   it('annotated and modified reflect state and resetAnnotations clears', () => {

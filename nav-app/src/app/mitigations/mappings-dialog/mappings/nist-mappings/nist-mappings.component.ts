@@ -1,8 +1,8 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Component, Input, OnInit } from '@angular/core';
-import { AsvsOwaspItem } from 'app/control-framework/control-frameworks/asvs-owasp-item';
-import { CisItem } from 'app/control-framework/control-frameworks/cis-item';
-import { NistItem } from 'app/control-framework/control-frameworks/nist-item';
+import { AsvsOwaspItem } from '../../../../control-framework/control-frameworks/asvs-owasp-item';
+import { CisItem } from '../../../../control-framework/control-frameworks/cis-item';
+import { NistItem } from '../../../../control-framework/control-frameworks/nist-item';
 
 @Component({
   selector: 'nist-mappings',

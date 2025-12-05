@@ -1,43 +1,25 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import {HttpClientModule} from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatrixSideComponent } from './matrix-side.component';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+
 describe('MatrixSideComponent', () => {
-  let component: MatrixSideComponent;
-  let fixture: ComponentFixture<MatrixSideComponent>;
+    let component: MatrixSideComponent;
+    let fixture: ComponentFixture<MatrixSideComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-    imports: [
-        HttpClientTestingModule,
-        MatDialogModule 
-      ],
-      declarations: [ MatrixSideComponent ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, MatDialogModule],
+            declarations: [MatrixSideComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MatrixSideComponent);
-    component = fixture.componentInstance;
-    (component as any).matrix = { tactics: [] };
-    // provide minimal viewModel with layout and required functions
-    (component as any).viewModel = {
-      layout: { showTacticRowBackground: false },
-      filterTactics: (t) => t,
-      filterTechniques: (ts) => ts,
-      sortTechniques: (ts) => ts,
-      applyControls: (ts) => ts,
-      isTechniqueSelected: () => false,
-      getTechniqueVM: () => ({ comment: '', metadata: [], links: [], enabled: true })
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(MatrixSideComponent);
+        component = fixture.componentInstance;
+    });
 
-  it('should create', () => {
-    (expect(component) as any).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

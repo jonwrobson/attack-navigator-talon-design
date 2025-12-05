@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ViewModel } from '../../viewmodels.service';
+import { ViewModel } from '../../classes';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
 import { MappingsExporter } from '../mappings-exporter';
-import { DataService } from '../../data.service';
+import { DataService } from '../../services/data.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ControlFramework } from '../../control-framework/control-framework';
 import { scoredMitigationVM } from '../scored-mitigation-vm';

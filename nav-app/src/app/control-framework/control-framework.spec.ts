@@ -1,6 +1,6 @@
 import { inject, TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
-import { DataService } from "../data.service";
+import { DataService } from "../services/data.service";
 import { ControlFramework } from "./control-framework";
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import config from '../../assets/config.json';
