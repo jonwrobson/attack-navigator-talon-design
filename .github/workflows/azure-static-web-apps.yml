@@ -80,7 +80,6 @@ jobs:
 
   # Deploy to Azure Static Web Apps
   deploy:
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     name: Deploy
     needs: [validate, test-suite]
