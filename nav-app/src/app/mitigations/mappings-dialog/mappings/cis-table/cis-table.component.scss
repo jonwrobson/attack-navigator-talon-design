@@ -1,13 +1,36 @@
+@import '../../../../../colors.scss';
+
 .table-wrapper {
   margin: 8px;
+  @include adaptive-color('background-color', white, color(dark-2));
 }
 
-.mat-row {
-  height: auto;
-}
-
-.mat-cell,
-.mat-header-cell {
-  padding: 8px;
-  white-space: pre-wrap;
+cis-table {
+  .mat-mdc-table, .mat-table, table {
+    @include adaptive-color('background-color', white, color(dark-2));
+    width: 100%;
+  }
+  
+  .mat-mdc-row, .mat-row, tr {
+    height: auto;
+    @include adaptive-color('background-color', white, color(dark-2));
+  }
+  
+  .mat-mdc-cell, .mat-cell, td {
+    padding: 8px;
+    white-space: pre-wrap;
+    @include adaptive-color('background-color', white, color(dark-2));
+    @include adaptive-color('color', #333, #e0e0e0);
+  }
+  
+  .mat-mdc-header-row, .mat-header-row, thead tr {
+    @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+  }
+  
+  .mat-mdc-header-cell, .mat-header-cell, th {
+    padding: 8px;
+    @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+    @include adaptive-color('color', #333, #e0e0e0);
+    font-weight: 600;
+  }
 }

@@ -134,6 +134,175 @@ body {
     }
 }
 
+// Mappings dialog dark mode styles
+.mappings-dialog {
+    .mat-mdc-dialog-container,
+    .mdc-dialog__container {
+        @include adaptive-color('background-color', white, color(dark-1));
+    }
+    
+    .mdc-dialog__surface {
+        @include adaptive-color('background-color', white, color(dark-1));
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    .mat-mdc-dialog-title, h1[mat-dialog-title] {
+        @include adaptive-color('background-color', white, color(dark-1));
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    .mat-mdc-dialog-content, [mat-dialog-content] {
+        @include adaptive-color('background-color', white, color(dark-1));
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    .mat-mdc-dialog-actions, [mat-dialog-actions] {
+        @include adaptive-color('background-color', white, color(dark-1));
+    }
+    
+    // Button toggle group
+    .mat-button-toggle-group {
+        @include adaptive-color('background-color', #f5f5f5, color(dark-2));
+        @include adaptive-color('border-color', #ddd, color(dark-3));
+    }
+    
+    .mat-button-toggle {
+        @include adaptive-color('background-color', #f5f5f5, color(dark-2));
+        @include adaptive-color('color', #333, on-color(dark));
+        
+        .mat-button-toggle-button {
+            @include adaptive-color('color', #333, on-color(dark));
+        }
+    }
+    
+    .mat-button-toggle-checked {
+        @include adaptive-color('background-color', #e0e0e0, color(dark-3));
+    }
+    
+    .mat-button-toggle-label-content {
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    // Tables in mappings dialog - more specific selectors
+    table, .mat-mdc-table, .mat-table {
+        @include adaptive-color('background-color', white, color(dark-2));
+        @include adaptive-color('color', #333, on-color(dark));
+        
+        tr {
+            @include adaptive-color('background-color', white, color(dark-2));
+        }
+        
+        th, td {
+            @include adaptive-color('background-color', white, color(dark-2));
+            @include adaptive-color('color', #333, on-color(dark));
+        }
+    }
+    
+    .mat-mdc-header-row, .mat-header-row, thead tr {
+        @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+        
+        th, .mat-mdc-header-cell, .mat-header-cell {
+            @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+            @include adaptive-color('color', #333, on-color(dark));
+        }
+    }
+    
+    .mat-mdc-row, .mat-row, tbody tr {
+        @include adaptive-color('background-color', white, color(dark-2));
+        
+        &:nth-child(even) {
+            @include adaptive-color('background-color', #fafafa, color(dark-3));
+            
+            td {
+                @include adaptive-color('background-color', #fafafa, color(dark-3));
+            }
+        }
+        
+        td, .mat-mdc-cell, .mat-cell {
+            @include adaptive-color('background-color', white, color(dark-2));
+            @include adaptive-color('color', #333, on-color(dark));
+        }
+    }
+    
+    .mat-mdc-footer-row, .mat-footer-row, tfoot tr {
+        @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+        
+        td, .mat-mdc-footer-cell, .mat-footer-cell {
+            @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+            @include adaptive-color('color', #333, on-color(dark));
+        }
+    }
+    
+    // Form fields
+    .mat-mdc-form-field {
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    .mat-mdc-select-value {
+        @include adaptive-color('color', #333, on-color(dark));
+    }
+    
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+        @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+    }
+    
+    .mat-mdc-form-field-focus-overlay {
+        @include adaptive-color-dark-only('background-color', transparent);
+    }
+    
+    // Tab group for expanded rows (ASVS/CIS tables)
+    .mat-mdc-tab-group, .mat-tab-group {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    .mat-mdc-tab-header, .mat-tab-header {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    .mat-mdc-tab-labels {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab__text-label,
+    .mat-tab-label {
+        @include adaptive-color('color', #333, #e0e0e0);
+    }
+    
+    .mat-mdc-tab-body-wrapper, .mat-tab-body-wrapper {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    .mat-mdc-tab-body-content, .mat-tab-body-content {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    // Expanded row details
+    .mapping-element-detail {
+        @include adaptive-color('background-color', white, color(dark-2));
+    }
+    
+    // ASVS and CIS sub-tables with high contrast text
+    asvs-table, cis-table {
+        .mat-mdc-table, .mat-table, table {
+            @include adaptive-color('background-color', white, color(dark-2));
+            
+            th, td {
+                @include adaptive-color('background-color', white, color(dark-2));
+                @include adaptive-color('color', #333, #e0e0e0);
+            }
+            
+            thead tr, .mat-mdc-header-row, .mat-header-row {
+                @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+                
+                th {
+                    @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+                    @include adaptive-color('color', #333, #e0e0e0);
+                }
+            }
+        }
+    }
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
