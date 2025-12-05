@@ -113,6 +113,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     
+    outputs:
+      static_web_app_url: ${{ steps.builddeploy.outputs.static_web_app_url }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -123,7 +126,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_HAPPY_FIELD_007F63B03 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/nav-app"
@@ -143,6 +146,9 @@ jobs:
     needs: [pre-deployment-validation, build_and_deploy_job]
     runs-on: ubuntu-latest
     name: Post-Deployment E2E Tests
+    
+    env:
+      BASE_URL: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}
     
     strategy:
       fail-fast: false
@@ -172,8 +178,8 @@ jobs:
       - name: Test deployment accessibility
         run: |
           # Test if the deployment is accessible
-          curl -f https://happy-field-007f63b03.azurestaticapps.net/ || {
-            echo "❌ Deployment not accessible"
+          curl -f "$BASE_URL/" || {
+            echo "❌ Deployment not accessible: $BASE_URL"
             exit 1
           }
           echo "✅ Deployment is accessible"
@@ -182,7 +188,7 @@ jobs:
         working-directory: nav-app
         run: npx cypress run --browser ${{ matrix.browser }} --headless
         env:
-          CYPRESS_BASE_URL: https://happy-field-007f63b03.azurestaticapps.net
+          CYPRESS_BASE_URL: ${{ env.BASE_URL }}
         continue-on-error: true
       
       - name: Upload Cypress artifacts
@@ -201,6 +207,9 @@ jobs:
     needs: [pre-deployment-validation, build_and_deploy_job]
     runs-on: ubuntu-latest
     name: Cross-Browser Testing
+    
+    env:
+      BASE_URL: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}
     
     services:
       selenium-hub:
@@ -250,7 +259,7 @@ jobs:
         run: npm run test:selenium:grid
         env:
           SELENIUM_HUB: http://localhost:4444/wd/hub
-          CYPRESS_BASE_URL: https://happy-field-007f63b03.azurestaticapps.net
+          CYPRESS_BASE_URL: ${{ env.BASE_URL }}
         continue-on-error: true
 
   # Performance testing
@@ -259,6 +268,9 @@ jobs:
     needs: [pre-deployment-validation, build_and_deploy_job]
     runs-on: ubuntu-latest
     name: Performance Testing
+    
+    env:
+      BASE_URL: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}
     
     steps:
       - name: Checkout code
@@ -286,7 +298,7 @@ jobs:
         working-directory: nav-app
         run: npm run test:performance:run
         env:
-          BASE_URL: https://happy-field-007f63b03.azurestaticapps.net
+          BASE_URL: ${{ env.BASE_URL }}
         continue-on-error: true
       
       - name: Upload performance results
@@ -342,6 +354,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Accessibility Testing
     
+    env:
+      BASE_URL: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -354,7 +369,7 @@ jobs:
       
       - name: Run accessibility tests
         run: |
-          axe https://happy-field-007f63b03.azurestaticapps.net \
+          axe "$BASE_URL" \
             --exit \
             --reporter json \
             --outputFile accessibility-results.json \
@@ -378,7 +393,7 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_HAPPY_FIELD_007F63B03 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
 
   # Test summary and reporting
@@ -405,7 +420,7 @@ jobs:
           echo "| Accessibility Testing | ${{ needs.accessibility-testing.result }} | WCAG compliance verification |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 🚀 Deployment Information" >> $GITHUB_STEP_SUMMARY
-          echo "- **Live URL**: https://happy-field-007f63b03.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+          echo "- **Live URL**: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Coverage Threshold**: ${{ needs.pre-deployment-validation.outputs.coverage-meets-threshold }}" >> $GITHUB_STEP_SUMMARY
@@ -428,13 +443,13 @@ jobs:
             | ✅ Pre-Deployment | ${{ needs.pre-deployment-validation.result }} |
             | 🚀 Azure Deployment | ${{ needs.build_and_deploy_job.result }} |
             | 🔍 E2E Testing | ${{ needs.post_deployment_e2e.result }} |
-            | 🌐 Cross-Browser | ${{ needs.cross_browser_testing.result }} |
-            | ⚡ Performance | ${{ needs.performance_testing.result }} |
-            | 🔒 Security | ${{ needs.security_scan.result }} |
-            | ♿ Accessibility | ${{ needs.accessibility_testing.result }} |
+            | 🌐 Cross-Browser | ${{ needs.cross-browser-testing.result }} |
+            | ⚡ Performance | ${{ needs.performance-testing.result }} |
+            | 🔒 Security | ${{ needs.security-scan.result }} |
+            | ♿ Accessibility | ${{ needs.accessibility-testing.result }} |
             
-            **🔗 Preview URL**: https://happy-field-007f63b03.azurestaticapps.net
-            **📊 Coverage Threshold Met**: ${{ needs.pre_deployment_validation.outputs.coverage_meets_threshold }}
+            **🔗 Preview URL**: ${{ needs.build_and_deploy_job.outputs.static_web_app_url }}
+            **📊 Coverage Threshold Met**: ${{ needs.pre-deployment-validation.outputs.coverage-meets-threshold }}
             
             *All tests are run against the live deployed application*
             `;

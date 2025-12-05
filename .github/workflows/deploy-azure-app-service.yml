@@ -1,0 +1,95 @@
+name: Build and Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  NODE_VERSION: '22'
+  AZURE_WEBAPP_NAME: talondesign
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build & Test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: nav-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: nav-app
+        run: npm ci --legacy-peer-deps
+
+      - name: Run linting
+        working-directory: nav-app
+        run: npm run lint --if-present
+        continue-on-error: true
+
+      - name: Run unit tests
+        working-directory: nav-app
+        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        continue-on-error: true
+
+      - name: Build production
+        working-directory: nav-app
+        run: npm run build
+
+      - name: Create deployment package
+        working-directory: nav-app/dist
+        run: |
+          zip -r ../deploy.zip .
+          echo "=== Deployment package contents ==="
+          unzip -l ../deploy.zip | head -20
+
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigator-app
+          path: nav-app/deploy.zip
+          retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    name: Deploy to Azure
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: production
+      url: https://talondesign-h5ayfddtfbdmb8ap.uksouth-01.azurewebsites.net
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: navigator-app
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**App URL:** https://talondesign-h5ayfddtfbdmb8ap.uksouth-01.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed from:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

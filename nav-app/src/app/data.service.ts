@@ -220,8 +220,8 @@ export class DataService {
     // Observable for data in config.json
     private configData$: Observable<Object>;
 
-    // Observable for data
-    private domainData$: Observable<Object>;
+    // Observables for data per domain (cache)
+    private domainDataCache = new Map<string, Observable<Object>>();
 
     // URLs in case config file doesn't load properly
     private latestVersion: Version = { name: "ATT&CK v12", number: "12" };
@@ -289,13 +289,12 @@ export class DataService {
                 'media_types': ['application/vnd.oasis.stix+json']
             }
             const collection = new Collection(collectionInfo, domain.taxii_url + 'stix', conn);
-            this.domainData$ = Observable.forkJoin(fromPromise(collection.getObjects('', undefined)));
-        } else if (refresh || !this.domainData$) {
-            console.log("retrieving data", domain.urls)
-            let bundleData = [];
-            const httpOptions = {
-                headers: undefined
-            }
+            const obs = Observable.forkJoin(fromPromise(collection.getObjects('', undefined)));
+            this.domainDataCache.set(domain.id, obs);
+        } else if (refresh || !this.domainDataCache.get(domain.id)) {
+            console.log("retrieving data", domain.urls);
+            let bundleData: Observable<Object>[] = [];
+            const httpOptions: { headers?: HttpHeaders } = {};
             if (domain.authentication && domain.authentication.enabled) { // include authorization header, if configured (integrations)
                 let token = `${domain.authentication.serviceName}:${domain.authentication.apiKey}`;
                 httpOptions.headers = new HttpHeaders({ 'Authorization': 'Basic ' + Buffer.from(token).toString('base64') })
@@ -303,9 +302,41 @@ export class DataService {
             domain.urls.forEach((url) => {
                 bundleData.push(this.http.get(url, httpOptions));
             });
-            this.domainData$ = Observable.forkJoin(bundleData);
+
+            // Attempt remote fetch with timeout; on error fall back to local asset JSON bundled with the app
+            const remote$ = Observable.forkJoin(bundleData).timeout(20000);
+            const fallbackAsset = this.getLocalDomainAsset(domain.domain_identifier);
+            if (fallbackAsset) {
+                // Wrap fallback in a catch to recover from remote failures
+                const withFallback$ = remote$.catch((err) => {
+                    console.warn(`Remote fetch failed or timed out for ${domain.id}. Falling back to local asset: ${fallbackAsset}`, err);
+                    return Observable.forkJoin([this.http.get(fallbackAsset)]);
+                });
+                this.domainDataCache.set(domain.id, withFallback$);
+            } else {
+                this.domainDataCache.set(domain.id, remote$);
+            }
         }
-        return this.domainData$;
+        return this.domainDataCache.get(domain.id);
+    }
+
+    /**
+     * Resolve a local asset path for a given domain identifier, when available.
+     * Returns undefined if no local fallback is bundled.
+     */
+    private getLocalDomainAsset(domainIdentifier: string): string | undefined {
+        switch (domainIdentifier) {
+            case 'enterprise-attack':
+                // Local fallback with a representative enterprise ATT&CK bundle
+                return './assets/enterprise-attack.json';
+            // Add additional local fallbacks here if you decide to bundle them
+            // case 'mobile-attack':
+            //     return './assets/mobile-attack.json';
+            // case 'ics-attack':
+            //     return './assets/ics-attack.json';
+            default:
+                return undefined;
+        }
     }
 
     /**
@@ -316,10 +347,28 @@ export class DataService {
             let domain = this.getDomain(domainVersionID);
             if (domain.dataLoaded && !refresh) resolve(null);
             if (domain) {
+                // reset previous error state and mark as not loaded while (re)loading
+                domain.loadError = undefined;
+                domain.dataLoaded = false;
                 let subscription = this.getDomainData(domain, refresh).subscribe({
                     next: (data: Object[]) => {
-                        this.parseBundle(domain, data);
-                        resolve(null);
+                        try {
+                            console.log(`[DataService] Data received for ${domain.id}. Parsing…`);
+                            this.parseBundle(domain, data);
+                            console.log(`[DataService] Parse complete for ${domain.id}. dataLoaded=${domain.dataLoaded}.`);
+                            domain.loadError = undefined;
+                            resolve(null);
+                        } catch (err) {
+                            console.error(`[DataService] Error parsing data for ${domain.id}:`, err);
+                            domain.loadError = err?.message || 'Failed to parse domain bundle';
+                            reject(err);
+                        }
+                    },
+                    error: (err) => {
+                        console.error(`[DataService] Failed to load data for ${domain.id}:`, err);
+                        domain.dataLoaded = false;
+                        domain.loadError = err?.message || 'Failed to load domain bundle';
+                        reject(err);
                     },
                     complete: () => { if (subscription) subscription.unsubscribe(); } //prevent memory leaks
                 });
@@ -834,6 +883,7 @@ export class Domain {
     public taxii_collection: string = "";
     public authentication: ServiceAuth;
     public dataLoaded: boolean = false;
+    public loadError?: string; // last load error message (if any)
     public dataLoadedCallbacks: any[] = [];
 
     public matrices: Matrix[] = [];

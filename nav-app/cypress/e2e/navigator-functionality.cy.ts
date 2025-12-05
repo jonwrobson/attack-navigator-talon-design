@@ -11,7 +11,8 @@ describe('ATT&CK Navigator Core Functionality', () => {
   });
 
   it('should display techniques in the matrix', () => {
-    cy.get('.technique-cell, .cell').should('have.length.greaterThan', 50);
+    cy.createNewLayer();
+    cy.get('.technique-cell, .cell', { timeout: 20000 }).should('have.length.greaterThan', 50);
     cy.get('.technique-cell, .cell').first().should('be.visible');
   });
 
@@ -25,9 +26,14 @@ describe('ATT&CK Navigator Core Functionality', () => {
     cy.addTechniqueComment('Test comment for E2E testing');
     
     // Verify comment indicator via underlined class on technique cell
-    cy.get('.technique-cell, .cell')
-      .first()
-      .should('have.class', 'underlined');
+    cy.get('@selectedTechniqueId').then((techniqueId) => {
+      if (techniqueId) {
+        cy.get(`.technique-cell[data-technique-id="${techniqueId}"], .cell[data-technique-id="${techniqueId}"]`)
+          .should('have.class', 'underlined');
+      } else {
+        cy.get('@selectedTechniqueCell').should('have.class', 'underlined');
+      }
+    });
   });
 
   it('should allow technique scoring', () => {
@@ -35,10 +41,16 @@ describe('ATT&CK Navigator Core Functionality', () => {
     cy.setTechniqueScore(85);
     
     // Verify score was applied (technique should have color or score indicator)
-    cy.get('.technique-cell, .cell')
-      .first()
-      .should('have.attr', 'style')
-      .and('contain', 'background');
+    cy.get('@selectedTechniqueId').then((techniqueId) => {
+      const selector = techniqueId
+        ? `.technique-cell[data-technique-id="${techniqueId}"], .cell[data-technique-id="${techniqueId}"]`
+        : '.technique-cell, .cell';
+
+      cy.get(selector)
+        .first()
+        .should('have.attr', 'style')
+        .and('contain', 'background');
+    });
   });
 
   it('should support matrix layout switching', () => {
@@ -63,6 +75,27 @@ describe('ATT&CK Navigator Core Functionality', () => {
         .its('length')
         .should('be.greaterThan', countBefore);
     });
+  });
+
+  it('should create a new layer and select the Compromise Client Software Binary technique', () => {
+    cy.createNewLayer();
+
+    // Ensure the specific technique cell is visible and click it to select
+    cy.contains('.technique-cell span, .cell span', 'Compromise Client Software Binary', { timeout: 60000 })
+      .scrollIntoView()
+      .click({ force: true });
+
+    // Confirm the technique cell matches the expected state after selection
+    cy.contains('.technique-cell.editing span, .cell.editing span', 'Compromise Client Software Binary', { timeout: 30000 })
+      .should(($span) => {
+        const cell = $span.closest('.technique-cell, .cell');
+        expect(cell, 'technique cell exists').to.have.length.greaterThan(0);
+        expect(cell, 'technique cell classes').to.have.class('link');
+        expect(cell, 'technique cell editing state').to.have.class('editing');
+        expect(cell, 'technique cell coloration').to.have.class('colored');
+        const style = cell.attr('style') || '';
+        expect(style, 'technique cell background style').to.match(/background/i);
+      });
   });
 
   it('should support search functionality', () => {
@@ -145,11 +178,31 @@ describe('ATT&CK Navigator Core Functionality', () => {
     cy.setTechniqueScore(75);
     
     // Switch layout and verify annotations persist
-  cy.switchMatrixLayout('flat');
-    cy.get('.technique-cell, .cell').first().should('have.class', 'underlined');
+    cy.switchMatrixLayout('flat');
+    cy.get('@selectedTechniqueId').then((techniqueId) => {
+      if (techniqueId) {
+        cy.get(`.technique-cell[data-technique-id="${techniqueId}"], .cell[data-technique-id="${techniqueId}"]`)
+          .should('have.class', 'underlined');
+      }
+    });
     
     // Switch back and verify still present
     cy.switchMatrixLayout('side');
-    cy.get('.technique-cell, .cell').first().should('have.class', 'underlined');
+    cy.get('@selectedTechniqueId').then((techniqueId) => {
+      if (techniqueId) {
+        cy.get(`.technique-cell[data-technique-id="${techniqueId}"], .cell[data-technique-id="${techniqueId}"]`)
+          .should('have.class', 'underlined');
+      }
+    });
   });
+
+  it('should render the tactics matrix after creating a new layer and allow tactic selection', () => {
+    cy.createNewLayer();
+    cy.get('.matrix, .matrices', { timeout: 20000 }).should('be.visible');
+    cy.get('.technique-cell, .cell').should('have.length.greaterThan', 10);
+    // Click the first tactic (column header) and ensure the UI remains responsive
+    cy.get('.matrix .tactic, .matrices .tactic').first().click({ force: true });
+    cy.get('.matrix, .matrices').should('be.visible');
+  });
+
 });

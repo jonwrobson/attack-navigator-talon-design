@@ -584,8 +584,15 @@ o88o  8  o88o o88o  o888o o888o    o888o  88o8 o888o o88o  o888o
     <mat-drawer-content>
         <div class="matrices" #scrollRef>
             <div oncontextmenu="return false">
-                <div class="spinner" *ngIf="!dataService.getDomain(viewModel.domainVersionID).dataLoaded">
+                <div class="spinner" *ngIf="!dataService.getDomain(viewModel.domainVersionID).dataLoaded && !dataService.getDomain(viewModel.domainVersionID).loadError">
                     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+                </div>
+                <div class="load-error" *ngIf="dataService.getDomain(viewModel.domainVersionID).loadError">
+                    <mat-icon color="warn">error</mat-icon>
+                    <span>Unable to load ATT&CK data: {{ dataService.getDomain(viewModel.domainVersionID).loadError }}</span>
+                    <div>
+                        <small>Check your network or try again. If offline, the app will use the bundled Enterprise fallback.</small>
+                    </div>
                 </div>
                 <div class="matrices-columns">
                     <div class="matrix-column"

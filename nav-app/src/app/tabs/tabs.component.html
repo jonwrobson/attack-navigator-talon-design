@@ -72,7 +72,7 @@
 </ng-template>
 
 <!-- New tab template -->
-<ng-template [ngIf]="activeTab && !activeTab.isDataTable">
+<ng-container *ngIf="activeTab && !activeTab.isDataTable">
     <section aria-label="Navigator Info" class="newTab">
         <div class="description">
             <div class="logo">
@@ -90,9 +90,7 @@
                 <button mat-button (click)="openDialog('help')">help</button>
                 <button mat-button (click)="openDialog('changelog')">changelog</button>
                 <div class="theme-select-container">
-                    <mat-label>
-                        theme ▾
-                    </mat-label>
+                    <mat-label>theme ▾</mat-label>
                     <mat-select (selectionChange)="handleUserThemeChange($event.value)" aria-label="Theme selection">
                         <mat-option value="dark">dark</mat-option>
                         <mat-option value="light">light</mat-option>
@@ -101,10 +99,12 @@
                 </div>
             </div>
         </div>
-        <a style='color: white;' href="https://talondesign.co.uk"><div style='padding:5px'>< Back To TalonDesign.co.uk</div></a>
-    <!-- removed misplaced section close tag -->
+        <a style="color: white;" href="https://talondesign.co.uk">
+            <div style="padding:5px">
+                < Back To TalonDesign.co.uk
+            </div>
+        </a>
         <mat-accordion class="headers-align">
-
             <!-- Create new layer interface -->
             <mat-expansion-panel #newlayer>
                 <mat-expansion-panel-header>
@@ -141,14 +141,14 @@
                                     <mat-select placeholder="version" [(ngModel)]="nVersion" required>
                                         <mat-option [value]="null">none</mat-option>
                                         <mat-option *ngFor="let nVersion of this.dataService.versions"
-                                                    [value]="nVersion">{{nVersion.name}}</mat-option>
+                                            [value]="nVersion">{{nVersion.name}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </td>
                             <td>
-                                Choose the version for the new layer. <em>*Versions prior
-                                to {{ds.versions[ds.versions.length - 1].name}} are not supported by Navigator
-                                v{{nav_version}}.</em>
+                                Choose the version for the new layer. <em>*Versions prior to
+                                    {{ds.versions[ds.versions.length - 1].name}} are not supported by Navigator
+                                    v{{nav_version}}.</em>
                             </td>
                         </tr>
                         <!-- Choose domain -->
@@ -156,10 +156,10 @@
                             <td>
                                 <mat-form-field>
                                     <mat-select placeholder="domain" [(ngModel)]="nDomain" [disabled]="!nVersion"
-                                                required>
+                                        required>
                                         <mat-option [value]="null">none</mat-option>
                                         <mat-option *ngFor="let nDomain of filterDomains(nVersion)"
-                                                    [value]=nDomain>{{nDomain.name}}</mat-option>
+                                            [value]="nDomain">{{nDomain.name}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </td>
@@ -189,19 +189,15 @@
                         <!-- Upload file from local -->
                         <td>
                             <button mat-button (click)="openUploadPrompt()">Upload from local</button>
-                            <input id="uploader" type="file" style="display: none" (change)="loadLayerFromFile()"/></td>
-
+                            <input id="uploader" type="file" style="display: none" (change)="loadLayerFromFile()" />
+                        </td>
                         <td><b style="font-size: 8pt">OR</b></td>
-
                         <!-- Upload layer via URL -->
                         <td>
                             <mat-form-field>
-                                <input type="text"
-                                       matInput
-                                       placeholder="Load from URL"
-                                       [(ngModel)]="loadURL"/>
+                                <input type="text" matInput placeholder="Load from URL" [(ngModel)]="loadURL" />
                                 <button mat-button matSuffix mat-icon-button aria-label="go" *ngIf="loadURL"
-                                        (click)="loadLayerFromURL(loadURL, true)">>
+                                    (click)="loadLayerFromURL(loadURL, true)">>
                                 </button>
                             </mat-form-field>
                         </td>
@@ -211,7 +207,7 @@
 
             <!-- Create layer from other layers -->
             <mat-expansion-panel (opened)="activeTab.showScoreVariables = true"
-                                 (closed)="activeTab.showScoreVariables = false">
+                (closed)="activeTab.showScoreVariables = false">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Create Layer from other layers
@@ -229,7 +225,7 @@
                                 <mat-select placeholder="domain" [(ngModel)]="domain" required>
                                     <mat-option [value]="null">none</mat-option>
                                     <mat-option *ngFor="let domain of this.dataService.domains"
-                                                [value]=domain.id>{{domain.name}} {{domain.version.name}}</mat-option>
+                                        [value]="domain.id">{{domain.name}} {{domain.version.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -238,18 +234,14 @@
                             can be merged.
                         </td>
                     </tr>
-
                     <!-- Score expression -->
                     <tr>
                         <td>
                             <mat-form-field>
-                                <input type="text"
-                                       matInput
-                                       placeholder="score expression"
-                                       [disabled]="!domain"
-                                       [(ngModel)]="scoreExpression"
-                                       (keyup)="scoreExpression = scoreExpression.toLowerCase()"
-                                       style="letter-spacing: 2px"/>
+                                <input type="text" matInput placeholder="score expression" [disabled]="!domain"
+                                    [(ngModel)]="scoreExpression"
+                                    (keyup)="scoreExpression = scoreExpression.toLowerCase()"
+                                    style="letter-spacing: 2px" />
                                 <mat-hint style="color: red" align="start">{{getScoreExpressionError()}}</mat-hint>
                             </mat-form-field>
                         </td>
@@ -259,18 +251,19 @@
                             <a href="http://mathjs.org/docs/expressions/syntax.html#operators">here</a>. Leave blank to
                             initialize scores to 0. Here's a list of available layer variables:
                             <ul *ngFor="let tab of layerTabs; let $i = index">
-                                <li *ngIf="getActiveTab().showScoreVariables && tab.isDataTable && (!domain || tab.domain === domain) && alphabetical(indexToChar($i))"><span class="tab-enumerator">{{indexToChar($i)}}</span> ({{tab.title}})</li>
+                                <li *ngIf="getActiveTab().showScoreVariables && tab.isDataTable && (!domain || tab.domain === domain) && alphabetical(indexToChar($i))">
+                                    <span class="tab-enumerator">{{indexToChar($i)}}</span> ({{tab.title}})
+                                </li>
                             </ul>
                         </td>
                     </tr>
-
                     <!-- Gradient -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="gradient" [(ngModel)]="gradient" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -279,14 +272,13 @@
                             default scoring gradient.
                         </td>
                     </tr>
-
                     <!-- Coloring -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="coloring" [(ngModel)]="coloring" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -295,14 +287,13 @@
                             no colors.
                         </td>
                     </tr>
-
                     <!-- Comments -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="comments" [(ngModel)]="comments" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -310,14 +301,13 @@
                             Choose which layer to import comments from. Leave blank to initialize with no comments.
                         </td>
                     </tr>
-
                     <!-- Links -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="links" [(ngModel)]="links" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -325,29 +315,28 @@
                             Choose which layer to import technique links from. Leave blank to initialize without links.
                         </td>
                     </tr>
-
                     <!-- Metadata -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="metadata" [(ngModel)]="metadata" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
                         <td [ngClass]="{disabled: !domain}">
-                            Choose which layer to import technique metadata from. Leave blank to initialize without metadata.
+                            Choose which layer to import technique metadata from. Leave blank to initialize without
+                            metadata.
                         </td>
                     </tr>
-
                     <!-- States -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="states" [(ngModel)]="enabledness" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -356,14 +345,13 @@
                             enabled.
                         </td>
                     </tr>
-
                     <!-- Filters -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="filters" [(ngModel)]="filters" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
@@ -371,31 +359,29 @@
                             Choose which layer to import filters from. Leave blank to initialize with no filters.
                         </td>
                     </tr>
-
                     <!-- Legend -->
                     <tr>
                         <td>
                             <mat-form-field>
                                 <mat-select placeholder="legend" [(ngModel)]="legendItems" [disabled]="!domain">
                                     <mat-option [value]="null">none</mat-option>
-                                    <mat-option *ngFor="let vm of getLayers()" [value]=vm>{{vm.name}}</mat-option>
+                                    <mat-option *ngFor="let vm of getLayers()" [value]="vm">{{vm.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </td>
                         <td [ngClass]="{disabled: !domain}">
-                            Choose which layer to import the legend from. Leave blank to initialize with an empty
-                            legend.
+                            Choose which layer to import the legend from. Leave blank to initialize with an empty legend.
                         </td>
                     </tr>
                 </table>
 
                 <!-- Create -->
                 <button mat-button [disabled]="getScoreExpressionError() || !domain"
-                        (click)="layerByOperation(); showScoreVariables = false">Create
+                    (click)="layerByOperation(); showScoreVariables = false">Create
                 </button>
             </mat-expansion-panel>
 
-            <!-- Customized Navigator-->
+            <!-- Customized Navigator -->
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -409,7 +395,9 @@
                 <table class="inputTable">
                     <!-- Default layers -->
                     <tr>
-                        <td><h1>Default Layers</h1></td>
+                        <td>
+                            <h1>Default Layers</h1>
+                        </td>
                         <td></td>
                     </tr>
                     <tr class="custom_nav_inputsection">
@@ -417,18 +405,17 @@
                             <ul class="layerLinks">
                                 <li *ngFor="let layerLinkURL of layerLinkURLs; let i = index trackBy:trackByFunction">
                                     <mat-form-field>
-                                        <input type="text" matInput
-                                               [placeholder]="'default layer URL ' + (i + 1)"
-                                               [(ngModel)]="layerLinkURLs[i]"/>
+                                        <input type="text" matInput [placeholder]="'default layer URL ' + (i + 1)"
+                                            [(ngModel)]="layerLinkURLs[i]" />
                                         <button mat-button matSuffix mat-icon-button aria-label="remove"
-                                                (click)="removeLayerLink(i)">
+                                            (click)="removeLayerLink(i)">
                                             x
                                         </button>
                                     </mat-form-field>
                                 </li>
                                 <li>
                                     <button mat-button (click)="addLayerLink()">
-                                        add {{layerLinkURLs.length > 0 ? "another" : "a"}} layer link
+                                        add {{layerLinkURLs.length > 0 ? 'another' : 'a'}} layer link
                                     </button>
                                 </li>
                             </ul>
@@ -437,10 +424,11 @@
                             default.
                         </td>
                     </tr>
-
                     <!-- Navigator Features -->
                     <tr>
-                        <td><h1>Navigator Features</h1></td>
+                        <td>
+                            <h1>Navigator Features</h1>
+                        </td>
                         <td></td>
                     </tr>
                     <ng-template ngFor let-featureItem [ngForOf]="customizedConfig" let-featureItemIndex="index">
@@ -449,45 +437,53 @@
                             (click)="featureItem.enabled = !featureItem.enabled">
                             <td class="featureRow-button">
                                 <ng-template [ngIf]="featureItem.enabled">
-                                    <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0h24v24H0z" fill="none" />
+                                        <path
+                                            d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                     </svg>
                                 </ng-template>
                                 <ng-template [ngIf]="!featureItem.enabled">
-                                    <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-                                        <path d="M0 0h24v24H0z" fill="none"/>
+                                    <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                                        <path d="M0 0h24v24H0z" fill="none" />
                                     </svg>
                                 </ng-template>
-                                {{featureItem.name.split("_").join(" ")}}
+                                {{featureItem.name.split('_').join(' ')}}
                             </td>
                             <td>{{featureItem.description}}</td>
                         </tr>
-                        <!-- sub-featuers -->
+                        <!-- sub-features -->
                         <tr *ngIf="featureItem.subfeatures">
                             <td>
-                                <h2>{{featureItem.name.split("_").join(" ")}}</h2>
+                                <h2>{{featureItem.name.split('_').join(' ')}}</h2>
                             </td>
                             <td></td>
                         </tr>
                         <ng-template ngFor let-subfeature [ngForOf]="featureItem.subfeatures"
-                                     let-subfeatureIndex="index" let-last="last">
+                            let-subfeatureIndex="index" let-last="last">
                             <tr class="featureRow noselect" (click)="subfeature.enabled = !subfeature.enabled">
                                 <td class="featureRow-button subfeature" [class.last]="last" style="padding-left: 20px">
                                     <ng-template [ngIf]="subfeature.enabled">
-                                        <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M0 0h24v24H0z" fill="none"/>
-                                            <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0 0h24v24H0z" fill="none" />
+                                            <path
+                                                d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                         </svg>
                                     </ng-template>
                                     <ng-template [ngIf]="!subfeature.enabled">
-                                        <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-                                            <path d="M0 0h24v24H0z" fill="none"/>
+                                        <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                                            <path d="M0 0h24v24H0z" fill="none" />
                                         </svg>
                                     </ng-template>
-                                    {{subfeature.name.split("_").join(" ")}}
+                                    {{subfeature.name.split('_').join(' ')}}
                                 </td>
                                 <td class="subfeature" [class.last]="last">{{subfeature.description}}</td>
                             </tr>
@@ -498,17 +494,15 @@
                 <!-- Custom Navigator URL -->
                 <div style="text-align: center; margin-top: 20px">
                     <mat-form-field id="layerlinkfield">
-                        <input id="layerLink" type="text"
-                               matInput
-                               readonly="readonly"
-                               (click)="selectLayerLink()"
-                               [value]="getLayerLink()"
-                               placeholder="custom navigator URL"/>
-                        <button (click)="copyLayerLink()" mat-button matSuffix mat-icon-button aria-label="copy"><span class="layerLinkCopy"
-                                matTooltip="copy" matTooltipPosition="right">
-                                <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 0h24v24H0z" fill="none"/>
-                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        <input id="layerLink" type="text" matInput readonly="readonly" (click)="selectLayerLink()"
+                            [value]="getLayerLink()" placeholder="custom navigator URL" />
+                        <button (click)="copyLayerLink()" mat-button matSuffix mat-icon-button aria-label="copy">
+                            <span class="layerLinkCopy" matTooltip="copy" matTooltipPosition="right">
+                                <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0h24v24H0z" fill="none" />
+                                    <path
+                                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                                 </svg>
                             </span>
                         </button>
@@ -517,10 +511,10 @@
                 </div>
             </mat-expansion-panel>
         </mat-accordion>
+    </section>
+</ng-container>
 
-    <!-- removed stray closing div tag at end of template -->
-</ng-template>
-
-<ng-template [ngIf]="activeTab && activeTab.isDataTable">
-    <DataTable [viewModel]="activeTab.dataContext" [currentDropdown]="dropdownEnabled" (dropdownChange)="dropdownEnabled = $event" (onScroll)="adjustHeader($event)"></DataTable>
-</ng-template>
+<ng-container *ngIf="activeTab?.isDataTable">
+    <DataTable [viewModel]="activeTab.dataContext" [currentDropdown]="dropdownEnabled"
+        (dropdownChange)="dropdownEnabled = $event" (onScroll)="adjustHeader($event)"></DataTable>
+</ng-container>

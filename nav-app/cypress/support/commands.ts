@@ -25,39 +25,47 @@ Cypress.Commands.add('waitForNavigatorLoad', () => {
   cy.get('body').then($body => {
     const hasMatrix = $body.find('.matrix, .matrices').length > 0;
     if (!hasMatrix) {
-      // Click Start button if visible to open the new tab UI
-      if ($body.find('button').filter((_, el) => /Start/i.test(el.textContent || '')).length) {
-        cy.contains('button', /Start/i).scrollIntoView().click({ force: true });
-      }
-      // Expand the Create New Layer panel and click a domain button
-      cy.contains('mat-expansion-panel-header', /Create New Layer/i, { timeout: 30000 })
-        .scrollIntoView()
-        .click({ force: true });
-      cy.contains('button', /Enterprise|Mobile|ICS/i, { timeout: 30000 })
-        .scrollIntoView()
-        .click({ force: true });
+      cy.log('waitForNavigatorLoad: no matrix detected, invoking createNewLayer helper');
+      return cy.createNewLayer();
     }
+    cy.log('waitForNavigatorLoad: matrix already present, continuing');
+    return undefined;
   });
 
-  // Wait for matrix to be present
+  // Wait for the matrix and some technique cells to render (data load + parse can be slow)
   cy.get('.matrix, .matrices', { timeout: 60000 }).should('be.visible');
+  cy.get('.technique-cell, .cell', { timeout: 90000 }).should('have.length.greaterThan', 10);
 
-  // Wait for techniques to load
-  cy.get('.technique-cell, .cell', { timeout: 60000 }).should('have.length.greaterThan', 0);
 });
 
 Cypress.Commands.add('selectTechnique', (techniqueId?: string) => {
-  if (techniqueId) {
-    cy.get(`.technique-cell[data-technique-id="${techniqueId}"] > div, .cell[data-technique-id="${techniqueId}"] > div`)
-      .first()
-      .click({ force: true });
-  } else {
-    cy.get('.technique-cell > div, .cell > div')
-      .first()
-      .click({ force: true });
-  }
+  const baseSelector = techniqueId
+    ? `.technique-cell[data-technique-id="${techniqueId}"] > div, .cell[data-technique-id="${techniqueId}"] > div`
+    : '.technique-cell > div, .cell > div';
+
+  cy.get(baseSelector)
+    .first()
+    .as('selectedTechniqueElement')
+    .click({ force: true });
+
+  cy.get('@selectedTechniqueElement')
+    .parents('.technique-cell, .cell')
+    .first()
+    .as('selectedTechniqueCell');
+
+  cy.get('@selectedTechniqueCell')
+    .invoke('attr', 'data-technique-id')
+    .then((techniqueId) => {
+      if (techniqueId) {
+        cy.wrap(techniqueId).as('selectedTechniqueId');
+      }
+    });
+
   // Ensure we have at least one technique selected (editing mode) for controls to enable
-  cy.get('.technique-cell.editing, .cell.editing', { timeout: 20000 }).should('exist');
+  cy.get('@selectedTechniqueCell', { timeout: 20000 })
+    .should('exist')
+    .and('have.class', 'editing');
+
   cy.get('[mattooltip="scoring"]', { timeout: 20000 })
     .should('be.visible')
     .and(($el) => {
@@ -66,8 +74,6 @@ Cypress.Commands.add('selectTechnique', (techniqueId?: string) => {
 });
 
 Cypress.Commands.add('addTechniqueComment', (comment: string) => {
-  // Ensure a technique is selected for editing
-  cy.selectTechnique();
   // Open comment dropdown
   cy.get('[mattooltip="comment"]').should('be.visible').click({ force: true });
   
@@ -79,8 +85,6 @@ Cypress.Commands.add('addTechniqueComment', (comment: string) => {
 });
 
 Cypress.Commands.add('setTechniqueScore', (score: number | string) => {
-  // Ensure a technique is selected for editing
-  cy.selectTechnique();
   // Open score dropdown
   cy.get('[mattooltip="scoring"]').should('be.visible').click({ force: true });
   
@@ -107,27 +111,76 @@ Cypress.Commands.add('switchMatrixLayout', (layout: 'side' | 'flat' | 'mini') =>
 });
 
 Cypress.Commands.add('createNewLayer', () => {
-  // Look for new layer button (can have various forms)
-  cy.get('body').then($body => {
-    // If on a data table tab, open a new blank tab first
-    if ($body.find('nav.tabs a.addTab').length) {
-      cy.get('nav.tabs a.addTab').first().click({ force: true });
-    }
-    // Prefer the New Tab + Create New Layer flow on the start screen
-    if ($body.find('mat-expansion-panel-header:contains("Create New Layer")').length) {
-      cy.contains('mat-expansion-panel-header', 'Create New Layer').click({ force: true });
-      cy.contains('button', /Enterprise|Mobile|ICS/i).first().click({ force: true });
-    } else if ($body.find('[data-cy="new-layer-btn"]').length > 0) {
-      cy.get('[data-cy="new-layer-btn"]').click();
-    } else if ($body.find('button:contains("new layer")').length > 0) {
-      cy.get('button:contains("new layer")').click();
-    } else if ($body.find('[mattooltip*="new"]').length > 0) {
-      cy.get('[mattooltip*="new"]').first().click();
-    } else {
-      // Fallback: look for any button that might create a new layer
-      cy.get('button').contains(/new|create|add/i).first().click({ force: true });
+  cy.log('createNewLayer: evaluating page state for new layer creation');
+
+  // If on a data table tab, open a new blank tab first (only when the control exists)
+  cy.get('body', { timeout: 15000 }).then($body => {
+    const $addTabs = $body.find('nav.tabs a.addTab');
+    if ($addTabs.length) {
+      cy.log('createNewLayer: addTab control found, opening new blank tab');
+      cy.wrap($addTabs.first()).click({ force: true });
     }
   });
+
+  // Prefer the New Tab + Create New Layer flow on the start screen
+  cy.get('body').then($body => {
+    if ($body.find('mat-expansion-panel-header:contains("Create New Layer")').length) {
+      cy.log('createNewLayer: expanding Create New Layer panel');
+      cy.contains('mat-expansion-panel-header', 'Create New Layer', { timeout: 15000 })
+        .should('be.visible')
+        .click({ force: true });
+
+      const preferredDomains = ['Enterprise', 'Mobile', 'ICS'];
+
+      return cy.get('table.btn-group button', { timeout: 60000 }).then($buttons => {
+        const buttonArray = Array.from($buttons) as HTMLButtonElement[];
+        const domainButton = buttonArray.find(btn => {
+          const text = (btn.textContent || '').toLowerCase();
+          return preferredDomains.some(domain => text.includes(domain.toLowerCase())) && !btn.disabled;
+        });
+
+        if (domainButton) {
+          cy.log(`createNewLayer: selecting domain button labeled "${domainButton.textContent?.trim() ?? ''}"`);
+          cy.wrap(domainButton).scrollIntoView().click({ force: true });
+          return;
+        }
+
+        const firstButton = buttonArray.find(btn => !btn.disabled);
+        if (firstButton) {
+          cy.log('createNewLayer: no preferred domain found; using first available domain button');
+          cy.wrap(firstButton).scrollIntoView().click({ force: true });
+          return;
+        }
+
+        throw new Error('No enabled domain buttons available after expanding Create New Layer panel');
+      });
+    }
+
+    if ($body.find('[data-cy="new-layer-btn"]').length > 0) {
+      cy.log('createNewLayer: using data-cy="new-layer-btn" shortcut');
+      cy.get('[data-cy="new-layer-btn"]').click();
+      return;
+    }
+
+    if ($body.find('button:contains("new layer")').length > 0) {
+      cy.log('createNewLayer: using generic "new layer" button');
+      cy.get('button:contains("new layer")').click();
+      return;
+    }
+
+    if ($body.find('[mattooltip*="new"]').length > 0) {
+      cy.log('createNewLayer: using mattooltip *new* control');
+      cy.get('[mattooltip*="new"]').first().click();
+      return;
+    }
+
+    cy.log('createNewLayer: resorting to first generic button matching /(new|create|add)/i');
+    cy.get('button').contains(/new|create|add/i).first().click({ force: true });
+  });
+
+  // After initiating creation, wait for matrix to appear and populate
+  cy.get('.matrix, .matrices', { timeout: 60000 }).should('be.visible');
+  cy.get('.technique-cell, .cell', { timeout: 90000 }).should('have.length.greaterThan', 10);
 });
 
 Cypress.Commands.add('searchTechniques', (searchTerm: string) => {
