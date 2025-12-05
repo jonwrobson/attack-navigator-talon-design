@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ViewModelsService } from '../../services/viewmodels.service';
 import { ViewModel } from '../../classes';
 import { Technique } from '../../classes/stix';
@@ -11,6 +11,7 @@ import { scoredMitigationVM } from '../scored-mitigation-vm';
     selector: 'technique-mappings',
     templateUrl: './technique-mappings.component.html',
     styleUrls: ['./technique-mappings.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),

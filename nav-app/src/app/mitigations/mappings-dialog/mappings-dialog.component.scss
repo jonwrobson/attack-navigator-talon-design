@@ -1,3 +1,5 @@
+@import "../../../colors.scss";
+
 .mat-dialog-container {
   padding: 0;
   height: 99%;
@@ -16,26 +18,34 @@
   max-width: 200vh !important;
   width: 99%;
   overflow: auto;
+  @include adaptive-color('background-color', white, color(dark-1));
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
 .mappings-dialog-content-button {
   margin: 5px;
 }
 
+.mappings-dialog-content-mat-table {
+  @include adaptive-color('background-color', white, color(dark-2));
+  @include adaptive-color('color', #333, on-color(dark));
+}
+
 .mappings-dialog-content-mat-table td,
 th {
   padding: 0px 10px 0px 10px;
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
 .mappings-dialog-content-mat-table tr:hover,
 tr:hover,
 tr:hover td {
-  background: rgb(214, 208, 255);
+  @include adaptive-color('background-color', rgb(214, 208, 255), color(dark-3));
 }
 
 .mappings-dialog-content-mat-table td:nth-child(even),
 th:nth-child(even) {
-  background: #EEE
+  @include adaptive-color('background-color', #EEE, color(dark-3));
 }
 
 .mapping-dialog-nist-table {

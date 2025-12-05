@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ViewModel } from '../../classes';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -33,6 +33,7 @@ export class MappingsDialogButtonComponent {
     selector: 'mappings-dialog',
     templateUrl: 'mappings-dialog.component.html',
     styleUrls: ['mappings-dialog.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
