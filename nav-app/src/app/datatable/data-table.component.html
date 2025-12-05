@@ -31,6 +31,13 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                 (click)="setCurrentControlSection('technique')">
                 Technique Controls
             </div>
+            <div
+                *ngIf="configService.getFeatureGroupCount('mitigation_controls') >= 1 && mitigationEnabledDomain()"
+                class="section-label"
+                [class.active]="currentControlSection === 'mitigation' && showControlsBar"
+                (click)="setCurrentControlSection('mitigation')">
+                Mitigation Controls
+            </div>
             <!-- Header/Help -->
         </div>
     </div>
@@ -611,7 +618,8 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                                 [(ngModel)]="scoreEditField"
                                 (input)="
                                     viewModel.editSelectedTechniques('score', $event.target.value);
-                                    viewModel.editSelectedTechniques('scoreColor', viewModel.gradient.getHexColor($event.target.value))
+                                    viewModel.editSelectedTechniques('scoreColor', viewModel.gradient.getHexColor($event.target.value));
+                                    onScoreChanged()
                                 " />
                             <mat-hint style="color: red" align="start" *ngIf="validateScoreInput()">not a number</mat-hint>
                         </mat-form-field>
@@ -755,6 +763,43 @@ o888     88 o888   888o 8888o  88  88  888  88  888    888 o888   888o 888      
                     </div>
                 </div>
             </li>
+            <!-- Mitigation Controls Section -->
+            <li *ngIf="configService.getFeatureGroup('mitigation_controls', 'any') && currentControlSection === 'mitigation' && mitigationEnabledDomain()" [class.label]="showControlLabels['mitigation']">
+                <!-- export mitigations for selection -->
+                <div *ngIf="configService.getFeature('export_mitigations')" class="control-row-item">
+                    <div class="control-row-button noselect" (click)="saveMitigationsLocally()" matTooltipPosition="below"
+                        matTooltip="export mitigations for selection">
+                        <span class="control-label" *ngIf="showControlLabels['mitigation']">Export Mitigations</span>
+                        <span class="material-icons">file_download</span>
+                        <span class="deselectNumber">M</span>
+                    </div>
+                </div>
+
+                <!-- Show top mitigations in order -->
+                <div *ngIf="configService.getFeature('show_mitigations')" class="control-row-item">
+                    <div class="control-row-button noselect" (click)="showMitigations()" matTooltipPosition="below"
+                        matTooltip="Show mitigations for scored techniques"
+                        [style.backgroundColor]="viewModel.showScoredMitigations ? '#ffab2e' : null">
+                        <span class="control-label" *ngIf="showControlLabels['mitigation']">Show Mitigations</span>
+                        <mat-icon>privacy_tip</mat-icon>
+                    </div>
+                </div>
+
+                <!-- Show control framework importer -->
+                <div *ngIf="configService.getFeature('show_mapping_import')" class="control-row-item">
+                    <div class="control-row-button noselect"
+                        (click)="currentDropdown = currentDropdown !== 'show_mapping_import' ? 'show_mapping_import' : null"
+                        matTooltipPosition="below" matTooltip="Show mapping import controls">
+                        <span class="control-label" *ngIf="showControlLabels['mitigation']">Import Mappings</span>
+                        <mat-icon>mediation</mat-icon>
+                    </div>
+
+                    <div class="dropdown-container inputfield layer_info" #dropdown [class.left]="checkalign(dropdown)"
+                        *ngIf="currentDropdown === 'show_mapping_import'">
+                        <ControlFrameworkImport [viewModel]="viewModel"></ControlFrameworkImport>
+                    </div>
+                </div>
+            </li>
             <li *ngIf="configService.getFeatureGroup('toolbar_controls', 'any')">
                 <!-- enable disable sticky toolbar -->
                 <div *ngIf="configService.getFeature('sticky_toolbar')" class="control-row-item">
@@ -813,6 +858,9 @@ o88o  8  o88o o88o  o888o o888o    o888o  88o8 o888o o88o  o888o
     </mat-drawer-content>
     <mat-drawer [disableClose]="true" mode="side" position="end" [opened]="viewModel.sidebarOpened">
         <sidebar [viewModel]="viewModel"></sidebar>
+    </mat-drawer>
+    <mat-drawer [disableClose]="true" mode="side" position="start" [opened]="viewModel.showScoredMitigations">
+        <app-mitigations [viewModel]="viewModel"></app-mitigations>
     </mat-drawer>
 </mat-drawer-container>
 

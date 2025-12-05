@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CisItem } from 'app/control-framework/control-frameworks/cis-item';
+import { CisItem } from '../../../../control-framework/control-frameworks/cis-item';
 
 @Component({
   selector: 'cis-table',

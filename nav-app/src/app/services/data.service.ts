@@ -293,6 +293,8 @@ export class DataService {
             case 'mitigates':
                 // record mitigation:technique relationship
                 addRelationshipToMap(domain.relationships['mitigates'], sro.source_ref, sro.target_ref);
+                // record reverse relationship (technique:mitigation)
+                addRelationshipToMap(domain.relationships['mitigatedBy'], sro.target_ref, sro.source_ref);
                 break;
             case 'revoked-by':
                 // record stix object: stix object relationship

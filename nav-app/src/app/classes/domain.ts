@@ -64,6 +64,9 @@ export class Domain {
         // mitigation mitigates technique
         // ID of mitigation to [] of technique IDs
         mitigates: new Map<string, string[]>(),
+        // technique mitigated by mitigation (reverse of mitigates)
+        // ID of technique to [] of mitigation IDs
+        mitigatedBy: new Map<string, string[]>(),
         // object is revoked-by object
         // ID of object to ID of revoking object
         revoked_by: new Map<string, string>(),

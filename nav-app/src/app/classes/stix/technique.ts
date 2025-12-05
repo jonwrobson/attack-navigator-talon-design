@@ -1,4 +1,5 @@
 import { DataService } from '../../services/data.service';
+import { Mitigation } from './mitigation';
 import { StixObject } from './stix-object';
 import { Tactic } from './tactic';
 
@@ -52,5 +53,16 @@ export class Technique extends StixObject {
     public get_all_technique_tactic_ids(): string[] {
         if (this.revoked || this.deprecated) return [];
         return this.tactics.map((shortname: string) => this.get_technique_tactic_id(shortname));
+    }
+
+    /**
+     * Get all mitigations for this technique in a given domain
+     * @param domainVersionID the domain ID to search for mitigations
+     * @returns {Mitigation[]} array of mitigations for this technique
+     */
+    public getAllMitigationsForDomain(domainVersionID: string): Mitigation[] {
+        const domain = this.dataService.getDomain(domainVersionID);
+        const mitigatedByIds = domain.relationships.mitigatedBy.get(this.id);
+        return mitigatedByIds ? domain.mitigations.filter((x) => mitigatedByIds.includes(x.id)) : [];
     }
 }

@@ -4,9 +4,11 @@ import { Gradient } from './gradient';
 import { LayoutOptions } from './layout-options';
 import { Link } from './link';
 import { Metadata } from './metadata';
-import { Technique, Tactic, Matrix } from './stix';
+import { Technique, Tactic, Matrix, Mitigation } from './stix';
 import { TechniqueVM } from './technique-vm';
 import { VersionChangelog } from './version-changelog';
+import { scoredMitigationVM } from '../mitigations/scored-mitigation-vm';
+import { ControlFramework } from '../control-framework/control-framework';
 import * as globals from '../utils/globals';
 import tinycolor from 'tinycolor2';
 
@@ -43,6 +45,13 @@ export class ViewModel {
     public showTacticRowBackground: boolean = false;
     public tacticRowBackground: string = '#dddddd';
     public stickyToolbar = true;
+
+    // Mitigation scoring properties
+    public scoredMitigations: scoredMitigationVM[] = [];
+    public mitigationTechnique: Technique[] = [];
+    public showScoredMitigations: boolean = false;
+    public selectedComponents: string[] = [];
+    public controlFramework: ControlFramework = new ControlFramework();
 
     public gradient: Gradient = new Gradient(); // scoring gradient
     public legendItems: any[] = [];
@@ -742,6 +751,74 @@ export class ViewModel {
         this.selectedTechniques.forEach((id) => {
             this.getTechniqueVM_id(id).resetAnnotations();
         });
+    }
+
+    /**
+     * Calculate and apply mitigations for scored techniques
+     */
+    public calculateAndApplyMitigations(): void {
+        let scoredMitigationsByAttackId = new Map<string, scoredMitigationVM>();
+        let techniquesInScopeByAttackId = new Map<string, Technique>();
+
+        let matrices = this.dataService.getDomain(this.domainVersionID).matrices;
+
+        for (let matrix of matrices) {
+            for (let tactic of this.filterTactics(matrix.tactics, matrix)) {
+                let techniques = this.applyControls(tactic.techniques, tactic, matrix);
+
+                for (let technique of techniques) {
+                    let tvm = this.getTechniqueVM(technique, tactic);
+
+                    let score = 0;
+                    let parsedScore = parseInt(tvm.score);
+                    if (!isNaN(parsedScore) && parsedScore > 0) {
+                        score = parsedScore;
+                        this.addToTopMitigations(technique, scoredMitigationsByAttackId, score);
+
+                        if (!techniquesInScopeByAttackId.has(technique.attackID)) {
+                            techniquesInScopeByAttackId.set(technique.attackID, technique);
+                        }
+                    }
+
+                    technique.subtechniques.forEach((x) => {
+                        let subTvm = this.getTechniqueVM(x, tactic);
+                        if ((score = parseInt(subTvm.score)) > 0) {
+                            this.addToTopMitigations(x, scoredMitigationsByAttackId, score);
+
+                            if (!techniquesInScopeByAttackId.has(x.attackID)) {
+                                techniquesInScopeByAttackId.set(x.attackID, x);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        let scoredMitigations: scoredMitigationVM[] = [];
+        scoredMitigationsByAttackId.forEach((x) => scoredMitigations.push(x));
+        this.scoredMitigations = scoredMitigations;
+
+        let techniquesInScope: Technique[] = [];
+        techniquesInScopeByAttackId.forEach((x) => techniquesInScope.push(x));
+        this.mitigationTechnique = techniquesInScope;
+    }
+
+    /**
+     * Helper to add a technique's mitigations to the scored mitigations map
+     */
+    private addToTopMitigations(technique: Technique, mitigationsByAttackId: Map<string, scoredMitigationVM>, score: number): void {
+        let mitigationsForTechnique = technique.getAllMitigationsForDomain(this.domainVersionID);
+        if (mitigationsForTechnique && mitigationsForTechnique.length > 0) {
+            for (let currentMitigation of mitigationsForTechnique) {
+                if (mitigationsByAttackId.has(currentMitigation.attackID.toString())) {
+                    let mitigation = mitigationsByAttackId.get(currentMitigation.attackID.toString());
+                    mitigation.count++;
+                    mitigation.score += score;
+                } else {
+                    mitigationsByAttackId.set(currentMitigation.attackID.toString(), new scoredMitigationVM(1, currentMitigation, score));
+                }
+            }
+        }
     }
 
     /**

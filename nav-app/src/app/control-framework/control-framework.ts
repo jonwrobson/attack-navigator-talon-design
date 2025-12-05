@@ -97,12 +97,12 @@ export class ControlFramework {
     if (!this.techniquesByAttackIdCache.has(key)) {
 
       let mitigations = technique.getAllMitigationsForDomain(domainVersionID);
-      let nistItems = [...new Set(mitigations?.map(x => 
-        this.getNistByMitigationId(x.attackID)).reduce((x, i) => x.concat(i), []))];
+      let nistItems: NistItem[] = [...new Set(mitigations?.map(x => 
+        this.getNistByMitigationId(x.attackID)).reduce((x, i) => x.concat(i), []) || [])];
 
       let filteredOwaspAsvs = this.getAsvsIdsForNistItems(nistItems);
 
-      let cisItems = nistItems.length > 0 ? nistItems.map(x => 
+      let cisItems: CisItem[] = nistItems.length > 0 ? nistItems.map(x => 
           x != undefined ? this.getCisItemsByNistSubCatId(x.mappingGroupingId()) : [])
         .reduce((x, i) => x ? x.concat(i) : i)
         .filter((v, i, a) => a.indexOf(v) === i) : [];

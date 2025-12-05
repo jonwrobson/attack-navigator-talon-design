@@ -286,6 +286,75 @@ export class DataTableComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
+     * Check if the current domain supports mitigations (enterprise or nist)
+     */
+    public mitigationEnabledDomain(): boolean {
+        return (this.viewModel.domainVersionID.includes('enterprise-attack') || this.viewModel.domainVersionID.includes('nist-attack'));
+    }
+
+    /**
+     * Toggle the mitigations panel visibility
+     */
+    public showMitigations(): void {
+        if (!this.viewModel.showScoredMitigations) {
+            this.viewModel.showScoredMitigations = true;
+        } else {
+            this.viewModel.showScoredMitigations = false;
+        }
+        // Always recalculate mitigations when panel is open to reflect current scores
+        if (this.viewModel.showScoredMitigations) {
+            this.viewModel.calculateAndApplyMitigations();
+        }
+    }
+
+    /**
+     * Called when a technique score changes - updates mitigations if panel is open
+     */
+    public onScoreChanged(): void {
+        if (this.viewModel.showScoredMitigations) {
+            this.viewModel.calculateAndApplyMitigations();
+        }
+    }
+
+    /**
+     * Export mitigations for scored techniques to JSON
+     */
+    public saveMitigationsLocally(): void {
+        let mitigations: { [k: string]: any } = { techniques: [] };
+
+        let matrices = this.dataService.getDomain(this.viewModel.domainVersionID).matrices;
+        for (let matrix of matrices) {
+            // create cells
+            for (let tactic of this.viewModel.filterTactics(matrix.tactics, matrix)) {
+                let techniques = this.viewModel.applyControls(tactic.techniques, tactic, matrix);
+
+                for (let technique of techniques) {
+                    if (technique) {
+                        let mitigationsForTechnique = technique.getAllMitigationsForDomain(this.viewModel.domainVersionID);
+                        let tvm = this.viewModel.getTechniqueVM(technique, tactic);
+
+                        if (parseInt(tvm.score) > 0) {
+                            let temp: any = {
+                                techniqueId: technique.id,
+                                attackId: technique.attackID,
+                                name: technique.name,
+                                mitigation: mitigationsForTechnique ? mitigationsForTechnique.map(x => x.serialize()) : null,
+                                score: tvm.score
+                            };
+                            mitigations.techniques.push(temp);
+                        }
+                    }
+                }
+            }
+        }
+
+        let json = JSON.stringify(mitigations);
+        let blob = new Blob([json], { type: 'text/json' });
+        let filename = this.viewModel.name.replace(/ /g, '_') + '.json';
+        this.saveBlob(blob, filename);
+    }
+
+    /**
      * Helper function for exporting to excel to stylize cells
      */
     public styleCells(cell, technique, tvm): void {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AsvsOwaspItem } from 'app/control-framework/control-frameworks/asvs-owasp-item';
+import { AsvsOwaspItem } from '../../../../control-framework/control-frameworks/asvs-owasp-item';
 
 @Component({
   selector: 'asvs-table',

@@ -20,4 +20,16 @@ export class Mitigation extends StixObject {
     public relatedTechniques(domainVersionID): string[] {
         return this.mitigated(domainVersionID);
     }
+
+    /**
+     * Serialize the mitigation to a simple object for export
+     */
+    public serialize(): any {
+        return {
+            attackId: this.attackID,
+            name: this.name,
+            description: this.description,
+            url: this.url,
+        };
+    }
 }

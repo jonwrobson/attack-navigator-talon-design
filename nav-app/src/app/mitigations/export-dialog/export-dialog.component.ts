@@ -4,8 +4,9 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
 import { MappingsExporter } from '../mappings-exporter';
 import { MatTableDataSource } from '@angular/material/table';
-import { DataService } from '../../data.service';
-import { ViewModel, ViewModelsService } from '../../viewmodels.service';
+import { DataService } from '../../services/data.service';
+import { ViewModelsService } from '../../services/viewmodels.service';
+import { ViewModel } from '../../classes';
 
 @Component({
     selector: 'export-dialog-button',

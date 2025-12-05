@@ -16,6 +16,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DndModule } from 'ngx-drag-drop';
 import { HttpClientModule } from '@angular/common/http';
@@ -34,6 +37,17 @@ import { SearchAndMultiselectComponent } from './search-and-multiselect/search-a
 import { ContextmenuComponent } from './matrix/technique-cell/contextmenu/contextmenu.component';
 import { TacticCellComponent } from './matrix/tactic-cell/tactic-cell.component';
 import { VersionUpgradeComponent } from './version-upgrade/version-upgrade.component';
+
+// Custom mitigations components
+import { MitigationsComponent } from './mitigations/mitigations.component';
+import { ControlFrameworkImportComponent } from './control-framework/control-framework-import/control-framework-import.component';
+import { ExportDialogComponent, ExportDialogButtonComponent } from './mitigations/export-dialog/export-dialog.component';
+import { MappingsDialogComponent, MappingsDialogButtonComponent } from './mitigations/mappings-dialog/mappings-dialog.component';
+import { AsvsTableComponent } from './mitigations/mappings-dialog/mappings/asvs-table/asvs-table.component';
+import { CisTableComponent } from './mitigations/mappings-dialog/mappings/cis-table/cis-table.component';
+import { NistMappingsComponent } from './mitigations/mappings-dialog/mappings/nist-mappings/nist-mappings.component';
+import { TechniqueMappingsComponent } from './mitigations/technique-mappings/technique-mappings.component';
+
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { LayerUpgradeComponent } from './layer-upgrade/layer-upgrade.component';
 import { ChangelogCellComponent } from './layer-upgrade/changelog-cell/changelog-cell.component';
@@ -66,6 +80,17 @@ import { ConfigService } from './services/config.service';
         ContextmenuComponent,
         TacticCellComponent,
         VersionUpgradeComponent,
+        // Custom mitigations components
+        MitigationsComponent,
+        ControlFrameworkImportComponent,
+        MappingsDialogComponent,
+        MappingsDialogButtonComponent,
+        ExportDialogComponent,
+        ExportDialogButtonComponent,
+        AsvsTableComponent,
+        CisTableComponent,
+        NistMappingsComponent,
+        TechniqueMappingsComponent,
         SidebarComponent,
         LayerUpgradeComponent,
         ChangelogCellComponent,
@@ -94,6 +119,9 @@ import { ConfigService } from './services/config.service';
         ColorPickerModule,
         DndModule,
         MatSidenavModule,
+        MatTableModule,
+        MatListModule,
+        MatButtonToggleModule,
         MatCardModule,
         MatDividerModule,
         MatStepperModule,

@@ -2,7 +2,7 @@ import { ViewModelsService } from '../services/viewmodels.service';
 import { ViewModel } from '../classes';
 import { Technique } from '../classes/stix';
 import { DataService } from '../services/data.service';
-import * as Excel from 'exceljs/dist/es5/exceljs.browser';
+import * as Excel from 'exceljs/dist/exceljs.min.js';
 import { ControlFramework } from '../control-framework/control-framework';
 import { TechniqueWithMappings } from "../control-framework/TechniqueWithMappings";
 
