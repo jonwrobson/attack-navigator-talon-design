@@ -1,4 +1,4 @@
-name: UAT - Comprehensive Test Suite
+name: UAT - Test Suite
 
 on:
   push:
@@ -13,7 +13,40 @@ env:
   NODE_VERSION: '22'
 
 jobs:
+  # Lightweight check for PRs - just verify it builds
+  pr-validation:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: PR Validation (Quick)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: nav-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: nav-app
+        run: npm ci --legacy-peer-deps
+
+      - name: Build production
+        working-directory: nav-app
+        run: npm run build
+
+      - name: Build summary
+        run: |
+          echo "## PR Validation ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Build successful. Full test suite will run after merge to UAT." >> $GITHUB_STEP_SUMMARY
+
+  # Full test suite - only runs on push to uat (after merge)
   unit-tests:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: Unit Tests & Coverage
 
@@ -45,6 +78,7 @@ jobs:
           retention-days: 7
 
   e2e-tests:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: E2E Tests (Cypress)
 
@@ -93,8 +127,9 @@ jobs:
           retention-days: 7
 
   build-validation:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    name: Build Validation
+    name: Build & Package
 
     steps:
       - name: Checkout code
@@ -141,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [unit-tests, e2e-tests, build-validation]
     name: Test Summary
-    if: always()
+    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
     steps:
       - name: Generate test summary
