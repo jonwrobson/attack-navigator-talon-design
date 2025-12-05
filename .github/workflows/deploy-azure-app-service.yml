@@ -16,6 +16,10 @@ env:
   NODE_VERSION: '22'
   AZURE_WEBAPP_NAME: talondesign
 
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -69,9 +73,6 @@ jobs:
     needs: build-and-test
     name: Deploy to Azure
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    environment:
-      name: production
-      url: https://talondesign-h5ayfddtfbdmb8ap.uksouth-01.azurewebsites.net
 
     steps:
       - name: Download artifact
@@ -79,11 +80,17 @@ jobs:
         with:
           name: navigator-app
 
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deploy.zip
 
       - name: Deployment summary
