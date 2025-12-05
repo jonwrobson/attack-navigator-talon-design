@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+      - feat/testing
   pull_request:
     branches:
       - master
