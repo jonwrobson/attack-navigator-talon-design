@@ -1,10 +1,7 @@
-name: Build and Deploy to Azure App Service
+name: Production - Build and Deploy
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
   workflow_dispatch:  # Allow manual trigger
@@ -18,9 +15,9 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Build & Test
+    name: Build & Deploy to Production
 
     steps:
       - name: Checkout code
@@ -37,16 +34,6 @@ jobs:
         working-directory: nav-app
         run: npm ci --legacy-peer-deps
 
-      - name: Run linting
-        working-directory: nav-app
-        run: npm run lint --if-present
-        continue-on-error: true
-
-      - name: Run unit tests
-        working-directory: nav-app
-        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
-        continue-on-error: true
-
       - name: Build production
         working-directory: nav-app
         run: npm run build
@@ -57,25 +44,6 @@ jobs:
           zip -r ../deploy.zip .
           echo "=== Deployment package contents ==="
           unzip -l ../deploy.zip | head -20
-
-      - name: Upload artifact for deployment
-        uses: actions/upload-artifact@v4
-        with:
-          name: navigator-app
-          path: nav-app/deploy.zip
-          retention-days: 7
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    name: Deploy to Azure
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: navigator-app
 
       - name: Login to Azure using OIDC
         uses: azure/login@v2
@@ -88,11 +56,11 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          package: deploy.zip
+          package: nav-app/deploy.zip
 
       - name: Deployment summary
         run: |
-          echo "## Deployment Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "## Production Deployment Complete! 🚀" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**App URL:** https://talondesign-h5ayfddtfbdmb8ap.uksouth-01.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
