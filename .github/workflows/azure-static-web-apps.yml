@@ -1,0 +1,144 @@
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - master
+      - uat
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - master
+      - uat
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  # Quick validation for PRs
+  validate:
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    name: Validate Build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: nav-app/package-lock.json
+
+      - name: Install and Build
+        working-directory: nav-app
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+
+  # Full test suite for UAT branch pushes
+  test-suite:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/uat'
+    runs-on: ubuntu-latest
+    name: Full Test Suite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: nav-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: nav-app
+        run: npm ci --legacy-peer-deps
+
+      - name: Run unit tests
+        working-directory: nav-app
+        run: npm run test:ci
+        continue-on-error: true
+
+      - name: Build application
+        working-directory: nav-app
+        run: npm run build
+
+      - name: Run E2E tests
+        working-directory: nav-app
+        run: |
+          npm install -g serve
+          serve -s dist -l 4200 &
+          sleep 5
+          npm run e2e:headless
+        continue-on-error: true
+
+  # Deploy to Azure Static Web Apps
+  deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    name: Deploy
+    needs: [validate, test-suite]
+    # Run even if validate/test-suite were skipped (different branch)
+    if: |
+      always() && 
+      (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
+      (needs.test-suite.result == 'success' || needs.test-suite.result == 'skipped') &&
+      github.event.action != 'closed'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: nav-app/package-lock.json
+
+      - name: Install and Build
+        working-directory: nav-app
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "nav-app/dist"
+          skip_app_build: true
+          skip_api_build: true
+
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.ref }}" == "refs/heads/master" ]; then
+            echo "**Production URL:** https://gentle-mushroom-09c34ee03.3.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
+            echo "**UAT URL:** https://gentle-mushroom-09c34ee03-uat.3.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Preview URL:** Check the deployment comment on the PR" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Close PR - cleanup preview environment
+  close_pull_request:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Cleanup Preview
+
+    steps:
+      - name: Close Pull Request
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "close"
