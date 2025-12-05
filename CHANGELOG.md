@@ -8,6 +8,140 @@
     This will patch the version number appropriately and create the correct tag on the current commit.
     The creation of the tag can be disabled with the --no-git-tag-version if desired.
 -->
+
+# 5.2.0 - 28 October 2025
+
+## Improvements
+- Extended search interface to support searching for techniques by detection strategy. See pull request [#702](https://github.com/mitre-attack/attack-navigator/pull/702).
+
+# 5.1.1 - 1 July 2025
+
+## Fixes
+- Fixed layer upgrade pagination button visibility in dark mode. See issue [#678](https://github.com/mitre-attack/attack-navigator/issues/678).
+
+# 5.1.0 - 14 August 2024
+
+## Improvements
+- Refactored the `layers/` directory structure to organize Layer File Formats into versioned subdirectories and removed outdated layer samples. See pull request [#649](https://github.com/mitre-attack/attack-navigator/pull/649).
+- Improved toolbar for better usability. See issue [#534](https://github.com/mitre-attack/attack-navigator/issues/534).
+- Updated Angular from v14 to v17.
+
+# 5.0.1 - 9 May 2024
+
+## Fixes
+- Fixed an issue with parsing technique platforms.
+
+# 5.0.0 - 2 May 2024
+
+## New Features
+- Navigator now loads data via the STIX 2.1 Collection Index. See issue [#607](https://github.com/mitre-attack/attack-navigator/issues/607).
+	- Added the `collection_index_url` property to `config.json` which specifies the URL to the collection index. By default, it is set to [ATT&CK's STIX 2.1 Collection Index](https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/index.json). More information about Collection Indexes can be found [here](https://github.com/mitre-attack/attack-stix-data?tab=readme-ov-file#collection-indexes).
+	- Removed the hardcoded list of ATT&CK versions from the `versions` property in `config.json`. Support for this property is continued for loading custom versions of the dataset, integration with the ATT&CK Workbench, loading content from a TAXII server, and for offline hosting. For any issues encountered, please ensure the versions `enabled` property is set to `true` and the data is properly defined in the versions `entries` array.
+	- The `collection_index_url` property and/or the `versions` property must be defined for Navigator to load properly. When both properties are defined, the Navigator will display the union of the versions that are specified under the "More Options" dropdown in the "Create New Layer" interface. If neither are defined, the user will be alerted that the Navigator failed to load.
+- Added support for loading content from a TAXII 2.1 server. See issue [#277](https://github.com/mitre-attack/attack-navigator/issues/277). For more information on how to load content from TAXII 2.1 see _Loading content from a TAXII server_ in the [README](README.md).
+
+## Improvements
+- Improved error handling when there is an issue loading the configuration file. See issue [#398](https://github.com/mitre-attack/attack-navigator/issues/398).
+
+## Fixes
+- Fixed an issue where loading a multi-layer JSON file through embedded links would throw an error and prevent the layers from loading. See issue [#624](https://github.com/mitre-attack/attack-navigator/issues/624).
+
+# 4.9.5 - 23 April 2024
+
+Adds support for ATT&CK v15.0.
+
+## Improvements
+- Added "mark all as reviewed" and "expand visible techniques" options to the Layer Upgrade UI to improve the overall technique review workflow. See issue [#595](https://github.com/mitre-attack/attack-navigator/issues/595).
+
+# 4.9.4 - 29 February 2024
+
+## Fixes
+- Fixed a bug with selecting techniques by data sources in the search & multi-select interface. See issue [#622](https://github.com/mitre-attack/attack-navigator/issues/622).
+
+# 4.9.3 - 27 February 2024
+
+## Fixes
+- Fixed a bug with loading Navigator layers on ATT&CK v10 or earlier. See issue [#620](https://github.com/mitre-attack/attack-navigator/issues/620).
+
+# 4.9.2 - 26 February 2024
+
+## Fixes
+- Fixed an issue with loading multiple bundles into a single matrix. See issue [#505](https://github.com/mitre-attack/attack-navigator/issues/505).
+- Fixed an issue where the outdated layer dialog box would not load the latest layer file format specification. See issue [#617](https://github.com/mitre-attack/attack-navigator/issues/617).
+- Fixed an issue in the ATT&CK version comparison which caused deprecated techniques to appear in the "review additions" section of the Layer Upgrade UI. See issue [#618](https://github.com/mitre-attack/attack-navigator/issues/618).
+
+# 4.9.1 - 14 November 2023
+
+Adds support for ATT&CK v14.1.
+
+## Fixes
+- Fixed an issue with the Dockerfile which was preventing the docker image from building. See issue [#598](https://github.com/mitre-attack/attack-navigator/pull/598).
+
+# 4.9.0 - 31 October 2023
+
+Adds support for ATT&CK v14.0.
+
+## New Features
+- Consolidated the JSON, Excel, and SVG export options into a single dropdown. Added an option to the export interface to only download annotations on visible techniques. See issue [#215](https://github.com/mitre-attack/attack-navigator/issues/215).
+- Extended search interface to support searching for techniques by asset.
+- Added the ability to configure how sub-techniques are displayed in the layer file through the `expandedSubtechniques` property - annotated, all, or none. See issue [#560](https://github.com/mitre-attack/attack-navigator/issues/560) and the `Layer File Format Changes` section.
+- Added functionality to download all open layers in JSON or MS Excel format. Also added the ability to upload a file with multiple layers. See issue  [#128](https://github.com/mitre-attack/attack-navigator/issues/128).
+- Added a new toolbar option to enable or disable the sticky toolbar.
+
+## Improvements
+- Added ability to render SVG export in dark mode. See issue [#556](https://github.com/mitre-attack/attack-navigator/issues/556).
+- Added the ability to configure whether or not to display the metadata underline either by editing `src/assets/config.json` or through the "Create Customized Navigator" interface. See issue [#400](https://github.com/mitre-attack/attack-navigator/issues/400).
+- Added functionality to scroll across the open tabs in the navigator. See issue [#581](https://github.com/mitre-attack/attack-navigator/issues/580).
+- Improved the matrix print view. See issue [#508](https://github.com/mitre-attack/attack-navigator/issues/508).
+- Added preventative measures for reverse tabnabbing. See issue [#527](https://github.com/mitre-attack/attack-navigator/issues/527).
+- Improved the layer version mismatch warning. For a major version change, the latest layer format and the changelog are linked. For a minor version change, warning message disappears in 6 seconds and links to the changlog. See issue [#260](https://github.com/mitre-attack/attack-navigator/issues/260).
+- Added functionality to scroll down with the Tactics header frozen to the top. See issue [#404](https://github.com/mitre-attack/attack-navigator/issues/404).
+- Improved the Dockerfile for faster builds. See issue [#411](https://github.com/mitre-attack/attack-navigator/pull/411).
+
+## Fixes
+- Fixed an issue where certain layer settings were not restored when upgrading the layer ATT&CK version. See issue [#597](https://github.com/mitre-attack/attack-navigator/issues/597).
+
+## Miscellaneous
+- Refactored the codebase to improve maintainability of the application.
+
+## Layer File Format Changes
+
+Layer file format updated to version 4.5. See [layer format v4.5](layers/spec/v4.5/layerformat.md) for the full specification.
+
+- Added support for selecting only visible techniques. The `selectVisibleTechniques` field specifies whether or not hidden techniques will be included in the different select behaviors.
+- Added support for configuring how sub-techniques are displayed in the layer with the `expandedSubtechniques` field. This property can be set to `all`, `annotated`, or `none` to expand all sub-techniques, expand only annotated sub-techniques, or collapse all sub-techniques, respectively.
+- Added support for a list of layers. Users can now upload a layer file that contains multiple layers.
+
+# 4.8.2 - 9 May 2023
+
+Adds support for ATT&CK v13.1.
+
+## Miscellaneous
+
+- Refactored the codebase to improve maintainability of the application.
+
+# 4.8.1 - 25 April 2023
+
+Adds support for ATT&CK v13.
+
+## Improvements
+- Users can disable the background color effect on manually assigned colors, aggregate scores, or non-aggregate scores by editing `src/assets/config.json` or through the "Create Customized Navigator" interface. See issue [#371](https://github.com/mitre-attack/attack-navigator/issues/371).
+- Added image orientation options and new preset image size options to the SVG exporter. See issue [#547](https://github.com/mitre-attack/attack-navigator/pull/547).
+
+## Fixes
+- Fixed an issue where aggregate scores were calculated on techniques with no sub-techniques. See issue [#539](https://github.com/mitre-attack/attack-navigator/issues/539).
+- Fixed an issue where pinned tooltips would cover the "pin/unpin tooltip" option in the context menu. See issue [#542](https://github.com/mitre-attack/attack-navigator/issues/542).
+- Fixed inconsistencies with dark theme in the SVG exporter. See issue [#546](https://github.com/mitre-attack/attack-navigator/pull/546).
+
+# 4.8.0 - 20 December 2022
+
+## New Features
+- Added the ability to create a layer from a custom [Collection](https://github.com/center-for-threat-informed-defense/attack-workbench-frontend/blob/develop/docs/collections.md#collections) or Stix Bundle. Users can specify the URL, version, and domain of a custom bundle in the Create New Layer interface. This will load the base data from the file at the given URL into the Navigator. Layers created from a custom collection/STIX bundle support all of the standard layer features (annotations, filter/sort, download/upload, layer-layer operations, etc.), apart from upgrading the layer to a newer ATT&CK version. See issue [#499](https://github.com/mitre-attack/attack-navigator/issues/499).
+
+## Layer File Format Changes
+
+Layer file format updated to version 4.4. This update adds support for layers created with a custom collection or STIX bundle; the optional `customDataURL` field contains the URL from which custom data was loaded. This update is fully backwards compatible with layer format v4.3 since the added field is optional. See [layer format v4.4](layers/spec/v4.4/layerformat.md) for the full specification.
+
 # 4.7.1 - 8 November 2022
 
 Adds support for ATT&CK v12.1.
@@ -91,7 +225,7 @@ Adds support for ATT&CK v11.
 
 ## Layer File Format Changes
 
-Updated the Layer File Format to v4.3 which adds a `links` array field to technique objects and to layers. This supports the assignment of hyperlinks to techniques which are accessed in the context menu and to layers which are accessed in the layer information dropdown menu. Link objects must conform to the schema `{"label": string, "url": string}` or `{"divider": boolean}`. A separator is displayed in the technique context menu where the `divider` property occurs in the list of hyperlinks.
+Updated the Layer File Format to v4.3 which adds a `links` array field to technique objects and to layers. This supports the assignment of hyperlinks to techniques which are accessed in the context menu and to layers which are accessed in the layer information dropdown menu. Link objects must conform to the schema `{"label": string, "url": string}` or `{"divider": boolean}`. A separator is displayed in the technique context menu where the `divider` property occurs in the list of hyperlinks. See [layer format v4.3](layers/spec/v4.3/layerformat.md) for the full specification.
 
 # v4.5.4 - 15 November 2021
 
@@ -193,7 +327,7 @@ Version 4.4 of the Navigator restores Safari support provided you are using Safa
 
 ## Layer File Format Changes
 
-Layer file format updated to version 4.2. This update is fully backwards compatible with the layer format v4.1 since the added fields are optional. See [layers/LAYERFORMATv4_2.md](layers/LAYERFORMATv4_2.md) for the full specification.
+Layer file format updated to version 4.2. This update is fully backwards compatible with the layer format v4.1 since the added fields are optional. See [layer format v4.2](layers/spec/v4.2/layerformat.md) for the full specification.
 
 This update adds settings for aggregate scores to the layout object of the layer:
 
@@ -234,7 +368,7 @@ Refactored the implementation of tabs to reduce performance issues when opening 
 
 ## Layer File Format Changes
 
-Layer file format updated to version 4.1. This update is fully backwards compatible with layer format v4.0 since the added field is optional. See [layers/LAYERFORMATv4_1.md](layers/LAYERFORMATv4_1.md) for the full specification.
+Layer file format updated to version 4.1. This update is fully backwards compatible with layer format v4.0 since the added field is optional. See [layer format v4.1](layers/spec/v4.1/layerformat.md) for the full specification.
 
 This update adds an optional `divider` object to the `metadata` format on technique objects. Each object in the metadata array must either be of the schema `{"name": string, "value": string}` or `{"divider": boolean}`. A separator will be displayed in the metadata tooltip where the `divider` property occurs in the list of metadata.
 
@@ -269,7 +403,7 @@ This update adds an optional `divider` object to the `metadata` format on techni
 
 ## Layer File Format Changes
 
-Layer file format updated to version 4.0. Older versions can still be loaded in the Navigator, but will no longer display the Pre-ATT&CK domain. See [layers/LAYERFORMATv4.md](layers/LAYERFORMATv4.md) for the full specification.
+Layer file format updated to version 4.0. Older versions can still be loaded in the Navigator, but will no longer display the Pre-ATT&CK domain. See [layer format v4.0](layers/spec/v4.0/layerformat.md) for the full specification.
 
 - ATT&CK version 8.0 removed the pre-ATT&CK domain, which became two tactics tagged with the `PRE` platform in the Enterprise domain. The `stages` section of filters have been removed to reflect this migration.
 - Replaced `version` field with `versions` object which specifies the layer format, Navigator, and ATT&CK content versions in support of the mixed domains and versions update.
@@ -386,7 +520,7 @@ If you want to continue using the non-sub-techniques Navigator, please use the [
 
 ## Layer File Format Changes
 
-Layer file format updated to version 3.0. Older versions can still be loaded in the Navigator, but may have degraded functionality.
+Layer file format updated to version 3.0. Older versions can still be loaded in the Navigator, but may have degraded functionality. See [layer format v3.0](layers/spec/v3.0/layerformat.md) for the full specification.
 
 - Removed "viewMode" enumeration in favor of "layout" object. viewMode will get parsed into a layout configuration automatically, but the conversion is not perfect since the layouts have changed.
 - Added "showSubtechniques" field to technique objects.
@@ -447,7 +581,7 @@ The "features" structure is used to enable/disable specific Navigator features. 
 
 ## Layer File Format Changes
 
-Layer file format updated to version 2.2. Older versions can still be loaded in the Navigator, and this update is fully backwards compatible with Version 2.1. See [layers/LAYERFORMATv2_2md](layers/LAYERFORMATv2_2.md) for the full v2.2 specification.
+Layer file format updated to version 2.2. Older versions can still be loaded in the Navigator, and this update is fully backwards compatible with Version 2.1. See [layer format v2.2](layers/spec/v2.2/layerformat.md) for the full specification.
 
 - Added the following cloud platforms to the set of acceptable enterprise platforms: "AWS", "GCP", "Azure", "Azure AD", "Office 365", "SaaS".
 - Updated Enterprise and Mobile platforms to match their format as seen elsewhere in ATT&CK. This change is fully backwards compatible, and if the old format is detected it will automatically be updated to the new format.
@@ -532,7 +666,7 @@ Also, please note that multiple matrices are only supported for `mitre-mobile`, 
 
 ## Layer File Format Changes
 
-Layer file format updated to version 2.1. This update is fully backwards compatible with layer format v2.0 since all the added fields are optional. See [layers/LAYERFORMATv2_1.md](layers/LAYERFORMATv2_1.md) for the full v2.1 specification.
+Layer file format updated to version 2.1. This update is fully backwards compatible with layer format v2.0 since all the added fields are optional. See [layer format v2.1](layers/spec/v2.1/layerformat.md) for the full specification.
 
 This update constitutes the addition of `metadata` fields to the layer and technique objects. Metadata can be used to support other applications using the layer format, or to add additional descriptive fields to layers or techniques. Metadata is formatted as an array, and each piece of metadata in the array must conform to the schema `{"name": string, "value": string}`.  
 
@@ -592,7 +726,7 @@ This update constitutes the addition of `metadata` fields to the layer and techn
 
 ## Layer File Format Changes
 
-Layer file format updated to version 2.0. Older layer versions can still be loaded by the Navigator, however some fields may no longer be supported. See [layers/LAYERFORMATv2.md](layers/LAYERFORMATv2.md) for the full v2.0 specification.
+Layer file format updated to version 2.0. Older layer versions can still be loaded by the Navigator, however some fields may no longer be supported. See [layer format v2.0](layers/spec/v2.0/layerformat.md) for the full specification.
 
 - Replaced the `viewFullTable` field (boolean) with the `viewMode` field (number) in order to support the "super compact" view option. See issue [#11](https://github.com/mitre-attack/attack-navigator/issues/11).
   - If `viewFullTable` is present in a layer file uploaded to the v2.0 Navigator it will be ignored.
