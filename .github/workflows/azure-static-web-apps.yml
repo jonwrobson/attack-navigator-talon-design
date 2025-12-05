@@ -107,10 +107,22 @@ jobs:
           npm ci --legacy-peer-deps
           npm run build
 
-      - name: Deploy to Azure Static Web Apps
+      - name: Deploy to Production (master)
+        if: github.ref == 'refs/heads/master'
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "nav-app/dist"
+          skip_app_build: true
+          skip_api_build: true
+
+      - name: Deploy to UAT
+        if: github.ref == 'refs/heads/uat'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_UAT }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "nav-app/dist"
@@ -124,7 +136,7 @@ jobs:
           if [ "${{ github.ref }}" == "refs/heads/master" ]; then
             echo "**Production URL:** https://gentle-mushroom-09c34ee03.3.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
-            echo "**UAT URL:** https://gentle-mushroom-09c34ee03-uat.3.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
+            echo "**UAT URL:** https://kind-field-05af68603.3.azurestaticapps.net" >> $GITHUB_STEP_SUMMARY
           else
             echo "**Preview URL:** Check the deployment comment on the PR" >> $GITHUB_STEP_SUMMARY
           fi
@@ -136,8 +148,18 @@ jobs:
     name: Cleanup Preview
 
     steps:
-      - name: Close Pull Request
+      - name: Close Pull Request (Production)
+        if: github.base_ref == 'master'
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
+          app_location: "nav-app/dist"
+
+      - name: Close Pull Request (UAT)
+        if: github.base_ref == 'uat'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_UAT }}
+          action: "close"
+          app_location: "nav-app/dist"
