@@ -58,6 +58,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^18.15.12",
     "codelyzer": "^6.0.0",
+    "crypto-browserify": "^3.12.1",
     "exceljs": "^4.3.0",
     "jasmine-core": "^5.1.0",
     "jasmine-spec-reporter": "~7.0.0",
@@ -69,10 +70,14 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "marked": "^12.0.2",
+    "os-browserify": "^0.3.0",
     "prettier": "^3.2.5",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
     "ts-node": "^10.9.1",
     "tslint": "~6.1.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "util": "^0.12.5"
   },
   "optionalDependencies": {
     "fsevents": "^2.3.2"

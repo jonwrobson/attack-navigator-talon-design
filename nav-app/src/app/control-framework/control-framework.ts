@@ -6,7 +6,8 @@ import { cisNist } from './control-frameworks/mappings/CIS-Nist';
 import { owaspAsvs } from './control-frameworks/mappings/OWASP-ASVS';
 import { techniquesNist } from './control-frameworks/mappings/techniqueIdsToNist';
 import { asvsNistMapping } from './control-frameworks/mappings/ASVS-map'
-import { DataService, Technique } from '../data.service';
+import { Technique } from '../classes/stix';
+import { DataService } from '../services/data.service';
 import { AsvsNist80053Rev4MappingItem } from './control-frameworks/asvs-nist-80053Rev4-mapping-item';
 import { mitigationNist } from './control-frameworks/mappings/mitigations-nist'
 import { TechniqueWithMappings } from "./TechniqueWithMappings";

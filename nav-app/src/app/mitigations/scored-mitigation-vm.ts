@@ -1,4 +1,4 @@
-import { Mitigation } from "../data.service";
+import { Mitigation } from "../classes/stix";
 
 // The view model for the scored mitigations
 export class scoredMitigationVM {

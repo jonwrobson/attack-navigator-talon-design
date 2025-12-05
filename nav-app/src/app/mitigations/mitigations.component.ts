@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ViewModel, ViewModelsService } from '../viewmodels.service';
-import { DataService, Technique } from '../data.service';
+import { ViewModelsService } from '../services/viewmodels.service';
+import { ViewModel } from '../classes';
+import { Technique } from '../classes/stix';
+import { DataService } from '../services/data.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MappingsExporter } from './mappings-exporter';
 import { scoredMitigationVM } from './scored-mitigation-vm';
