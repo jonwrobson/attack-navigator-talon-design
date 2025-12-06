@@ -76,24 +76,60 @@
       
       <div class="mappings-comparison">
         <div class="your-mappings">
-          <h4>Your NIST CSF Mappings</h4>
+          <h4>Your NIST CSF Mappings <span class="edit-hint">(click to remove)</span></h4>
           <div class="chip-list">
-            <span class="chip csf" *ngFor="let csf of currentReviewItem.yourNistCsfMappings">{{csf}}</span>
+            <span class="chip csf removable" 
+                  *ngFor="let csf of currentReviewItem.yourNistCsfMappings"
+                  (click)="removeCsfMapping(csf)"
+                  [matTooltip]="getCsfDescription(csf)">
+              {{csf}} <mat-icon class="remove-icon">close</mat-icon>
+            </span>
           </div>
           <h5>→ Resolves to 800-53:</h5>
           <div class="chip-list">
-            <span class="chip control" *ngFor="let ctrl of currentReviewItem.your80053Controls">{{ctrl}}</span>
+            <span class="chip control" 
+                  *ngFor="let ctrl of currentReviewItem.your80053Controls"
+                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
           </div>
         </div>
         
         <div class="ctid-mappings">
-          <h4>CTID Recommended Controls</h4>
+          <h4>CTID Recommended Controls <span class="edit-hint">(click to add CSF mapping)</span></h4>
           <div class="technique-controls" *ngFor="let tech of currentReviewItem.ctidTechniques">
             <span class="technique-id">{{tech.techniqueId}}: {{tech.techniqueName}}</span>
             <div class="chip-list">
-              <span class="chip control ctid" *ngFor="let ctrl of tech.ctidControls">{{ctrl}}</span>
+              <span class="chip control ctid addable" 
+                    *ngFor="let ctrl of tech.ctidControls"
+                    (click)="showAddMappingDialog(ctrl)"
+                    [matTooltip]="getControlDescription(ctrl)"
+                    [ngClass]="{'already-mapped': isControlInYourMappings(ctrl)}">
+                {{ctrl}}
+                <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl)">add</mat-icon>
+                <mat-icon class="check-icon" *ngIf="isControlInYourMappings(ctrl)">check</mat-icon>
+              </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Add Mapping Dialog -->
+      <div class="add-mapping-panel" *ngIf="showAddPanel">
+        <h4>Add CSF Mapping for 800-53 Control: <strong>{{selectedControlToAdd}}</strong></h4>
+        <p class="control-desc">{{getControlDescription(selectedControlToAdd)}}</p>
+        <p class="suggestion">Suggested CSF subcategories that reference this control:</p>
+        <div class="chip-list suggestion-list">
+          <span class="chip csf addable" 
+                *ngFor="let csf of getSuggestedCsfForControl(selectedControlToAdd)"
+                (click)="addCsfMapping(csf)"
+                [matTooltip]="getCsfDescription(csf)">
+            {{csf}} <mat-icon class="add-icon">add</mat-icon>
+          </span>
+          <span *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0" class="no-suggestions">
+            No CSF subcategories directly reference this 800-53 control
+          </span>
+        </div>
+        <div class="panel-actions">
+          <button mat-button (click)="closeAddPanel()">Cancel</button>
         </div>
       </div>
       
@@ -101,23 +137,31 @@
         <div class="analysis-section matching" *ngIf="currentReviewItem.matchingControls.length > 0">
           <h5><mat-icon>check_circle</mat-icon> Matching ({{currentReviewItem.matchingControls.length}})</h5>
           <div class="chip-list">
-            <span class="chip match" *ngFor="let ctrl of currentReviewItem.matchingControls">{{ctrl}}</span>
+            <span class="chip match" 
+                  *ngFor="let ctrl of currentReviewItem.matchingControls"
+                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
           </div>
         </div>
         
         <div class="analysis-section missing" *ngIf="currentReviewItem.missingFromYours.length > 0">
-          <h5><mat-icon>warning</mat-icon> Missing from yours ({{currentReviewItem.missingFromYours.length}})</h5>
-          <p class="suggestion-hint">CTID recommends these 800-53 controls. Consider adding corresponding NIST CSF mappings.</p>
+          <h5><mat-icon>warning</mat-icon> Missing from yours ({{currentReviewItem.missingFromYours.length}}) <span class="edit-hint">(click to add)</span></h5>
           <div class="chip-list">
-            <span class="chip missing" *ngFor="let ctrl of currentReviewItem.missingFromYours">{{ctrl}}</span>
+            <span class="chip missing addable" 
+                  *ngFor="let ctrl of currentReviewItem.missingFromYours"
+                  (click)="showAddMappingDialog(ctrl)"
+                  [matTooltip]="getControlDescription(ctrl)">
+              {{ctrl}} <mat-icon class="add-icon">add</mat-icon>
+            </span>
           </div>
         </div>
         
         <div class="analysis-section unique" *ngIf="currentReviewItem.uniqueToYours.length > 0">
           <h5><mat-icon>star</mat-icon> Unique to yours ({{currentReviewItem.uniqueToYours.length}})</h5>
-          <p class="suggestion-hint">These are in your mappings but not in CTID. This may be intentional - your context may differ.</p>
+          <p class="suggestion-hint">These are in your mappings but not in CTID. This may be intentional.</p>
           <div class="chip-list">
-            <span class="chip unique" *ngFor="let ctrl of currentReviewItem.uniqueToYours">{{ctrl}}</span>
+            <span class="chip unique" 
+                  *ngFor="let ctrl of currentReviewItem.uniqueToYours"
+                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
           </div>
         </div>
       </div>

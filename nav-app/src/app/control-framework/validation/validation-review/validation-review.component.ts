@@ -31,6 +31,10 @@ export class ValidationReviewComponent implements OnInit {
   currentReviewItem: MappingValidationResult | null = null;
   currentFilter: string = 'all';
   
+  // Add mapping panel state
+  showAddPanel = false;
+  selectedControlToAdd = '';
+  
   displayedColumns = ['status', 'mitigationId', 'coverage', 'yourMappings', 'ctidControls', 'actions'];
   
   constructor(
@@ -323,6 +327,241 @@ export class ValidationReviewComponent implements OnInit {
    */
   isIgnored(mitigationId: string): boolean {
     return this.ignoredItems.has(mitigationId);
+  }
+
+  // ============ CLICKABLE CONTROL ACTIONS ============
+
+  // Track pending changes per mitigation
+  pendingAdditions: Map<string, Set<string>> = new Map(); // mitigationId -> Set of control IDs to add
+  pendingRemovals: Map<string, Set<string>> = new Map();  // mitigationId -> Set of CSF IDs to remove
+
+  /**
+   * Queue a CTID control for addition - find corresponding CSF mapping
+   */
+  addCsfMappingForControl(controlId: string, mitigationId: string) {
+    if (!mitigationId) return;
+
+    // Initialize pending set if needed
+    if (!this.pendingAdditions.has(mitigationId)) {
+      this.pendingAdditions.set(mitigationId, new Set());
+    }
+
+    const pendingSet = this.pendingAdditions.get(mitigationId)!;
+    
+    // Toggle: if already pending, remove it
+    if (pendingSet.has(controlId)) {
+      pendingSet.delete(controlId);
+    } else {
+      pendingSet.add(controlId);
+    }
+  }
+
+  /**
+   * Queue a CSF mapping for removal (or directly remove in simple mode)
+   */
+  removeCsfMapping(csfId: string, mitigationId?: string) {
+    const targetMitigationId = mitigationId || this.currentReviewItem?.mitigationId;
+    if (!targetMitigationId) return;
+
+    // Direct removal - immediately remove the mapping
+    this.controlFramework.removeMapping(csfId, targetMitigationId);
+    console.log(`Removed mapping: ${targetMitigationId} → ${csfId}`);
+    
+    // Update current review item's local data to reflect the change
+    if (this.currentReviewItem && this.currentReviewItem.mitigationId === targetMitigationId) {
+      this.currentReviewItem.yourNistCsfMappings = 
+        this.currentReviewItem.yourNistCsfMappings.filter(c => c !== csfId);
+    }
+  }
+
+  /**
+   * Get pending additions for a mitigation
+   */
+  getPendingAdditions(mitigationId: string): string[] {
+    return [...(this.pendingAdditions.get(mitigationId) || [])];
+  }
+
+  /**
+   * Get pending removals for a mitigation
+   */
+  getPendingRemovals(mitigationId: string): string[] {
+    return [...(this.pendingRemovals.get(mitigationId) || [])];
+  }
+
+  /**
+   * Check if control is pending addition
+   */
+  isPendingAddition(controlId: string, mitigationId: string): boolean {
+    return this.pendingAdditions.get(mitigationId)?.has(controlId) || false;
+  }
+
+  /**
+   * Check if CSF is pending removal
+   */
+  isPendingRemoval(csfId: string, mitigationId: string): boolean {
+    return this.pendingRemovals.get(mitigationId)?.has(csfId) || false;
+  }
+
+  /**
+   * Apply all pending changes for a mitigation
+   */
+  applyPendingChanges(mitigationId: string) {
+    // Process removals first
+    const removals = this.pendingRemovals.get(mitigationId);
+    if (removals) {
+      removals.forEach(csfId => {
+        this.controlFramework.removeMapping(csfId, mitigationId);
+        console.log(`Removed mapping: ${mitigationId} → ${csfId}`);
+      });
+    }
+
+    // Process additions - find CSF subcategories for each control
+    const additions = this.pendingAdditions.get(mitigationId);
+    if (additions) {
+      additions.forEach(controlId => {
+        const csfIds = this.getCsfForControl(controlId);
+        if (csfIds.length > 0) {
+          // Add the first matching CSF (could show a picker for multiple)
+          csfIds.forEach(csfId => {
+            this.controlFramework.addMapping(csfId, mitigationId);
+            console.log(`Added mapping: ${mitigationId} → ${csfId} (for 800-53 ${controlId})`);
+          });
+        } else {
+          console.warn(`No CSF mapping found for control ${controlId}`);
+        }
+      });
+    }
+
+    // Clear pending changes
+    this.clearPendingChanges(mitigationId);
+
+    // Mark as reviewed
+    this.markItemReviewed(mitigationId);
+
+    // Notify user
+    alert(`Applied changes for ${mitigationId}. Reload validation to see updated coverage.`);
+  }
+
+  /**
+   * Clear pending changes for a mitigation
+   */
+  clearPendingChanges(mitigationId: string) {
+    this.pendingAdditions.delete(mitigationId);
+    this.pendingRemovals.delete(mitigationId);
+  }
+
+  /**
+   * Check if there are pending changes
+   */
+  hasPendingChanges(mitigationId: string): boolean {
+    const additions = this.pendingAdditions.get(mitigationId);
+    const removals = this.pendingRemovals.get(mitigationId);
+    return (additions?.size || 0) > 0 || (removals?.size || 0) > 0;
+  }
+
+  /**
+   * Get control description from CTID data for tooltip
+   */
+  getControlDescription(controlId: string): string {
+    const control = this.ctidService.getControl(controlId);
+    if (control) {
+      return `${control.name}\n\n${control.description?.substring(0, 200) || 'No description'}...`;
+    }
+    return controlId;
+  }
+
+  /**
+   * Find NIST CSF subcategories that map to a given 800-53 control
+   * This is a reverse lookup from our existing data
+   */
+  private getCsfForControl(controlId: string): string[] {
+    const matches: string[] = [];
+    
+    // Normalize control ID (remove any revision suffixes for matching)
+    const normalizedControl = controlId.replace(/\s*\(.*\)/, '').trim();
+    
+    for (const nistItem of this.controlFramework.nistItems) {
+      // Check NIST SP 800-53 Rev. 4 mappings
+      const rev4 = nistItem.mappings?.['NIST SP 800-53 Rev. 4'];
+      if (rev4) {
+        const controlsList = Array.isArray(rev4) ? rev4 : [rev4];
+        if (controlsList.some(c => c.includes(normalizedControl) || normalizedControl.includes(c.split('-')[0]))) {
+          matches.push(nistItem.subcategory.id);
+        }
+      }
+      
+      // Check NIST SP 800-53 Rev. 5 mappings if available
+      const rev5 = nistItem.mappings?.['NIST SP 800-53 Rev. 5'];
+      if (rev5) {
+        const controlsList = Array.isArray(rev5) ? rev5 : [rev5];
+        if (controlsList.some(c => c.includes(normalizedControl) || normalizedControl.includes(c.split('-')[0]))) {
+          matches.push(nistItem.subcategory.id);
+        }
+      }
+    }
+    
+    return [...new Set(matches)];
+  }
+
+  // ============ ADD MAPPING PANEL ============
+
+  /**
+   * Show the add mapping dialog for a control
+   */
+  showAddMappingDialog(controlId: string) {
+    this.selectedControlToAdd = controlId;
+    this.showAddPanel = true;
+  }
+
+  /**
+   * Close the add mapping panel
+   */
+  closeAddPanel() {
+    this.showAddPanel = false;
+    this.selectedControlToAdd = '';
+  }
+
+  /**
+   * Get suggested CSF subcategories for a control (public wrapper)
+   */
+  getSuggestedCsfForControl(controlId: string): string[] {
+    return this.getCsfForControl(controlId);
+  }
+
+  /**
+   * Add a CSF mapping and close the panel
+   */
+  addCsfMapping(csfId: string) {
+    if (!this.currentReviewItem) return;
+    
+    this.controlFramework.addMapping(csfId, this.currentReviewItem.mitigationId);
+    console.log(`Added mapping: ${this.currentReviewItem.mitigationId} → ${csfId}`);
+    
+    // Close panel and show feedback
+    this.closeAddPanel();
+    
+    // Mark as reviewed
+    this.markItemReviewed(this.currentReviewItem.mitigationId);
+  }
+
+  /**
+   * Get CSF subcategory description for tooltip
+   */
+  getCsfDescription(csfId: string): string {
+    const nistItem = this.controlFramework.nistItems.find(item => item.subcategory.id === csfId);
+    if (nistItem) {
+      return `${nistItem.subcategory.description}`;
+    }
+    return csfId;
+  }
+
+  /**
+   * Check if a control is already covered by your mappings
+   */
+  isControlInYourMappings(controlId: string): boolean {
+    if (!this.currentReviewItem) return false;
+    return this.currentReviewItem.your80053Controls.includes(controlId) ||
+           this.currentReviewItem.matchingControls.includes(controlId);
   }
 
   // ============ PERSISTENCE ============

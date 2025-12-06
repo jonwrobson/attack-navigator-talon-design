@@ -384,3 +384,134 @@
 ::ng-deep .mat-mdc-tab-group {
   margin-bottom: 24px;
 }
+
+// Edit hints
+.edit-hint {
+  font-size: 11px;
+  font-weight: 400;
+  font-style: italic;
+  @include adaptive-color(color, #999, #777);
+}
+
+// Clickable/Actionable chips
+.chip {
+  &.removable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    
+    .remove-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+    
+    &:hover {
+      @include adaptive-color(background, #ffcdd2, #c62828);
+      @include adaptive-color(color, #c62828, #ffcdd2);
+      
+      .remove-icon {
+        opacity: 1;
+      }
+    }
+  }
+  
+  &.addable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    
+    .add-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+    
+    .check-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #4caf50;
+    }
+    
+    &:hover:not(.already-mapped) {
+      @include adaptive-color(background, #c8e6c9, #2e7d32);
+      @include adaptive-color(color, #2e7d32, #c8e6c9);
+      
+      .add-icon {
+        opacity: 1;
+      }
+    }
+    
+    &.already-mapped {
+      opacity: 0.7;
+      cursor: default;
+    }
+  }
+}
+
+// Add Mapping Panel
+.add-mapping-panel {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 8px;
+  @include adaptive-color(background, #e8f5e9, #1b5e20);
+  border: 2px solid #4caf50;
+  
+  h4 {
+    margin: 0 0 8px 0;
+    @include adaptive-color(color, #2e7d32, #c8e6c9);
+    
+    strong {
+      @include adaptive-color(color, #1b5e20, #a5d6a7);
+    }
+  }
+  
+  .control-desc {
+    font-size: 13px;
+    @include adaptive-color(color, #558b2f, #aed581);
+    margin-bottom: 12px;
+    max-height: 60px;
+    overflow: hidden;
+  }
+  
+  .suggestion {
+    font-size: 12px;
+    font-weight: 500;
+    @include adaptive-color(color, #33691e, #c5e1a5);
+    margin-bottom: 8px;
+  }
+  
+  .suggestion-list {
+    margin-bottom: 12px;
+    
+    .chip.csf.addable {
+      @include adaptive-color(background, #c8e6c9, #388e3c);
+      @include adaptive-color(color, #1b5e20, #e8f5e9);
+      
+      &:hover {
+        @include adaptive-color(background, #a5d6a7, #4caf50);
+      }
+    }
+  }
+  
+  .no-suggestions {
+    font-size: 12px;
+    font-style: italic;
+    @include adaptive-color(color, #7cb342, #9ccc65);
+  }
+  
+  .panel-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(76, 175, 80, 0.3);
+  }
+}
