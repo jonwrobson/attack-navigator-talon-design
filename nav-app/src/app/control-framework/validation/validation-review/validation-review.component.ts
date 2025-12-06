@@ -57,8 +57,13 @@ export class ValidationReviewComponent implements OnInit {
   controlSearchTerm = '';
   selectedControlFamily = '';
   expandedFamilies: Set<string> = new Set();
-  private enrichedControlsCache: EnrichedControl[] = [];
-  private controlFamiliesCache: ControlFamily[] = [];
+  
+  // Cached/computed control data - these are updated explicitly, not on every render
+  enrichedControls: EnrichedControl[] = [];
+  groupedControls: ControlFamily[] = [];
+  filteredControls: EnrichedControl[] = [];
+  controlFamilyList: { id: string; name: string; count: number }[] = [];
+  uniqueCtidControlIds: string[] = [];
   
   displayedColumns = ['status', 'mitigationId', 'coverage', 'yourMappings', 'ctidControls', 'actions'];
   
@@ -675,75 +680,57 @@ export class ValidationReviewComponent implements OnInit {
     'SR': 'Supply Chain Risk Management'
   };
 
-  /** Quick filter tags for common security concepts */
-  getQuickFilterTags(): string[] {
-    return [
-      'endpoint', 'detection', 'monitor', 'malware', 'response',
-      'logging', 'alert', 'protect', 'prevent', 'analyze'
-    ];
-  }
+  /** Quick filter tags for common security concepts - static list */
+  readonly quickFilterTags = [
+    'endpoint', 'detection', 'monitor', 'malware', 'response',
+    'logging', 'alert', 'protect', 'prevent', 'analyze'
+  ];
 
   /**
-   * Get all unique CTID controls for current review item
+   * Build all control data for current review item - call once when item changes
    */
-  getUniqueCtidControls(): string[] {
-    if (!this.currentReviewItem) return [];
-    return [...new Set(this.currentReviewItem.ctidTechniques.flatMap(t => t.ctidControls))];
-  }
-
-  /**
-   * Build enriched control list with full details for current item
-   */
-  private buildEnrichedControls(): EnrichedControl[] {
-    if (!this.currentReviewItem) return [];
+  private buildControlData() {
+    if (!this.currentReviewItem) {
+      this.enrichedControls = [];
+      this.groupedControls = [];
+      this.filteredControls = [];
+      this.controlFamilyList = [];
+      this.uniqueCtidControlIds = [];
+      return;
+    }
     
-    const controlIds = this.getUniqueCtidControls();
-    const enriched: EnrichedControl[] = [];
+    // Get unique control IDs
+    this.uniqueCtidControlIds = [...new Set(
+      this.currentReviewItem.ctidTechniques.flatMap(t => t.ctidControls)
+    )];
     
-    for (const id of controlIds) {
+    // Build enriched controls
+    this.enrichedControls = this.uniqueCtidControlIds.map(id => {
       const control = this.ctidService.getControl(id);
       const family = id.split('-')[0];
-      
-      // Find which techniques this control is recommended for
-      const techniques = this.currentReviewItem.ctidTechniques
+      const techniques = this.currentReviewItem!.ctidTechniques
         .filter(t => t.ctidControls.includes(id))
         .map(t => t.techniqueId);
       
-      enriched.push({
+      return {
         id,
         name: control?.name || id,
         description: control?.description || '',
         family,
         techniques
-      });
-    }
+      };
+    });
     
-    return enriched;
-  }
-
-  /**
-   * Get controls grouped by family
-   */
-  getGroupedControls(): ControlFamily[] {
-    // Rebuild cache if needed
-    if (this.enrichedControlsCache.length === 0 || 
-        this.enrichedControlsCache[0]?.id !== this.getUniqueCtidControls()[0]) {
-      this.enrichedControlsCache = this.buildEnrichedControls();
-      this.controlFamiliesCache = [];
-    }
-    
-    if (this.controlFamiliesCache.length > 0) return this.controlFamiliesCache;
-    
+    // Group by family
     const familyMap = new Map<string, EnrichedControl[]>();
-    
-    for (const ctrl of this.enrichedControlsCache) {
+    for (const ctrl of this.enrichedControls) {
       if (!familyMap.has(ctrl.family)) {
         familyMap.set(ctrl.family, []);
       }
       familyMap.get(ctrl.family)!.push(ctrl);
     }
     
-    this.controlFamiliesCache = Array.from(familyMap.entries())
+    this.groupedControls = Array.from(familyMap.entries())
       .map(([id, controls]) => ({
         id,
         name: this.CONTROL_FAMILIES[id] || id,
@@ -752,29 +739,22 @@ export class ValidationReviewComponent implements OnInit {
       }))
       .sort((a, b) => a.id.localeCompare(b.id));
     
-    return this.controlFamiliesCache;
-  }
-
-  /**
-   * Get list of control families for filter dropdown
-   */
-  getControlFamilies(): { id: string; name: string; count: number }[] {
-    return this.getGroupedControls().map(f => ({
+    // Build family list for dropdown
+    this.controlFamilyList = this.groupedControls.map(f => ({
       id: f.id,
       name: f.name,
       count: f.count
     }));
+    
+    // Initialize filtered to all
+    this.filteredControls = [...this.enrichedControls];
   }
 
   /**
-   * Filter controls by search term and/or family
+   * Update filtered controls - call when search/filter changes
    */
-  getFilteredControls(): EnrichedControl[] {
-    if (this.enrichedControlsCache.length === 0) {
-      this.enrichedControlsCache = this.buildEnrichedControls();
-    }
-    
-    let filtered = [...this.enrichedControlsCache];
+  filterControls() {
+    let filtered = [...this.enrichedControls];
     
     // Filter by family
     if (this.selectedControlFamily) {
@@ -790,7 +770,7 @@ export class ValidationReviewComponent implements OnInit {
         c.description.toLowerCase().includes(term)
       );
       
-      // Sort by relevance - name matches first, then description
+      // Sort by relevance - name matches first
       filtered.sort((a, b) => {
         const aNameMatch = a.name.toLowerCase().includes(term) ? 0 : 1;
         const bNameMatch = b.name.toLowerCase().includes(term) ? 0 : 1;
@@ -799,7 +779,7 @@ export class ValidationReviewComponent implements OnInit {
       });
     }
     
-    return filtered;
+    this.filteredControls = filtered;
   }
 
   /**
@@ -807,6 +787,7 @@ export class ValidationReviewComponent implements OnInit {
    */
   applyQuickFilter(tag: string) {
     this.controlSearchTerm = this.controlSearchTerm === tag ? '' : tag;
+    this.filterControls();
   }
 
   /**
@@ -815,13 +796,7 @@ export class ValidationReviewComponent implements OnInit {
   clearControlFilters() {
     this.controlSearchTerm = '';
     this.selectedControlFamily = '';
-  }
-
-  /**
-   * Trigger filter update (called on input change)
-   */
-  filterControls() {
-    // Filters are applied via getFilteredControls(), just need to trigger change detection
+    this.filterControls();
   }
 
   /**
@@ -855,13 +830,19 @@ export class ValidationReviewComponent implements OnInit {
   }
 
   /**
-   * Reset control caches when review item changes
+   * TrackBy function for ngFor performance
+   */
+  trackByControlId(index: number, ctrl: EnrichedControl): string {
+    return ctrl.id;
+  }
+
+  /**
+   * Reset control data when review item changes
    */
   private resetControlCaches() {
-    this.enrichedControlsCache = [];
-    this.controlFamiliesCache = [];
     this.controlSearchTerm = '';
     this.selectedControlFamily = '';
     this.expandedFamilies.clear();
+    this.buildControlData();
   }
 }

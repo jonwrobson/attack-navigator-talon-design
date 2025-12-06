@@ -94,7 +94,7 @@
         </div>
         
         <div class="ctid-mappings">
-          <h4>CTID Recommended Controls <span class="control-count">({{getUniqueCtidControls().length}} unique)</span></h4>
+          <h4>CTID Recommended Controls <span class="control-count">({{uniqueCtidControlIds.length}} unique)</span></h4>
           
           <!-- Search and Filter Bar -->
           <div class="control-search-bar">
@@ -108,7 +108,7 @@
               <mat-label>Control Family</mat-label>
               <mat-select [(ngModel)]="selectedControlFamily" (selectionChange)="filterControls()">
                 <mat-option value="">All Families</mat-option>
-                <mat-option *ngFor="let family of getControlFamilies()" [value]="family.id">
+                <mat-option *ngFor="let family of controlFamilyList" [value]="family.id">
                   {{family.id}} - {{family.name}} ({{family.count}})
                 </mat-option>
               </mat-select>
@@ -119,7 +119,7 @@
           <div class="quick-filters">
             <span class="quick-filter-label">Quick filters:</span>
             <button mat-stroked-button class="quick-filter-btn" 
-                    *ngFor="let tag of getQuickFilterTags()"
+                    *ngFor="let tag of quickFilterTags"
                     [class.active]="controlSearchTerm === tag"
                     (click)="applyQuickFilter(tag)">
               {{tag}}
@@ -128,7 +128,7 @@
 
           <!-- Grouped Controls View -->
           <div class="controls-grouped" *ngIf="!controlSearchTerm && !selectedControlFamily">
-            <div class="control-family-group" *ngFor="let family of getGroupedControls()">
+            <div class="control-family-group" *ngFor="let family of groupedControls">
               <div class="family-header" (click)="toggleFamilyExpanded(family.id)">
                 <mat-icon>{{isFamilyExpanded(family.id) ? 'expand_more' : 'chevron_right'}}</mat-icon>
                 <span class="family-id">{{family.id}}</span>
@@ -154,10 +154,10 @@
           <!-- Filtered/Search Results View -->
           <div class="controls-filtered" *ngIf="controlSearchTerm || selectedControlFamily">
             <div class="search-results-header">
-              <span>{{getFilteredControls().length}} controls found</span>
+              <span>{{filteredControls.length}} controls found</span>
               <button mat-button (click)="clearControlFilters()">Clear filters</button>
             </div>
-            <div class="control-item" *ngFor="let ctrl of getFilteredControls()"
+            <div class="control-item" *ngFor="let ctrl of filteredControls; trackBy: trackByControlId"
                  (click)="showAddMappingDialog(ctrl.id)"
                  [class.already-mapped]="isControlInYourMappings(ctrl.id)"
                  [class.search-match]="controlSearchTerm">
@@ -173,7 +173,7 @@
                 <span class="technique-tag" *ngFor="let tech of ctrl.techniques">{{tech}}</span>
               </div>
             </div>
-            <div class="no-results" *ngIf="getFilteredControls().length === 0">
+            <div class="no-results" *ngIf="filteredControls.length === 0">
               <mat-icon>search_off</mat-icon>
               <p>No controls match your search. Try different keywords like "monitor", "detect", "protect", "response".</p>
             </div>
