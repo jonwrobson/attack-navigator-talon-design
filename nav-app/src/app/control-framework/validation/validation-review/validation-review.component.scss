@@ -244,21 +244,66 @@
       }
     }
     
+    .suggestion-hint {
+      font-size: 12px;
+      @include adaptive-color(color, #666, #999);
+      margin: 4px 0 8px 26px;
+      font-style: italic;
+    }
+    
     &.matching h5 { color: #4caf50; }
     &.missing h5 { color: #f44336; }
     &.unique h5 { color: #2196f3; }
   }
 }
 
+// Review Status Indicator
+.review-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  @include adaptive-color(background, #e8f5e9, #1b5e20);
+  
+  mat-icon {
+    color: #4caf50;
+  }
+  
+  span {
+    flex: 1;
+    font-weight: 500;
+    @include adaptive-color(color, #2e7d32, #a5d6a7);
+  }
+}
+
 // Review Actions
 .review-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   gap: 16px;
   margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid;
   @include adaptive-color(border-color, #eee, #333);
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.exit-review-btn {
+  display: block;
+  margin: 16px auto 0;
+  @include adaptive-color(color, #666, #999);
+}
+
+// Export buttons
+.export-btn {
+  margin-left: 8px;
 }
 
 // Table Styles

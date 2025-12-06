@@ -9,6 +9,14 @@
         <mat-icon>{{loading ? 'hourglass_empty' : 'refresh'}}</mat-icon>
         {{loading ? 'Loading...' : 'Load / Refresh Data'}}
       </button>
+      <button mat-raised-button (click)="exportToExcel()" [disabled]="results.length === 0" class="export-btn">
+        <mat-icon>download</mat-icon>
+        Export to Excel
+      </button>
+      <button mat-stroked-button (click)="exportGapsCsv()" [disabled]="results.length === 0" class="export-btn">
+        <mat-icon>warning</mat-icon>
+        Export Gaps CSV
+      </button>
     </div>
   </div>
 
@@ -99,6 +107,7 @@
         
         <div class="analysis-section missing" *ngIf="currentReviewItem.missingFromYours.length > 0">
           <h5><mat-icon>warning</mat-icon> Missing from yours ({{currentReviewItem.missingFromYours.length}})</h5>
+          <p class="suggestion-hint">CTID recommends these 800-53 controls. Consider adding corresponding NIST CSF mappings.</p>
           <div class="chip-list">
             <span class="chip missing" *ngFor="let ctrl of currentReviewItem.missingFromYours">{{ctrl}}</span>
           </div>
@@ -106,23 +115,44 @@
         
         <div class="analysis-section unique" *ngIf="currentReviewItem.uniqueToYours.length > 0">
           <h5><mat-icon>star</mat-icon> Unique to yours ({{currentReviewItem.uniqueToYours.length}})</h5>
+          <p class="suggestion-hint">These are in your mappings but not in CTID. This may be intentional - your context may differ.</p>
           <div class="chip-list">
             <span class="chip unique" *ngFor="let ctrl of currentReviewItem.uniqueToYours">{{ctrl}}</span>
           </div>
         </div>
+      </div>
+
+      <!-- Review Status Indicator -->
+      <div class="review-status-indicator" *ngIf="isReviewed(currentReviewItem.mitigationId) || isIgnored(currentReviewItem.mitigationId)">
+        <mat-icon *ngIf="isReviewed(currentReviewItem.mitigationId)">check_circle</mat-icon>
+        <mat-icon *ngIf="isIgnored(currentReviewItem.mitigationId)">block</mat-icon>
+        <span *ngIf="isReviewed(currentReviewItem.mitigationId)">Marked as Reviewed</span>
+        <span *ngIf="isIgnored(currentReviewItem.mitigationId)">Marked as Ignored</span>
+        <button mat-button (click)="clearItemStatus(currentReviewItem.mitigationId)">Clear</button>
       </div>
       
       <div class="review-actions">
         <button mat-button (click)="previousReview()" [disabled]="currentReviewIndex === 0">
           <mat-icon>arrow_back</mat-icon> Previous
         </button>
-        <button mat-raised-button color="accent" (click)="markReviewed()">
-          <mat-icon>done</mat-icon> Mark Reviewed
-        </button>
+        
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="markItemReviewed(currentReviewItem.mitigationId); nextReview()">
+            <mat-icon>done</mat-icon> Accept & Next
+          </button>
+          <button mat-stroked-button color="warn" (click)="markItemIgnored(currentReviewItem.mitigationId); nextReview()">
+            <mat-icon>block</mat-icon> Ignore
+          </button>
+        </div>
+        
         <button mat-button (click)="nextReview()" [disabled]="currentReviewIndex >= filteredResults.length - 1">
-          Next <mat-icon>arrow_forward</mat-icon>
+          Skip <mat-icon>arrow_forward</mat-icon>
         </button>
       </div>
+
+      <button mat-button class="exit-review-btn" (click)="exitReviewMode()">
+        <mat-icon>close</mat-icon> Exit Review Mode
+      </button>
     </div>
   </div>
 
