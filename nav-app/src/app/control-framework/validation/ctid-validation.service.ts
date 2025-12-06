@@ -30,8 +30,8 @@ interface StixAttackPattern {
 })
 export class CtidValidationService {
   
-  // Your fork's raw GitHub URLs
-  private readonly BASE_URL = 'https://raw.githubusercontent.com/jonwrobson/attack-control-framework-mappings/main';
+  // Your fork's raw GitHub URLs - NOTE: uses 'master' branch
+  private readonly BASE_URL = 'https://raw.githubusercontent.com/jonwrobson/attack-control-framework-mappings/master';
   private readonly ATTACK_VERSION = 'attack_12_1';
   private readonly FRAMEWORK = 'nist800_53_r5';
   
