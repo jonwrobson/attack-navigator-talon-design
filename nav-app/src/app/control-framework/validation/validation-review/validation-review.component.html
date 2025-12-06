@@ -209,8 +209,8 @@
           </div>
         </div>
 
-        <!-- Show CSF options to add if not covered -->
-        <div class="add-options" *ngIf="!isControlInYourMappings(selectedControlToAdd)">
+        <!-- Show CSF options to add -->
+        <div class="add-options">
           <h5>Add a CSF mapping to cover this control:</h5>
           <p class="hint">Select a CSF subcategory that references {{selectedControlToAdd}}:</p>
           
@@ -222,10 +222,15 @@
               <span class="function-count">({{group.items.length}})</span>
             </div>
             <div class="csf-list">
-              <div class="csf-item addable" *ngFor="let item of group.items" (click)="addCsfMapping(item.id)">
+              <div class="csf-item" 
+                   *ngFor="let item of group.items" 
+                   [class.addable]="!isCsfAlreadyMapped(item.id)"
+                   [class.already-added]="isCsfAlreadyMapped(item.id)"
+                   (click)="!isCsfAlreadyMapped(item.id) && addCsfMapping(item.id)">
                 <span class="csf-id">{{item.id}}</span>
                 <span class="csf-desc">{{item.description}}</span>
-                <mat-icon class="add-icon">add_circle_outline</mat-icon>
+                <mat-icon class="add-icon" *ngIf="!isCsfAlreadyMapped(item.id)">add_circle_outline</mat-icon>
+                <mat-icon class="check-icon" *ngIf="isCsfAlreadyMapped(item.id)">check_circle</mat-icon>
               </div>
             </div>
           </div>

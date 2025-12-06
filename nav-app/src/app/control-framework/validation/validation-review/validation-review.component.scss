@@ -631,6 +631,23 @@
     &.existing {
       @include adaptive-color(background, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
     }
+    
+    &.already-added {
+      @include adaptive-color(background, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.25));
+      cursor: default;
+      
+      .csf-id {
+        @include adaptive-color(background, #c8e6c9, #2e7d32);
+      }
+      
+      .csf-desc {
+        @include adaptive-color(color, #558b2f, #a5d6a7);
+      }
+      
+      .check-icon {
+        color: #4caf50;
+      }
+    }
   }
   
   .no-suggestions {

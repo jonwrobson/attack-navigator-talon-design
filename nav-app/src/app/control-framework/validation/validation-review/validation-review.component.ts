@@ -659,19 +659,33 @@ export class ValidationReviewComponent implements OnInit {
   }
 
   /**
-   * Add a CSF mapping and close the panel
+   * Check if a CSF subcategory is already mapped to this mitigation
+   */
+  isCsfAlreadyMapped(csfId: string): boolean {
+    if (!this.currentReviewItem) return false;
+    return this.currentReviewItem.yourNistCsfMappings.includes(csfId);
+  }
+
+  /**
+   * Add a CSF mapping - keep panel open for multiple selections
    */
   addCsfMapping(csfId: string) {
     if (!this.currentReviewItem) return;
     
+    // Check if already mapped
+    if (this.isCsfAlreadyMapped(csfId)) {
+      console.log(`CSF ${csfId} is already mapped to ${this.currentReviewItem.mitigationId}`);
+      return;
+    }
+    
     this.controlFramework.addMapping(csfId, this.currentReviewItem.mitigationId);
     console.log(`Added mapping: ${this.currentReviewItem.mitigationId} → ${csfId}`);
     
-    // Close panel and show feedback
-    this.closeAddPanel();
+    // Update the current review item's local data to reflect the change
+    this.currentReviewItem.yourNistCsfMappings.push(csfId);
     
-    // Mark as reviewed
-    this.markItemReviewed(this.currentReviewItem.mitigationId);
+    // DON'T close panel - allow adding multiple mappings
+    // this.closeAddPanel();
   }
 
   /**
