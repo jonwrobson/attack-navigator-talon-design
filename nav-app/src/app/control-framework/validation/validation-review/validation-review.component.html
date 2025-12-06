@@ -200,28 +200,39 @@
         <!-- Show which of YOUR CSF mappings include this control -->
         <div class="your-coverage" *ngIf="getYourCsfForControl(selectedControlToAdd).length > 0">
           <h5>Your CSF mappings that include this control:</h5>
-          <div class="chip-list">
-            <span class="chip csf existing" *ngFor="let csf of getYourCsfForControl(selectedControlToAdd)">
-              {{csf}} <mat-icon>check</mat-icon>
-            </span>
+          <div class="csf-list">
+            <div class="csf-item existing" *ngFor="let item of getYourCsfDetailsForControl(selectedControlToAdd)">
+              <span class="csf-id">{{item.id}}</span>
+              <span class="csf-desc">{{item.description}}</span>
+              <mat-icon class="check-icon">check_circle</mat-icon>
+            </div>
           </div>
         </div>
 
         <!-- Show CSF options to add if not covered -->
         <div class="add-options" *ngIf="!isControlInYourMappings(selectedControlToAdd)">
           <h5>Add a CSF mapping to cover this control:</h5>
-          <p class="hint">These CSF subcategories reference {{selectedControlToAdd}} in their 800-53 mappings:</p>
-          <div class="chip-list suggestion-list">
-            <span class="chip csf addable" 
-                  *ngFor="let csf of getSuggestedCsfForControl(selectedControlToAdd)"
-                  (click)="addCsfMapping(csf)"
-                  [matTooltip]="getCsfDescription(csf)">
-              {{csf}} <mat-icon class="add-icon">add</mat-icon>
-            </span>
-            <span *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0" class="no-suggestions">
-              No CSF subcategories directly reference this 800-53 control.
-              You may need to add a custom mapping.
-            </span>
+          <p class="hint">Select a CSF subcategory that references {{selectedControlToAdd}}:</p>
+          
+          <!-- Grouped by CSF Function -->
+          <div class="csf-grouped" *ngFor="let group of getGroupedCsfForControl(selectedControlToAdd)">
+            <div class="csf-function-header">
+              <span class="function-id">{{group.functionId}}</span>
+              <span class="function-name">{{group.functionName}}</span>
+              <span class="function-count">({{group.items.length}})</span>
+            </div>
+            <div class="csf-list">
+              <div class="csf-item addable" *ngFor="let item of group.items" (click)="addCsfMapping(item.id)">
+                <span class="csf-id">{{item.id}}</span>
+                <span class="csf-desc">{{item.description}}</span>
+                <mat-icon class="add-icon">add_circle_outline</mat-icon>
+              </div>
+            </div>
+          </div>
+          
+          <div class="no-suggestions" *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0">
+            No CSF subcategories directly reference this 800-53 control.
+            You may need to add a custom mapping.
           </div>
         </div>
 

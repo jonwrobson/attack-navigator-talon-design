@@ -525,36 +525,118 @@
     .hint {
       font-size: 12px;
       @include adaptive-color(color, #689f38, #aed581);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
   }
   
-  .chip.csf.existing {
-    @include adaptive-color(background, #a5d6a7, #388e3c);
-    @include adaptive-color(color, #1b5e20, #e8f5e9);
+  // CSF Function Group Headers
+  .csf-grouped {
+    margin-bottom: 12px;
     
-    mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
+    .csf-function-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px 6px 0 0;
+      @include adaptive-color(background, #c8e6c9, #2e7d32);
+      
+      .function-id {
+        font-weight: 700;
+        font-size: 14px;
+        @include adaptive-color(color, #1b5e20, #a5d6a7);
+      }
+      
+      .function-name {
+        font-size: 13px;
+        @include adaptive-color(color, #33691e, #c8e6c9);
+      }
+      
+      .function-count {
+        margin-left: auto;
+        font-size: 12px;
+        @include adaptive-color(color, #558b2f, #aed581);
+      }
     }
   }
   
-  .suggestion-list {
-    .chip.csf.addable {
-      @include adaptive-color(background, #c8e6c9, #388e3c);
-      @include adaptive-color(color, #1b5e20, #e8f5e9);
+  // CSF List View
+  .csf-list {
+    @include adaptive-color(background, rgba(255,255,255,0.5), rgba(0,0,0,0.2));
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .csf-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid;
+    @include adaptive-color(border-color, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .csf-id {
+      font-weight: 600;
+      font-size: 12px;
+      min-width: 70px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      @include adaptive-color(background, #e8f5e9, #1b5e20);
+      @include adaptive-color(color, #2e7d32, #a5d6a7);
+    }
+    
+    .csf-desc {
+      flex: 1;
+      font-size: 12px;
+      line-height: 1.4;
+      @include adaptive-color(color, #33691e, #c8e6c9);
+    }
+    
+    .check-icon {
+      color: #4caf50;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    .add-icon {
+      @include adaptive-color(color, #689f38, #aed581);
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    
+    &.addable {
       cursor: pointer;
+      transition: background 0.2s;
       
       &:hover {
-        @include adaptive-color(background, #a5d6a7, #4caf50);
+        @include adaptive-color(background, #a5d6a7, #388e3c);
+        
+        .add-icon {
+          opacity: 1;
+          color: #4caf50;
+        }
       }
+    }
+    
+    &.existing {
+      @include adaptive-color(background, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
     }
   }
   
   .no-suggestions {
     font-size: 12px;
     font-style: italic;
+    padding: 12px;
     @include adaptive-color(color, #7cb342, #9ccc65);
   }
   

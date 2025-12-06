@@ -556,11 +556,72 @@ export class ValidationReviewComponent implements OnInit {
     this.selectedControlToAdd = '';
   }
 
+  /** CSF Function names */
+  private readonly CSF_FUNCTIONS: { [key: string]: string } = {
+    'ID': 'Identify',
+    'PR': 'Protect',
+    'DE': 'Detect',
+    'RS': 'Respond',
+    'RC': 'Recover',
+    'GV': 'Govern'
+  };
+
   /**
    * Get suggested CSF subcategories for a control (public wrapper)
    */
   getSuggestedCsfForControl(controlId: string): string[] {
     return this.getCsfForControl(controlId);
+  }
+
+  /**
+   * Get CSF items with descriptions, grouped by function (ID/PR/DE/RS/RC)
+   */
+  getGroupedCsfForControl(controlId: string): { functionId: string; functionName: string; items: { id: string; description: string }[] }[] {
+    const csfIds = this.getCsfForControl(controlId);
+    const grouped = new Map<string, { id: string; description: string }[]>();
+    
+    for (const csfId of csfIds) {
+      const nistItem = this.controlFramework.nistItems.find(item => item.subcategory.id === csfId);
+      if (!nistItem) continue;
+      
+      // Extract function from ID (e.g., "DE" from "DE.CM-1")
+      const functionId = csfId.split('.')[0];
+      
+      if (!grouped.has(functionId)) {
+        grouped.set(functionId, []);
+      }
+      
+      grouped.get(functionId)!.push({
+        id: csfId,
+        description: nistItem.subcategory.description || csfId
+      });
+    }
+    
+    // Sort by function order: ID, GV, PR, DE, RS, RC
+    const functionOrder = ['ID', 'GV', 'PR', 'DE', 'RS', 'RC'];
+    
+    return Array.from(grouped.entries())
+      .sort((a, b) => functionOrder.indexOf(a[0]) - functionOrder.indexOf(b[0]))
+      .map(([functionId, items]) => ({
+        functionId,
+        functionName: this.CSF_FUNCTIONS[functionId] || functionId,
+        items: items.sort((a, b) => a.id.localeCompare(b.id))
+      }));
+  }
+
+  /**
+   * Get YOUR existing CSF mappings with details for this control
+   */
+  getYourCsfDetailsForControl(controlId: string): { id: string; description: string }[] {
+    const csfIds = this.getYourCsfForControl(controlId);
+    
+    return csfIds.map(csfId => {
+      const nistItem = this.controlFramework.nistItems.find(item => item.subcategory.id === csfId);
+      return {
+        id: csfId,
+        description: nistItem?.subcategory.description || csfId
+      };
+    }).sort((a, b) => a.id.localeCompare(b.id));
   }
 
   /**
