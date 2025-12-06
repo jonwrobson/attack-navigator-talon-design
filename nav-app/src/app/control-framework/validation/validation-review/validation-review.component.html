@@ -1,0 +1,193 @@
+<div class="validation-container">
+  <!-- Header with summary -->
+  <div class="validation-header">
+    <h2>Mapping Validation Review</h2>
+    <p class="description">Compare your curated Mitigation → NIST CSF mappings against MITRE CTID's curated data</p>
+    
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="loadValidation()" [disabled]="loading">
+        <mat-icon>{{loading ? 'hourglass_empty' : 'refresh'}}</mat-icon>
+        {{loading ? 'Loading...' : 'Load / Refresh Data'}}
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="summary">
+    <div class="summary-card total">
+      <div class="card-value">{{summary.totalMitigations}}</div>
+      <div class="card-label">Total Mitigations</div>
+    </div>
+    <div class="summary-card validated">
+      <div class="card-value">{{summary.validated}}</div>
+      <div class="card-label">Validated (≥80%)</div>
+    </div>
+    <div class="summary-card review">
+      <div class="card-value">{{summary.needsReview}}</div>
+      <div class="card-label">Needs Review (50-80%)</div>
+    </div>
+    <div class="summary-card gap">
+      <div class="card-value">{{summary.gaps}}</div>
+      <div class="card-label">Gaps (&lt;50%)</div>
+    </div>
+    <div class="summary-card pending">
+      <div class="card-value">{{summary.pending}}</div>
+      <div class="card-label">Pending (No CTID data)</div>
+    </div>
+    <div class="summary-card coverage">
+      <div class="card-value">{{summary.averageCoverage}}%</div>
+      <div class="card-label">Average Coverage</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <mat-tab-group *ngIf="results.length > 0" (selectedTabChange)="filterByStatus($event)">
+    <mat-tab label="All ({{results.length}})"></mat-tab>
+    <mat-tab label="Gaps ({{getCountByStatus('gap')}})"></mat-tab>
+    <mat-tab label="Needs Review ({{getCountByStatus('needs-review')}})"></mat-tab>
+    <mat-tab label="Validated ({{getCountByStatus('validated')}})"></mat-tab>
+    <mat-tab label="Pending ({{getCountByStatus('pending')}})"></mat-tab>
+  </mat-tab-group>
+
+  <!-- Step-by-step Review Mode -->
+  <div class="review-mode" *ngIf="reviewMode && currentReviewItem">
+    <div class="review-progress">
+      <span>Reviewing {{currentReviewIndex + 1}} of {{filteredResults.length}}</span>
+      <mat-progress-bar mode="determinate" [value]="((currentReviewIndex + 1) / filteredResults.length) * 100"></mat-progress-bar>
+    </div>
+    
+    <div class="review-card">
+      <div class="review-header">
+        <span class="mitigation-id">{{currentReviewItem.mitigationId}}</span>
+        <span class="status-badge" [ngClass]="currentReviewItem.status">{{currentReviewItem.status | uppercase}}</span>
+        <span class="coverage">{{currentReviewItem.coveragePercent}}% coverage</span>
+      </div>
+      
+      <h3>{{currentReviewItem.mitigationName}}</h3>
+      <p class="mitigation-desc">{{currentReviewItem.mitigationDescription}}</p>
+      
+      <div class="mappings-comparison">
+        <div class="your-mappings">
+          <h4>Your NIST CSF Mappings</h4>
+          <div class="chip-list">
+            <span class="chip csf" *ngFor="let csf of currentReviewItem.yourNistCsfMappings">{{csf}}</span>
+          </div>
+          <h5>→ Resolves to 800-53:</h5>
+          <div class="chip-list">
+            <span class="chip control" *ngFor="let ctrl of currentReviewItem.your80053Controls">{{ctrl}}</span>
+          </div>
+        </div>
+        
+        <div class="ctid-mappings">
+          <h4>CTID Recommended Controls</h4>
+          <div class="technique-controls" *ngFor="let tech of currentReviewItem.ctidTechniques">
+            <span class="technique-id">{{tech.techniqueId}}: {{tech.techniqueName}}</span>
+            <div class="chip-list">
+              <span class="chip control ctid" *ngFor="let ctrl of tech.ctidControls">{{ctrl}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="analysis">
+        <div class="analysis-section matching" *ngIf="currentReviewItem.matchingControls.length > 0">
+          <h5><mat-icon>check_circle</mat-icon> Matching ({{currentReviewItem.matchingControls.length}})</h5>
+          <div class="chip-list">
+            <span class="chip match" *ngFor="let ctrl of currentReviewItem.matchingControls">{{ctrl}}</span>
+          </div>
+        </div>
+        
+        <div class="analysis-section missing" *ngIf="currentReviewItem.missingFromYours.length > 0">
+          <h5><mat-icon>warning</mat-icon> Missing from yours ({{currentReviewItem.missingFromYours.length}})</h5>
+          <div class="chip-list">
+            <span class="chip missing" *ngFor="let ctrl of currentReviewItem.missingFromYours">{{ctrl}}</span>
+          </div>
+        </div>
+        
+        <div class="analysis-section unique" *ngIf="currentReviewItem.uniqueToYours.length > 0">
+          <h5><mat-icon>star</mat-icon> Unique to yours ({{currentReviewItem.uniqueToYours.length}})</h5>
+          <div class="chip-list">
+            <span class="chip unique" *ngFor="let ctrl of currentReviewItem.uniqueToYours">{{ctrl}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="review-actions">
+        <button mat-button (click)="previousReview()" [disabled]="currentReviewIndex === 0">
+          <mat-icon>arrow_back</mat-icon> Previous
+        </button>
+        <button mat-raised-button color="accent" (click)="markReviewed()">
+          <mat-icon>done</mat-icon> Mark Reviewed
+        </button>
+        <button mat-button (click)="nextReview()" [disabled]="currentReviewIndex >= filteredResults.length - 1">
+          Next <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div class="results-list" *ngIf="!reviewMode && filteredResults.length > 0">
+    <button mat-raised-button color="accent" (click)="startReview()" class="start-review-btn">
+      <mat-icon>play_arrow</mat-icon> Start Step-by-Step Review
+    </button>
+    
+    <table mat-table [dataSource]="filteredResults" class="validation-table">
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="status-badge" [ngClass]="item.status">{{item.status}}</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="mitigationId">
+        <th mat-header-cell *matHeaderCellDef>Mitigation</th>
+        <td mat-cell *matCellDef="let item">
+          <strong>{{item.mitigationId}}</strong><br>
+          <small>{{item.mitigationName}}</small>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="coverage">
+        <th mat-header-cell *matHeaderCellDef>Coverage</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="coverage-bar">
+            <div class="coverage-fill" [style.width.%]="item.coveragePercent" [ngClass]="item.status"></div>
+          </div>
+          <span>{{item.coveragePercent}}%</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="yourMappings">
+        <th mat-header-cell *matHeaderCellDef>Your CSF</th>
+        <td mat-cell *matCellDef="let item">{{item.yourNistCsfMappings.length}} subcategories</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="ctidControls">
+        <th mat-header-cell *matHeaderCellDef>CTID Controls</th>
+        <td mat-cell *matCellDef="let item">{{getTotalCtidControls(item)}} controls</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item; let i = index">
+          <button mat-icon-button (click)="reviewSingle(i)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          [ngClass]="row.status"
+          (click)="reviewSingle(filteredResults.indexOf(row))"></tr>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && results.length === 0">
+    <mat-icon>assessment</mat-icon>
+    <h3>No validation data loaded</h3>
+    <p>Click "Load / Refresh Data" to fetch CTID mappings and compare against your curated data.</p>
+  </div>
+</div>
