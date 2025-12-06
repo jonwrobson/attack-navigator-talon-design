@@ -1,7 +1,6 @@
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-import 'rxjs/add/operator/map'
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 // material
 import { MatInputModule } from '@angular/material/input';
@@ -10,26 +9,25 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DndModule } from 'ngx-drag-drop';
-import { PopoverModule } from 'ngx-smart-popover';
 import { HttpClientModule } from '@angular/common/http';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatTabsModule } from '@angular/material/tabs';
 
 import { AppComponent } from './app.component';
 import { DataTableComponent } from './datatable/data-table.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { HelpComponent } from './help/help.component';
-import { ExporterComponent } from './exporter/exporter.component';
+import { SvgExportComponent } from './svg-export/svg-export.component';
 import { TechniqueCellComponent } from './matrix/technique-cell/technique-cell.component';
 import { MatrixSideComponent } from './matrix/matrix-side/matrix-side.component';
 import { MatrixFlatComponent } from './matrix//matrix-flat/matrix-flat.component';
@@ -40,11 +38,11 @@ import { ContextmenuComponent } from './matrix/technique-cell/contextmenu/contex
 import { TacticCellComponent } from './matrix/tactic-cell/tactic-cell.component';
 import { VersionUpgradeComponent } from './version-upgrade/version-upgrade.component';
 
+// Custom mitigations components
 import { MitigationsComponent } from './mitigations/mitigations.component';
 import { ControlFrameworkImportComponent } from './control-framework/control-framework-import/control-framework-import.component';
 import { ExportDialogComponent, ExportDialogButtonComponent } from './mitigations/export-dialog/export-dialog.component';
 import { MappingsDialogComponent, MappingsDialogButtonComponent } from './mitigations/mappings-dialog/mappings-dialog.component';
-import { MatListModule } from '@angular/material/list';
 import { AsvsTableComponent } from './mitigations/mappings-dialog/mappings/asvs-table/asvs-table.component';
 import { CisTableComponent } from './mitigations/mappings-dialog/mappings/cis-table/cis-table.component';
 import { NistMappingsComponent } from './mitigations/mappings-dialog/mappings/nist-mappings/nist-mappings.component';
@@ -53,16 +51,18 @@ import { TechniqueMappingsComponent } from './mitigations/technique-mappings/tec
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { LayerUpgradeComponent } from './layer-upgrade/layer-upgrade.component';
 import { ChangelogCellComponent } from './layer-upgrade/changelog-cell/changelog-cell.component';
-import { MatCardModule } from "@angular/material/card";
-import { MatDividerModule } from "@angular/material/divider";
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { LayerSettingsComponent } from './layer-settings/layer-settings.component';
 
-import { MarkdownModule } from "ngx-markdown";
+import { MarkdownModule } from 'ngx-markdown';
 import { LayerInformationComponent } from './layer-information/layer-information.component';
 import { ChangelogComponent } from './changelog/changelog.component';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ListInputComponent } from './list-input/list-input.component';
-
+import { ConfigService } from './services/config.service';
 
 @NgModule({
     declarations: [
@@ -70,7 +70,7 @@ import { ListInputComponent } from './list-input/list-input.component';
         DataTableComponent,
         TabsComponent,
         HelpComponent,
-        ExporterComponent,
+        SvgExportComponent,
         TechniqueCellComponent,
         MatrixSideComponent,
         MatrixFlatComponent,
@@ -80,6 +80,7 @@ import { ListInputComponent } from './list-input/list-input.component';
         ContextmenuComponent,
         TacticCellComponent,
         VersionUpgradeComponent,
+        // Custom mitigations components
         MitigationsComponent,
         ControlFrameworkImportComponent,
         MappingsDialogComponent,
@@ -96,6 +97,7 @@ import { ListInputComponent } from './list-input/list-input.component';
         LayerInformationComponent,
         ChangelogComponent,
         ListInputComponent,
+        LayerSettingsComponent,
     ],
     imports: [
         BrowserModule,
@@ -103,7 +105,6 @@ import { ListInputComponent } from './list-input/list-input.component';
         BrowserAnimationsModule,
         MatSelectModule,
         FormsModule,
-        MatTableModule,
         ReactiveFormsModule,
         MatInputModule,
         MatButtonModule,
@@ -114,37 +115,33 @@ import { ListInputComponent } from './list-input/list-input.component';
         MatMenuModule,
         MatExpansionModule,
         MatDialogModule,
+        MatSnackBarModule,
         ColorPickerModule,
-        MatSlideToggleModule,
-        MatSidenavModule,
-        MatDialogModule,
-        MatIconModule,
-        MatButtonToggleModule,
-        MatListModule,
-        MatCheckboxModule,
         DndModule,
         MatSidenavModule,
+        MatTableModule,
+        MatListModule,
+        MatButtonToggleModule,
         MatCardModule,
         MatDividerModule,
         MatStepperModule,
         MatPaginatorModule,
         MarkdownModule.forRoot(),
-        PopoverModule,
-        MatTabsModule
-    ],
-    exports: [
-        MatSelectModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTooltipModule,
-        MatMenuModule,
-        MatExpansionModule,
         MatTabsModule,
     ],
+    exports: [MatSelectModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, MatMenuModule, MatExpansionModule, MatTabsModule],
     providers: [
-        Title
+        Title,
+        ConfigService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (configService: ConfigService) => {
+                return () => configService.loadConfig();
+            },
+            deps: [ConfigService],
+            multi: true,
+        },
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

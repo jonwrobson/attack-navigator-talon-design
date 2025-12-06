@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DataService, Technique, Tactic, Matrix, Domain } from './data.service';
-import { ViewModelsService, ViewModel } from './viewmodels.service';
+import { DataService } from './services/data.service';
+import { Technique, Tactic, Matrix } from './classes/stix';
+import { Domain, ViewModel } from './classes';
+import { ViewModelsService } from './services/viewmodels.service';
 
 function buildBundle() {
   // Two techniques under execution; one subtechnique under T8000

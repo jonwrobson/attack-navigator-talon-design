@@ -1,13 +1,15 @@
 import { Component, OnInit, Input, ElementRef, ViewEncapsulation } from '@angular/core';
-import { Technique, Tactic, DataService, Note } from '../../../data.service';
-import { ViewModel, TechniqueVM, ViewModelsService } from '../../../viewmodels.service';
+import { DataService } from '../../../services/data.service';
+import { Technique, Tactic, Note } from '../../../classes/stix';
+import { ViewModel, TechniqueVM } from '../../../classes';
+import { ViewModelsService } from '../../../services/viewmodels.service';
 import { CellPopover } from '../cell-popover';
 
 @Component({
-  selector: 'app-tooltip',
-  templateUrl: './tooltip.component.html',
-  styleUrls: ['./tooltip.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-tooltip',
+    templateUrl: './tooltip.component.html',
+    styleUrls: ['./tooltip.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class TooltipComponent extends CellPopover implements OnInit {
     @Input() technique: Technique;
@@ -17,22 +19,34 @@ export class TooltipComponent extends CellPopover implements OnInit {
     public notes: Note[];
 
     public get isCellPinned(): boolean {
-        return this.viewModelsService.pinnedCell === this.techniqueVM.technique_tactic_union_id
+        return this.viewModelsService.pinnedCell === this.techniqueVM.technique_tactic_union_id;
     }
 
     public get techniqueVM(): TechniqueVM {
         return this.viewModel.getTechniqueVM(this.technique, this.tactic);
     }
 
-    constructor(private element: ElementRef, private dataService: DataService, private viewModelsService: ViewModelsService) {
+    constructor(
+        public element: ElementRef,
+        public dataService: DataService,
+        public viewModelsService: ViewModelsService
+    ) {
         super(element);
     }
 
     ngOnInit() {
-        this.placement = this.getPosition();
+        this.placement = this.getPlacement();
         let domain = this.dataService.getDomain(this.viewModel.domainVersionID);
-        this.notes = domain.notes.filter(note => {
+        this.notes = domain.notes.filter((note) => {
             return note.object_refs.includes(this.technique.id);
         });
+    }
+
+    public getPlacement(): string {
+        return this.getPosition();
+    }
+
+    public unpin(): void {
+        this.viewModelsService.pinnedCell = '';
     }
 }

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DataService } from './data.service';
+import { DataService } from './services/data.service';
 
 describe('ATT&CK model objects', () => {
   let service: DataService;

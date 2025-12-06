@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DataService } from './data.service';
-import { ViewModelsService } from './viewmodels.service';
+import { DataService } from './services/data.service';
+import { ViewModelsService } from './services/viewmodels.service';
+import { ViewModel } from './classes';
 
 describe('ViewModelsService inheritance in layer ops', () => {
   let data: DataService;

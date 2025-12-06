@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ViewModel, ViewModelsService } from '../viewmodels.service';
-import { DataService, Technique } from '../data.service';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { ViewModelsService } from '../services/viewmodels.service';
+import { ViewModel } from '../classes';
+import { Technique } from '../classes/stix';
+import { DataService } from '../services/data.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MappingsExporter } from './mappings-exporter';
 import { scoredMitigationVM } from './scored-mitigation-vm';
@@ -8,7 +10,8 @@ import { scoredMitigationVM } from './scored-mitigation-vm';
 @Component({
     selector: 'app-mitigations',
     templateUrl: './mitigations.component.html',
-    styleUrls: ['./mitigations.component.scss']
+    styleUrls: ['./mitigations.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class MitigationsComponent implements OnInit {
     @Input() viewModel: ViewModel;

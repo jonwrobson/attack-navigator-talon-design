@@ -1,4 +1,4 @@
-import { Gradient } from './viewmodels.service';
+import { Gradient } from './classes';
 
 describe('Gradient utility', () => {
   it('should initialize with a default preset and serialize/deserialize', () => {
