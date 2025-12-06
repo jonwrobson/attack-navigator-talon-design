@@ -183,22 +183,50 @@
 
       <!-- Add Mapping Dialog -->
       <div class="add-mapping-panel" *ngIf="showAddPanel">
-        <h4>Add CSF Mapping for 800-53 Control: <strong>{{selectedControlToAdd}}</strong></h4>
-        <p class="control-desc">{{getControlDescription(selectedControlToAdd)}}</p>
-        <p class="suggestion">Suggested CSF subcategories that reference this control:</p>
-        <div class="chip-list suggestion-list">
-          <span class="chip csf addable" 
-                *ngFor="let csf of getSuggestedCsfForControl(selectedControlToAdd)"
-                (click)="addCsfMapping(csf)"
-                [matTooltip]="getCsfDescription(csf)">
-            {{csf}} <mat-icon class="add-icon">add</mat-icon>
-          </span>
-          <span *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0" class="no-suggestions">
-            No CSF subcategories directly reference this 800-53 control
-          </span>
+        <div class="panel-header">
+          <h4>800-53 Control: <strong>{{selectedControlToAdd}}</strong></h4>
+          <button mat-icon-button (click)="closeAddPanel()" class="close-btn">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
+        <p class="control-desc">{{getControlDescription(selectedControlToAdd)}}</p>
+        
+        <!-- Check if already covered -->
+        <div class="already-covered" *ngIf="isControlInYourMappings(selectedControlToAdd)">
+          <mat-icon>check_circle</mat-icon>
+          <span>This control is already covered by your mappings!</span>
+        </div>
+
+        <!-- Show which of YOUR CSF mappings include this control -->
+        <div class="your-coverage" *ngIf="getYourCsfForControl(selectedControlToAdd).length > 0">
+          <h5>Your CSF mappings that include this control:</h5>
+          <div class="chip-list">
+            <span class="chip csf existing" *ngFor="let csf of getYourCsfForControl(selectedControlToAdd)">
+              {{csf}} <mat-icon>check</mat-icon>
+            </span>
+          </div>
+        </div>
+
+        <!-- Show CSF options to add if not covered -->
+        <div class="add-options" *ngIf="!isControlInYourMappings(selectedControlToAdd)">
+          <h5>Add a CSF mapping to cover this control:</h5>
+          <p class="hint">These CSF subcategories reference {{selectedControlToAdd}} in their 800-53 mappings:</p>
+          <div class="chip-list suggestion-list">
+            <span class="chip csf addable" 
+                  *ngFor="let csf of getSuggestedCsfForControl(selectedControlToAdd)"
+                  (click)="addCsfMapping(csf)"
+                  [matTooltip]="getCsfDescription(csf)">
+              {{csf}} <mat-icon class="add-icon">add</mat-icon>
+            </span>
+            <span *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0" class="no-suggestions">
+              No CSF subcategories directly reference this 800-53 control.
+              You may need to add a custom mapping.
+            </span>
+          </div>
+        </div>
+
         <div class="panel-actions">
-          <button mat-button (click)="closeAddPanel()">Cancel</button>
+          <button mat-button (click)="closeAddPanel()">Close</button>
         </div>
       </div>
       

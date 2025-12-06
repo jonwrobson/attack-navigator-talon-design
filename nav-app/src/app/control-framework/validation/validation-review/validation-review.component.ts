@@ -564,6 +564,40 @@ export class ValidationReviewComponent implements OnInit {
   }
 
   /**
+   * Get YOUR existing CSF mappings that cover this control
+   * (i.e., CSF subcategories you've already mapped that reference this 800-53 control)
+   */
+  getYourCsfForControl(controlId: string): string[] {
+    if (!this.currentReviewItem) return [];
+    
+    const yourCsf = this.currentReviewItem.yourNistCsfMappings;
+    const controlMatches: string[] = [];
+    
+    // Normalize control ID
+    const normalizedControl = controlId.replace(/\s*\(.*\)/, '').trim();
+    
+    for (const csfId of yourCsf) {
+      const nistItem = this.controlFramework.nistItems.find(item => item.subcategory.id === csfId);
+      if (!nistItem) continue;
+      
+      // Check if this CSF's 800-53 mappings include the control
+      const rev4 = nistItem.mappings?.['NIST SP 800-53 Rev. 4'];
+      const rev5 = nistItem.mappings?.['NIST SP 800-53 Rev. 5'];
+      
+      const allControls = [
+        ...(Array.isArray(rev4) ? rev4 : rev4 ? [rev4] : []),
+        ...(Array.isArray(rev5) ? rev5 : rev5 ? [rev5] : [])
+      ];
+      
+      if (allControls.some(c => c.includes(normalizedControl) || normalizedControl.includes(c.split('-')[0]))) {
+        controlMatches.push(csfId);
+      }
+    }
+    
+    return [...new Set(controlMatches)];
+  }
+
+  /**
    * Add a CSF mapping and close the panel
    */
   addCsfMapping(csfId: string) {

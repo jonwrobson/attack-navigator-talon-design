@@ -464,36 +464,87 @@
   @include adaptive-color(background, #e8f5e9, #1b5e20);
   border: 2px solid #4caf50;
   
-  h4 {
-    margin: 0 0 8px 0;
-    @include adaptive-color(color, #2e7d32, #c8e6c9);
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
     
-    strong {
-      @include adaptive-color(color, #1b5e20, #a5d6a7);
+    h4 {
+      margin: 0;
+      @include adaptive-color(color, #2e7d32, #c8e6c9);
+      
+      strong {
+        @include adaptive-color(color, #1b5e20, #a5d6a7);
+        font-size: 16px;
+      }
+    }
+    
+    .close-btn {
+      margin: -8px -8px 0 0;
+      @include adaptive-color(color, #558b2f, #aed581);
     }
   }
   
   .control-desc {
     font-size: 13px;
     @include adaptive-color(color, #558b2f, #aed581);
-    margin-bottom: 12px;
-    max-height: 60px;
-    overflow: hidden;
+    margin-bottom: 16px;
+    line-height: 1.4;
   }
   
-  .suggestion {
-    font-size: 12px;
-    font-weight: 500;
-    @include adaptive-color(color, #33691e, #c5e1a5);
-    margin-bottom: 8px;
+  .already-covered {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    @include adaptive-color(background, #c8e6c9, #2e7d32);
+    
+    mat-icon {
+      color: #4caf50;
+    }
+    
+    span {
+      font-weight: 500;
+      @include adaptive-color(color, #1b5e20, #e8f5e9);
+    }
+  }
+  
+  .your-coverage, .add-options {
+    margin-bottom: 12px;
+    
+    h5 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      @include adaptive-color(color, #33691e, #c5e1a5);
+    }
+    
+    .hint {
+      font-size: 12px;
+      @include adaptive-color(color, #689f38, #aed581);
+      margin-bottom: 8px;
+    }
+  }
+  
+  .chip.csf.existing {
+    @include adaptive-color(background, #a5d6a7, #388e3c);
+    @include adaptive-color(color, #1b5e20, #e8f5e9);
+    
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
   }
   
   .suggestion-list {
-    margin-bottom: 12px;
-    
     .chip.csf.addable {
       @include adaptive-color(background, #c8e6c9, #388e3c);
       @include adaptive-color(color, #1b5e20, #e8f5e9);
+      cursor: pointer;
       
       &:hover {
         @include adaptive-color(background, #a5d6a7, #4caf50);
@@ -510,7 +561,7 @@
   .panel-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 8px;
+    margin-top: 12px;
     padding-top: 8px;
     border-top: 1px solid rgba(76, 175, 80, 0.3);
   }
