@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<testsuite name="Chrome Headless 140.0.0.0 (Windows 10)" package="" timestamp="2025-10-02T08:20:45" id="0" hostname="JON-DESKTOP" tests="81" errors="0" failures="0" time="0.342">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.0.0 Safari/537.36"/>
+  </properties>
+  <testcase name="AppComponent should create the app" time="0.032" classname="AppComponent"/>
+  <testcase name="AppComponent should have as title 'ATT&amp;CK® Navigator'" time="0.003" classname="AppComponent"/>
+  <testcase name="ChangelogComponent should create" time="0.008" classname="ChangelogComponent"/>
+  <testcase name="ConfigService should be created" time="0.001" classname="ConfigService"/>
+  <testcase name="ControlFrameworkImportComponent should create" time="0.017" classname="ControlFrameworkImportComponent"/>
+  <testcase name="ControlFramework initialization should be truthy" time="0.001" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have nist items" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have cis items" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have owasp items" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have techniquesNist" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have asvsNist80053Mapping" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework initialization should have mitigationNist" time="0" classname="ControlFramework initialization"/>
+  <testcase name="ControlFramework getNistByMitigationId should get 5 Nist Items by Mitigation attack Id M1036" time="0" classname="ControlFramework getNistByMitigationId"/>
+  <testcase name="ControlFramework getNistByMitigationId should get an empty array of Nist Items by Mitigation attack Id &quot;DOESNOTEXIST&quot;" time="0" classname="ControlFramework getNistByMitigationId"/>
+  <testcase name="ControlFramework getCisItemsByNistSubCatId should get 1 CIS Items by nist sub cat is DE.CM-7" time="0" classname="ControlFramework getCisItemsByNistSubCatId"/>
+  <testcase name="ControlFramework getCisItemsByNistSubCatId should get an empty array of CIS Items by nist sub cat is &quot;DOESNOTEXIST&quot;" time="0" classname="ControlFramework getCisItemsByNistSubCatId"/>
+  <testcase name="ControlFramework getNistItemByNistSubCatId should get a CIS Items by nist sub cat is DE.CM-7" time="0.001" classname="ControlFramework getNistItemByNistSubCatId"/>
+  <testcase name="ControlFramework getNistItemByNistSubCatId should get null for nist sub cat id &quot;DOESNOTEXIST&quot;" time="0" classname="ControlFramework getNistItemByNistSubCatId"/>
+  <testcase name="ControlFramework getTechniqueMapping should return null when given a null technique" time="0.022" classname="ControlFramework getTechniqueMapping"/>
+  <testcase name="ControlFramework getTechniqueMapping should return an enriched technique when given a valid technique" time="0.019" classname="ControlFramework getTechniqueMapping"/>
+  <testcase name="ControlFramework getNistItemsWithMappings should be truthy" time="0.009" classname="ControlFramework getNistItemsWithMappings"/>
+  <testcase name="ControlFramework getMitigations should be truthy" time="0.077" classname="ControlFramework getMitigations"/>
+  <testcase name="ATT&amp;CK model objects should wire relationships and class helpers" time="0.002" classname="ATT&amp;CK model objects"/>
+  <testcase name="DataService should be created" time="0.001" classname="DataService"/>
+  <testcase name="DataService should handle version setup correctly" time="0.001" classname="DataService"/>
+  <testcase name="DataService should get domain by identifier" time="0" classname="DataService"/>
+  <testcase name="DataService should handle STIX data parsing" time="0.001" classname="DataService"/>
+  <testcase name="DataService should identify valid technique-like objects through parse" time="0.001" classname="DataService"/>
+  <testcase name="DataService should filter deprecated and revoked objects" time="0.001" classname="DataService"/>
+  <testcase name="DataService should parse relationships and matrices/tactics" time="0" classname="DataService"/>
+  <testcase name="DataService should compute VersionChangelog differences" time="0" classname="DataService"/>
+  <testcase name="DataService getDomainData includes Basic auth header when configured" time="0.001" classname="DataService"/>
+  <testcase name="DataService getDomainData caches the created Observable when refresh=false" time="0.001" classname="DataService"/>
+  <testcase name="DataService loadDomainData resolves; invalid domain rejects" time="0.017" classname="DataService"/>
+  <testcase name="DataService loadDomainData when already loaded (no refresh) still triggers request in current implementation" time="0.001" classname="DataService"/>
+  <testcase name="DataService compareVersions branches: revocations, deprecations, changes vs minor" time="0.001" classname="DataService"/>
+  <testcase name="DataService utilities: getDomainVersionID and getCurrentVersion" time="0.001" classname="DataService"/>
+  <testcase name="ExporterComponent should create" time="0.016" classname="ExporterComponent"/>
+  <testcase name="HelpComponent should create" time="0.005" classname="HelpComponent"/>
+  <testcase name="IconsService should be created" time="0.001" classname="IconsService"/>
+  <testcase name="LayerInformationComponent should create" time="0.002" classname="LayerInformationComponent"/>
+  <testcase name="ChangelogCellComponent should create" time="0.003" classname="ChangelogCellComponent"/>
+  <testcase name="ListInputComponent should create" time="0.004" classname="ListInputComponent"/>
+  <testcase name="MatrixFlatComponent should create" time="0.005" classname="MatrixFlatComponent"/>
+  <testcase name="MatrixMiniComponent should create" time="0.003" classname="MatrixMiniComponent"/>
+  <testcase name="MatrixSideComponent should create" time="0.006" classname="MatrixSideComponent"/>
+  <testcase name="TacticCellComponent should create" time="0.004" classname="TacticCellComponent"/>
+  <testcase name="ContextmenuComponent should create" time="0.004" classname="ContextmenuComponent"/>
+  <testcase name="TechniqueCellComponent can create an instance of TechniqueCellComponent" time="0.001" classname="TechniqueCellComponent"/>
+  <testcase name="TechniqueCellComponent #onMouseEnter() and #onMouseLeave() emit with highlighted and un-highlighted techniques, respectively" time="0" classname="TechniqueCellComponent"/>
+  <testcase name="TooltipComponent should create" time="0.004" classname="TooltipComponent"/>
+  <testcase name="AsvsTableComponent should create" time="0.009" classname="AsvsTableComponent"/>
+  <testcase name="CisTableComponent should create" time="0.005" classname="CisTableComponent"/>
+  <testcase name="NistMappingsComponent should create" time="0.006" classname="NistMappingsComponent"/>
+  <testcase name="MitigationsComponent should ..." time="0.016" classname="MitigationsComponent"/>
+  <testcase name="SidebarComponent should create" time="0.002" classname="SidebarComponent"/>
+  <testcase name="TabsComponent (logic only) getUniqueLayerName increments correctly" time="0.001" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) newBlankTab opens a new tab and selects it" time="0" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) openTab selects existing tab when not forced" time="0" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) openTab replace closes active and inserts new tab" time="0.001" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) closeTab selects appropriate next tab or opens new blank when none" time="0" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) indexToChar and charToIndex map only data tabs" time="0" classname="TabsComponent (logic only)"/>
+  <testcase name="TabsComponent (logic only) hasFeature proxies to config service and dialogs open" time="0" classname="TabsComponent (logic only)"/>
+  <testcase name="VersionUpgradeComponent should create" time="0.003" classname="VersionUpgradeComponent"/>
+  <testcase name="ViewModelsService controls and aggregation filterTechniques filters by platforms but not for PRE-ATT&amp;CK" time="0.002" classname="ViewModelsService controls and aggregation"/>
+  <testcase name="ViewModelsService controls and aggregation isSubtechniqueEnabled returns true when a subtechnique is enabled and matches platform" time="0.001" classname="ViewModelsService controls and aggregation"/>
+  <testcase name="ViewModelsService controls and aggregation sortTechniques respects modes 0-3 and numeric tie-breakers" time="0.006" classname="ViewModelsService controls and aggregation"/>
+  <testcase name="ViewModelsService controls and aggregation calculateAggregateScore covers average/min/max/sum and countUnscored toggle" time="0.002" classname="ViewModelsService controls and aggregation"/>
+  <testcase name="Filter helpers initPlatformOptions, toggle, inFilter, serialize/deSerialize" time="0" classname="Filter helpers"/>
+  <testcase name="Gradient utility should initialize with a default preset and serialize/deserialize" time="0" classname="Gradient utility"/>
+  <testcase name="Gradient utility should change presets and update gradient" time="0" classname="Gradient utility"/>
+  <testcase name="Gradient utility should map values to gradient endpoints" time="0.001" classname="Gradient utility"/>
+  <testcase name="Gradient utility should add and remove colors" time="0" classname="Gradient utility"/>
+  <testcase name="ViewModelsService inheritance in layer ops inherits fields, filters, legendItems, and gradient" time="0.002" classname="ViewModelsService inheritance in layer ops"/>
+  <testcase name="ViewModel initialization and static score initTechniqueVMs populates techniqueVMs and static scoring sets binary gradient" time="0.002" classname="ViewModel initialization and static score"/>
+  <testcase name="ViewModelsService.layerLayerOperation combines scores across VMs and updates gradient" time="0.003" classname="ViewModelsService.layerLayerOperation"/>
+  <testcase name="LayoutOptions enforces valid layouts and toggles showName/showID with mini" time="0" classname="LayoutOptions"/>
+  <testcase name="LayoutOptions serialize/deserialize roundtrip" time="0" classname="LayoutOptions"/>
+  <testcase name="ViewmodelsService should be created" time="0.002" classname="ViewmodelsService"/>
+  <testcase name="TechniqueVM helpers annotated and modified reflect state and resetAnnotations clears" time="0" classname="TechniqueVM helpers"/>
+  <testcase name="TechniqueVM helpers deSerialize sets fields from JSON" time="0.001" classname="TechniqueVM helpers"/>
+  <system-out>
+    <![CDATA[Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) ALERT: 'Error: external_references has invalid format in imported BaseStix object (ID: attack-pattern--67890)'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'retrieving data', ['https://example.com/a.json', 'https://example.com/b.json']
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'retrieving data', ['u1']
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'retrieving data', ['u1', 'u2']
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: '[DataService] Data received for test-12. Parsing…'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: '[DataService] Parse complete for test-12. dataLoaded=true.'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'retrieving data', ['u']
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: '[DataService] Data received for imm-12. Parsing…'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: '[DataService] Parse complete for imm-12. dataLoaded=true.'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'settings changed'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing config service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'tabs component initializing'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'controls''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'controls', 'initializing technique VMs'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'controls''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'controls', 'initializing technique VMs'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'controls''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'controls', 'initializing technique VMs'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'controls''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'controls', 'initializing technique VMs'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'base''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'layer by operation''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'updating gradient'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'VM''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'VM', 'initializing technique VMs'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'layer by operation''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'score expression evaluated to single result to be applied to all techniques'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'updating gradient'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'A''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'B''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'layer by operation''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'updating gradient'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing ViewModel 'layer by operation''
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'updating gradient'
+,Chrome Headless 140.0.0.0 (Windows 10) LOG: 'initializing data service'
+
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

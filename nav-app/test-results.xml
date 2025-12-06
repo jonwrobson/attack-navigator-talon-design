@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="26.332" tests="5" failures="2">
+  <testsuite name="Root Suite" timestamp="2025-10-02T08:37:21" tests="0" file="cypress\e2e\visual-regression.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Visual Regression Tests" timestamp="2025-10-02T08:37:21" tests="5" time="26.323" failures="2">
+    <testcase name="Visual Regression Tests should match matrix layout baseline" time="3.210" classname="should match matrix layout baseline">
+      <failure message="Snapshot E:\Code\attack-navigator-talon-design\nav-app\cypress\snapshots\base\cypress\e2e\visual-regression.cy.ts\matrix-default-view.png does not exist." type="Error"><![CDATA[Error: Snapshot E:\Code\attack-navigator-talon-design\nav-app\cypress\snapshots\base\cypress\e2e\visual-regression.cy.ts\matrix-default-view.png does not exist.
+    at <unknown> (E:\Code\attack-navigator-talon-design\nav-app\node_modules\cypress-visual-regression\dist\utils.js:62:14)
+    at new Promise (<anonymous>)
+    at parseImage (E:\Code\attack-navigator-talon-design\nav-app\node_modules\cypress-visual-regression\dist\utils.js:60:10)
+    at compareSnapshotsPlugin (E:\Code\attack-navigator-talon-design\nav-app\node_modules\cypress-visual-regression\dist\plugin.js:86:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testcase>
+    <testcase name="Visual Regression Tests &quot;before each&quot; hook for &quot;should match technique tooltip appearance&quot;" time="0.672" classname="&quot;before each&quot; hook for &quot;should match technique tooltip appearance&quot;">
+      <failure message="`cy.visit()` failed trying to load:
+
+http://localhost:4200/
+
+We attempted to make an http request to this URL but the request failed without a response.
+
+We received this error at the network level:
+
+  &gt; Error: connect ECONNREFUSED 127.0.0.1:4200
+
+Common situations why this would fail:
+  - you don&apos;t have internet access
+  - you forgot to run / boot your web server
+  - your web server isn&apos;t accessible
+  - you have weird network configuration settings on your computer
+
+Because this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `Visual Regression Tests`" type="CypressError"><![CDATA[CypressError: `cy.visit()` failed trying to load:
+
+http://localhost:4200/
+
+We attempted to make an http request to this URL but the request failed without a response.
+
+We received this error at the network level:
+
+  > Error: connect ECONNREFUSED 127.0.0.1:4200
+
+Common situations why this would fail:
+  - you don't have internet access
+  - you forgot to run / boot your web server
+  - your web server isn't accessible
+  - you have weird network configuration settings on your computer
+
+Because this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `Visual Regression Tests`
+    at <unknown> (http://localhost:4200/__cypress/runner/cypress_runner.js:130312:74)
+    at visitFailedByErr (http://localhost:4200/__cypress/runner/cypress_runner.js:129704:12)
+    at <unknown> (http://localhost:4200/__cypress/runner/cypress_runner.js:130311:11)
+    at tryCatcher (http://localhost:4200/__cypress/runner/cypress_runner.js:1807:23)
+    at Promise._settlePromiseFromHandler (http://localhost:4200/__cypress/runner/cypress_runner.js:1519:31)
+    at Promise._settlePromise (http://localhost:4200/__cypress/runner/cypress_runner.js:1576:18)
+    at Promise._settlePromise0 (http://localhost:4200/__cypress/runner/cypress_runner.js:1621:10)
+    at Promise._settlePromises (http://localhost:4200/__cypress/runner/cypress_runner.js:1697:18)
+    at _drainQueueStep (http://localhost:4200/__cypress/runner/cypress_runner.js:2407:12)
+    at _drainQueue (http://localhost:4200/__cypress/runner/cypress_runner.js:2400:9)
+    at Async._drainQueues (http://localhost:4200/__cypress/runner/cypress_runner.js:2416:5)
+    at Async.drainQueues (http://localhost:4200/__cypress/runner/cypress_runner.js:2286:14)
+From Your Spec Code:
+    at Context.eval (webpack://attack-navigator/./cypress/e2e/visual-regression.cy.ts:3:7)
+
+From Node.js Internals:
+  Error: connect ECONNREFUSED 127.0.0.1:4200
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1187:16)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

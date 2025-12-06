@@ -7,27 +7,43 @@
 .mitigation-table {
   width: 96%;
   margin: 8px auto auto auto;
+  @include adaptive-color('background-color', white, color(dark-2));
+  @include adaptive-color('color', on-color(body), on-color(dark));
+  
+  th {
+    @include adaptive-color('color', #333, on-color(dark));
+    @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+  }
+  
+  td {
+    @include adaptive-color('color', #333, on-color(dark));
+    @include adaptive-color('border-bottom-color', #e0e0e0, color(dark-3));
+  }
 }
 
 .mitigation-component-container {
   margin: 25px auto auto auto;
   width: 100%;
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
 tr.mitigation-table-row {
   height: 1em;
+  @include adaptive-color('background-color', transparent, color(dark-2));
 }
 
 .mitigation-table-header {
   height: 2em;
+  @include adaptive-color('background-color', #f5f5f5, color(dark-3));
 }
 
-tr.mitigation-table-row :hover {
-  background-color: black;
+tr.mitigation-table-row:hover {
+  @include adaptive-color('background-color', #f0f0f0, color(dark-3));
 }
 
 tr.mitigation-table-row.highlighted {
   background-color: #60c5ff;
+  @include adaptive-color-dark-only('background-color', color(cell-highlight-dark-color));
 }
 
 .mat-column-framework {
@@ -50,6 +66,7 @@ tr.mitigation-table-row.highlighted {
   display: flex;
   flex-direction: column;
   margin:20px;
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
 tr.mitigations-component-detail-row {
@@ -57,11 +74,11 @@ tr.mitigations-component-detail-row {
 }
 
 tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):hover {
-  background: #f5f5f5;
+  @include adaptive-color('background-color', #f5f5f5, color(dark-3));
 }
 
 tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):active {
-  background: #efefef;
+  @include adaptive-color('background-color', #efefef, color(dark-4));
 }
 
 .mitigations-component-element-row td {
@@ -79,15 +96,18 @@ tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):ac
   padding-top: 2px;
   font-weight: bold;
   font-size: 12px;
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
 .mitigations-component-element-content {
   font-weight: lighter;
   font-size: 12px;
+  @include adaptive-color('color', #555, on-color(dark));
 }
 
 .mitigations-component-element-content a {
   padding-right: 5px;
+  @include adaptive-color('color', color(link), color(dark-link));
 }
 
 .mitigations-component-element-description-attribution {
@@ -102,9 +122,10 @@ tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):ac
 .mitigations-component-list-item {
   font-size: 12px;
   height: 2em !important;
+  @include adaptive-color('color', #333, on-color(dark));
 }
 
-.mitigations-component-container {
+.mitigations-component-inner-container {
   height: 200px;
   overflow: auto;
 }
@@ -112,6 +133,9 @@ tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):ac
 .mitigation-component-threat-textarea {
   width: 98%;
   height: 4em;
+  @include adaptive-color('background-color', white, color(dark-2));
+  @include adaptive-color('color', #333, on-color(dark));
+  @include adaptive-color('border-color', #ccc, color(dark-3));
 }
 
 // .mitigations-component-buttongroup {

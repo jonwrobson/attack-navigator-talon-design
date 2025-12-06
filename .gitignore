@@ -1,1 +1,17 @@
 .DS_Store
+
+# Visual Studio
+.vs/
+nav-app/cypress/screenshots/*
+# Azure deployment artifacts
+publish-profile.xml
+*.zip
+logs.zip
+AzureCLI.msi
+
+# Build outputs
+nav-app/dist/
+nav-app/dist_unzip/
+
+# Local VS Code settings
+.vscode/

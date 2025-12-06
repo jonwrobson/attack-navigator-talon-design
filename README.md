@@ -1,12 +1,3 @@
-
-# Note from jonwrobson
-
-I have created this fork to add a view on mitigations for selected techniques. There is a new section of controls at the top of any Enterprise tab. Behind the mitigations is a set of mapped NIST CSF v1.1 high level requirements as well as CIS and OWASP ASVS controls and standards. The intention is to be able to issue security requirements to mitigate an attack chain.
-
-Now running Angular 14!
-
-[![Azure Static Web Apps CI/CD](https://github.com/jonwrobson/attack-navigator-talon-design/actions/workflows/azure-static-web-apps-happy-field-007f63b03.yml/badge.svg?branch=master)](https://github.com/jonwrobson/attack-navigator-talon-design/actions/workflows/azure-static-web-apps-happy-field-007f63b03.yml)
-
 # ATT&CK® Navigator
 
 The ATT&CK Navigator is designed to provide basic navigation and annotation of [ATT&CK](https://attack.mitre.org) matrices, something that people are already doing today in tools like Excel.  We've designed it to be simple and generic - you can use the Navigator to visualize your defensive coverage, your red/blue team planning, the frequency of detected techniques or anything else you want to do.  The Navigator doesn't care - it just allows you to manipulate the cells in the matrix (color coding, adding a comment, assigning a numerical value, etc.).  We thought having a simple tool that everyone could use to visualize the matrix would help make it easy to use ATT&CK.
@@ -17,9 +8,7 @@ The principal feature of the Navigator is the ability for users to define layers
 
 The ATT&CK Navigator is hosted live via GitHub Pages. [You can find a live instance of the current version of the Navigator here](https://mitre-attack.github.io/attack-navigator). You can read more about how to use the application itself in the [USAGE](/USAGE.md) document (which is mirrored in the in-app help page).
 
-Version 4.0 of the ATT&CK Navigator supports all ATT&CK domains in a single instance of the application instead of requiring a different instance for each domain. It also sees the introduction of support for the ICS domain. See [the changelog](CHANGELOG.md) for more information.
-
-Additionally, older versions of ATT&CK can now be loaded in the application. The ATT&CK Navigator supports ATT&CK versions 8, 7, 6, 5, and 4. Older versions do not work in the application since their data model is too outdated.
+Version 4.0+ of the ATT&CK Navigator supports all ATT&CK domains in a single instance of the application instead of requiring a different instance for each domain. Additionally, older versions of ATT&CK can be loaded in the application. The ATT&CK Navigator supports ATT&CK versions 4+. Older versions do not work in the application since their data model is too outdated.
 
 Previous versions of the Navigator application are also hosted via GitHub Pages for users who want a more classic experience:
 | ATT&CK Version | Navigator Version | Domains | |
@@ -37,8 +26,8 @@ Use our [GitHub Issue Tracker](https://github.com/mitre-attack/attack-navigator/
 
 ## Requirements
 
-* [Node.js](https://nodejs.org) version 8 or greater
-* [AngularCLI](https://cli.angular.io)
+* [Node.js v18](https://nodejs.org)
+* [AngularCLI v17](https://cli.angular.io)
 
 ## Supported Browsers
 
@@ -70,20 +59,19 @@ Use our [GitHub Issue Tracker](https://github.com/mitre-attack/attack-navigator/
 1. Run `ng build` within the **nav-app** directory
 2. Copy files from `nav-app/dist/` directory
 
-_Note: `ng build --prod` does not currently work for ATT&CK Navigator without additional flags. To build the production environment instead use `ng build --prod --aot=false --build-optimizer=false`._
+_Note: `ng build --configuration production` does not currently work for ATT&CK Navigator without additional flags. To build the production environment instead use `ng build --configuration production --aot=false --build-optimizer=false`._
 
 ### Running the Navigator offline
 
 1. Install the Navigator as per instructions above.
-2. Follow instructions under [loading content from local files](#Loading-content-from-local-files) to configure the Navigator to populate the matrix without an internet connection. For enterprise-attack, use [this file](https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json). For mobile-attack, use [this file](https://raw.githubusercontent.com/mitre/cti/master/mobile-attack/mobile-attack.json). For pre-attack, use [this file](https://raw.githubusercontent.com/mitre/cti/master/pre-attack/pre-attack.json).
-
-### Common issues
-
-1. If serving or compiling the application gives the warning `Module not found: can't resolve 'fs'`, run the command `npm run postinstall`. The postinstall step usually runs automatically after `npm install` to patch the `fs` issue, but in some environments it must be run manually.
+2. Follow instructions under [loading content from local files](#Loading-content-from-local-files) to configure the Navigator to populate the matrix without an internet connection. The latest MITRE ATT&CK data files can be found here:
+	- [Enterprise ATT&CK](https://github.com/mitre-attack/attack-stix-data/raw/master/enterprise-attack/enterprise-attack.json).
+	- [Mobile ATT&CK](https://github.com/mitre-attack/attack-stix-data/raw/master/mobile-attack/mobile-attack.json).
+	- [ICS ATT&CK](https://github.com/mitre-attack/attack-stix-data/raw/master/ics-attack/ics-attack.json).
 
 ## Documentation
 
-When viewing the app in a browser, click on the **?** icon to the right of the **ATT&CK® Navigator** title to view its documentation.
+When viewing the Navigator in a browser, click on the **?** icon in the upper right corner to view the in-app documentation.
 
 ## Layers Folder
 
@@ -138,43 +126,96 @@ Example custom context menu objects:
 }
 ```
 
-## Loading content from a TAXII server
+## Methods for loading content
 
-*By default, the Navigator loads content from ATT&CK STIX data hosted on the [MITRE/CTI repository](#related-mitre-work). Note: TAXII 2.1/STIX 2.1 bundles are **not** supported when loading content from a TAXII server.*
+### Loading content from a Collection Index
 
-1. Edit the `config.json` file in the **nav-app/src/assets** directory.
-2. Define the `taxii_url` property in place of the `data` property and set the value to your server's URL.
-3. Define the `taxii_collection` property and set the value to the collection UUIDs your TAXII server has set.
+By default, the Navigator loads content from the ATT&CK Collection Index hosted on the [ATT&CK STIX Data repository](#related-mitre-work). More information about Collection Indexes can be found [here](https://github.com/mitre-attack/attack-stix-data?tab=readme-ov-file#collection-indexes).
 
-Example loading content from a TAXII server:
+1. Modify the `config.json` file located in the `src/assets` directory.
+2. Set the `collection_index_url` property to the URL of your Collection Index (for example, `"collection_index_url": "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/index.json"`)
+
+*Note: For the Navigator to load successfully, either the `collection_index_url` property, the `versions` property, or both must be defined. If both the `collection_index_url` and `versions` properties are defined, the Navigator will display the union of the versions under the "More Options" dropdown in the "Create New Layer" interface. If neither are defined, an alert will be triggered indicating that the Navigator failed to load.*
+
+### Loading content from a TAXII server
+
+Both TAXII 2.0 and TAXII 2.1 are currently supported. Support for TAXII 2.0 will be deprecated in December 2024. More information about the TAXII 2.1 Server can be found [here](https://github.com/mitre-attack/attack-workbench-taxii-server/tree/main).
+
+1. Modify the `config.json` file located in the `src/assets` directory.
+2. In the `versions` section, set the `enabled` property to `true`.
+3. Define the `taxii_url` property in the list of domains, in place of the domain `data` property, and set its value to the TAXII server URL.
+4. Define the `taxii_collection` property and set its value to the collection UUID as determined by the TAXII server.
+
+#### Example loading content from a TAXII 2.0 server:
 
 ```json
-"domains": [
-    {
-        "name": "Enterprise",
-        "taxii_url": "https://cti-taxii.mitre.org/",
-        "taxii_collection": "95ecc380-afe9-11e4-9b6c-751b66dd541e"
-    }
-]
+"versions": {
+	"enabled": true,
+	"entries": [
+		{
+			"name": "Enterprise TAXII 2.0 Data",
+			"version": "14",
+			"domains": [
+				{
+					"name": "Enterprise",
+					"taxii_url": "https://cti-taxii.mitre.org/",
+					"taxii_collection": "95ecc380-afe9-11e4-9b6c-751b66dd541e"
+				}
+			]
+		}
+	]
+},
 ```
 
-## Loading content from local files
-
-*It's possible to populate the the Navigator using files that consist of bundles of STIX objects, similarly to [this](https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json) file. STIX 2.0 and STIX 2.1 bundles are supported.*
-
-1. Put the stix bundles in `src/assets`. This will tell the server hosting the Navigator to host the data as well.
-2. Edit the `config.json` file in the **nav-app/src/assets** directory.
-3. Change the URL specified in the `data` array to the path to the STIX bundle (e.g `assets/enterprise-attack.json`). Multiple paths may be added to the `data` array to display multiple STIX bundles in a single instance.
-
-Example loading content from local files:
+#### Example loading content from a TAXII 2.1 server:
 
 ```json
-"domains": [
-    {
-        "name": "Enterprise",
-        "data": ["assets/enterprise-attack.json"]
-    }
-]
+"versions": {
+	"enabled": true,
+	"entries": [
+		{
+			"name": "Enterprise TAXII 2.1 Data",
+			"version": "14",
+			"domains": [
+				{
+					"name": "Enterprise",
+					"taxii_url": "https://attack-taxii.mitre.org/",
+					"taxii_collection": "x-mitre-collection--1f5f1533-f617-4ca8-9ab4-6a02367fa019"
+				}
+			]
+		}
+	]
+},
+```
+
+### Loading content from local files
+
+Navigator can be populated using files that consist of bundles of STIX objects, similar to the format found in [this example](https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json). Both STIX 2.0 and STIX 2.1 bundles are supported.
+
+1. Place the STIX bundle(s) in the `src/assets` directory. This allows the server hosting the Navigator to also host the data.
+2. Modify the `config.json` file located in the `src/assets` directory.
+3. In the `versions` section, set the `enabled` property to `true`.
+4. Update the URL specified in the `data` array to the path to the STIX bundle (for example, `assets/enterprise-attack.json`). Multiple paths may be added to the `data` array to display multiple STIX bundles in a single instance.
+
+#### Example loading content from local files:
+
+```json
+"versions": {
+    "enabled": true,
+    "entries": [
+        {
+            "name": "Local Enterprise STIX Data",
+            "version": "14",
+            "domains": [
+                {
+                    "name": "Enterprise",
+                    "identifier": "enterprise-attack",
+                    "data": ["assets/enterprise-attack.json"]
+                }
+            ]
+        }
+    ]
+},
 ```
 
 ## Running the Docker File
@@ -197,7 +238,7 @@ Local files to load should be placed in the `nav-app/src/assets/` directory.
         "enabled": true,
         "urls": [
             "assets/example.json", 
-            "https://raw.githubusercontent.com/mitre-attack/attack-navigator/master/layers/data/samples/Bear_APT.json"
+            "https://raw.githubusercontent.com/mitre-attack/attack-navigator/master/layers/samples/Bear_APT.json"
         ]
     }
    ```
@@ -235,7 +276,7 @@ If you want to embed the Navigator in a webpage, use an iframe:
 
 If you want to embed a version of the Navigator with specific features removed (e.g tabs, adding annotations), or with a default layer, we recommend using the _create customized Navigator_ feature. We highly recommend disabling the "leave site dialog" via this means when embedding the Navigator since otherwise you will be warned whenever you try to leave the embedding page. Refer to the in-application help page section "Customizing the Navigator" for more details.
 
-The following is an example iframe which embeds our [*Bear APTs](layers/data/samples/Bear_APT.json) layer with tabs and the ability to add annotations removed:
+The following is an example iframe which embeds our [*Bear APTs](layers/samples/Bear_APT.json) layer with tabs and the ability to add annotations removed:
 
 ```HTML
 <iframe src="https://mitre-attack.github.io/attack-navigator/enterprise/#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fmitre%2Fattack-navigator%2Fmaster%2Flayers%2Fdata%2Fsamples%2FBear_APT.json&tabs=false&selecting_techniques=false" width="1000" height="500"></iframe>
@@ -246,6 +287,10 @@ The following is an example iframe which embeds our [*Bear APTs](layers/data/sam
 ### CTI
 
 [Cyber Threat Intelligence repository](https://github.com/mitre/cti) of the ATT&CK catalog expressed in STIX 2.0 JSON.
+
+### ATT&CK STIX Data
+
+[ATT&CK STIX Data repository](https://github.com/mitre-attack/attack-stix-data) of the ATT&CK catalog expressed in STIX 2.1 JSON.
 
 ### ATT&CK
 
@@ -265,7 +310,7 @@ STIX is designed to improve many different capabilities, such as collaborative t
 
 ## Notice
 
-Copyright 2020 The MITRE Corporation
+Copyright 2024 The MITRE Corporation
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-0128.
 

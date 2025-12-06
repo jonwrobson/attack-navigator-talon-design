@@ -24,6 +24,9 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Visual Studio
+.vs/
+
 # misc
 /.angular/cache
 /.sass-cache
@@ -33,6 +36,7 @@
 npm-debug.log
 testem.log
 /typings
+/.angular/cache
 
 # e2e
 /e2e/*.js
