@@ -164,6 +164,89 @@
   @include adaptive-color(background, #f8f9fa, #252525);
 }
 
+// Your NIST CSF Mappings list styling
+.your-mappings {
+  .your-csf-list {
+    @include adaptive-color(background, rgba(255,255,255,0.5), rgba(0,0,0,0.2));
+    border-radius: 6px;
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    
+    .csf-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid;
+      @include adaptive-color(border-color, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .csf-id {
+        font-weight: 600;
+        font-size: 12px;
+        min-width: 70px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        @include adaptive-color(background, #e3f2fd, #1565c0);
+        @include adaptive-color(color, #1565c0, #e3f2fd);
+      }
+      
+      .csf-desc {
+        flex: 1;
+        font-size: 12px;
+        line-height: 1.4;
+        @include adaptive-color(color, #333, #ddd);
+      }
+      
+      .remove-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        opacity: 0.4;
+        flex-shrink: 0;
+        transition: opacity 0.2s, color 0.2s;
+        @include adaptive-color(color, #666, #999);
+      }
+      
+      &.removable {
+        cursor: pointer;
+        transition: background 0.2s;
+        
+        &:hover {
+          @include adaptive-color(background, #ffebee, rgba(244, 67, 54, 0.2));
+          
+          .csf-id {
+            @include adaptive-color(background, #ffcdd2, #b71c1c);
+            @include adaptive-color(color, #c62828, #ef9a9a);
+          }
+          
+          .csf-desc {
+            @include adaptive-color(color, #c62828, #ef9a9a);
+          }
+          
+          .remove-icon {
+            opacity: 1;
+            color: #f44336;
+          }
+        }
+      }
+    }
+    
+    .empty-message {
+      font-size: 12px;
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+      @include adaptive-color(color, #999, #777);
+    }
+  }
+}
+
 .technique-controls {
   margin-bottom: 12px;
   
