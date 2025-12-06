@@ -89,11 +89,13 @@
               No CSF mappings yet
             </div>
           </div>
-          <h5>→ Resolves to 800-53:</h5>
-          <div class="chip-list">
-            <span class="chip control" 
-                  *ngFor="let ctrl of currentReviewItem.your80053Controls"
-                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
+          <div class="resolves-section">
+            <h5>→ Resolves to 800-53:</h5>
+            <div class="chip-list">
+              <span class="chip control" 
+                    *ngFor="let ctrl of currentReviewItem.your80053Controls"
+                    [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
+            </div>
           </div>
         </div>
         
