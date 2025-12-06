@@ -94,19 +94,88 @@
         </div>
         
         <div class="ctid-mappings">
-          <h4>CTID Recommended Controls <span class="edit-hint">(click to add CSF mapping)</span></h4>
-          <div class="technique-controls" *ngFor="let tech of currentReviewItem.ctidTechniques">
-            <span class="technique-id">{{tech.techniqueId}}: {{tech.techniqueName}}</span>
-            <div class="chip-list">
-              <span class="chip control ctid addable" 
-                    *ngFor="let ctrl of tech.ctidControls"
-                    (click)="showAddMappingDialog(ctrl)"
-                    [matTooltip]="getControlDescription(ctrl)"
-                    [ngClass]="{'already-mapped': isControlInYourMappings(ctrl)}">
-                {{ctrl}}
-                <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl)">add</mat-icon>
-                <mat-icon class="check-icon" *ngIf="isControlInYourMappings(ctrl)">check</mat-icon>
-              </span>
+          <h4>CTID Recommended Controls <span class="control-count">({{getUniqueCtidControls().length}} unique)</span></h4>
+          
+          <!-- Search and Filter Bar -->
+          <div class="control-search-bar">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search controls (e.g., XDR, endpoint, detection)</mat-label>
+              <input matInput [(ngModel)]="controlSearchTerm" (ngModelChange)="filterControls()" placeholder="Type to search...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="family-filter">
+              <mat-label>Control Family</mat-label>
+              <mat-select [(ngModel)]="selectedControlFamily" (selectionChange)="filterControls()">
+                <mat-option value="">All Families</mat-option>
+                <mat-option *ngFor="let family of getControlFamilies()" [value]="family.id">
+                  {{family.id}} - {{family.name}} ({{family.count}})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Quick Filter Tags -->
+          <div class="quick-filters">
+            <span class="quick-filter-label">Quick filters:</span>
+            <button mat-stroked-button class="quick-filter-btn" 
+                    *ngFor="let tag of getQuickFilterTags()"
+                    [class.active]="controlSearchTerm === tag"
+                    (click)="applyQuickFilter(tag)">
+              {{tag}}
+            </button>
+          </div>
+
+          <!-- Grouped Controls View -->
+          <div class="controls-grouped" *ngIf="!controlSearchTerm && !selectedControlFamily">
+            <div class="control-family-group" *ngFor="let family of getGroupedControls()">
+              <div class="family-header" (click)="toggleFamilyExpanded(family.id)">
+                <mat-icon>{{isFamilyExpanded(family.id) ? 'expand_more' : 'chevron_right'}}</mat-icon>
+                <span class="family-id">{{family.id}}</span>
+                <span class="family-name">{{family.name}}</span>
+                <span class="family-count">({{family.controls.length}})</span>
+              </div>
+              <div class="family-controls" *ngIf="isFamilyExpanded(family.id)">
+                <div class="control-item" *ngFor="let ctrl of family.controls"
+                     (click)="showAddMappingDialog(ctrl.id)"
+                     [class.already-mapped]="isControlInYourMappings(ctrl.id)">
+                  <div class="control-header">
+                    <span class="control-id">{{ctrl.id}}</span>
+                    <mat-icon class="mapped-icon" *ngIf="isControlInYourMappings(ctrl.id)">check_circle</mat-icon>
+                    <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl.id)">add_circle_outline</mat-icon>
+                  </div>
+                  <div class="control-name">{{ctrl.name}}</div>
+                  <div class="control-desc-preview">{{ctrl.description | slice:0:150}}...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtered/Search Results View -->
+          <div class="controls-filtered" *ngIf="controlSearchTerm || selectedControlFamily">
+            <div class="search-results-header">
+              <span>{{getFilteredControls().length}} controls found</span>
+              <button mat-button (click)="clearControlFilters()">Clear filters</button>
+            </div>
+            <div class="control-item" *ngFor="let ctrl of getFilteredControls()"
+                 (click)="showAddMappingDialog(ctrl.id)"
+                 [class.already-mapped]="isControlInYourMappings(ctrl.id)"
+                 [class.search-match]="controlSearchTerm">
+              <div class="control-header">
+                <span class="control-id">{{ctrl.id}}</span>
+                <span class="control-family-badge">{{ctrl.family}}</span>
+                <mat-icon class="mapped-icon" *ngIf="isControlInYourMappings(ctrl.id)">check_circle</mat-icon>
+                <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl.id)">add_circle_outline</mat-icon>
+              </div>
+              <div class="control-name" [innerHTML]="highlightSearchTerm(ctrl.name)"></div>
+              <div class="control-desc-preview" [innerHTML]="highlightSearchTerm(ctrl.description | slice:0:200)">...</div>
+              <div class="control-techniques">
+                <span class="technique-tag" *ngFor="let tech of ctrl.techniques">{{tech}}</span>
+              </div>
+            </div>
+            <div class="no-results" *ngIf="getFilteredControls().length === 0">
+              <mat-icon>search_off</mat-icon>
+              <p>No controls match your search. Try different keywords like "monitor", "detect", "protect", "response".</p>
             </div>
           </div>
         </div>

@@ -1,11 +1,29 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CtidValidationService } from '../ctid-validation.service';
-import { MappingValidationResult, ValidationSummary } from '../ctid-stix.models';
+import { MappingValidationResult, ValidationSummary, Nist80053Control } from '../ctid-stix.models';
 import { ControlFramework } from '../../control-framework';
 import { DataService } from '../../../services/data.service';
 import { ViewModel } from '../../../classes';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
+
+/** Enriched control for display */
+interface EnrichedControl {
+  id: string;
+  name: string;
+  description: string;
+  family: string;
+  techniques: string[];
+}
+
+/** Control family group */
+interface ControlFamily {
+  id: string;
+  name: string;
+  count: number;
+  controls: EnrichedControl[];
+}
 
 @Component({
   selector: 'validation-review',
@@ -35,11 +53,19 @@ export class ValidationReviewComponent implements OnInit {
   showAddPanel = false;
   selectedControlToAdd = '';
   
+  // Control search and filter state
+  controlSearchTerm = '';
+  selectedControlFamily = '';
+  expandedFamilies: Set<string> = new Set();
+  private enrichedControlsCache: EnrichedControl[] = [];
+  private controlFamiliesCache: ControlFamily[] = [];
+  
   displayedColumns = ['status', 'mitigationId', 'coverage', 'yourMappings', 'ctidControls', 'actions'];
   
   constructor(
     private ctidService: CtidValidationService,
-    private dataService: DataService
+    private dataService: DataService,
+    private sanitizer: DomSanitizer
   ) {
     // Load persisted review state from localStorage
     this.loadReviewState();
@@ -102,18 +128,21 @@ export class ValidationReviewComponent implements OnInit {
     this.reviewMode = true;
     this.currentReviewIndex = 0;
     this.currentReviewItem = this.filteredResults[0];
+    this.resetControlCaches();
   }
 
   reviewSingle(index: number) {
     this.reviewMode = true;
     this.currentReviewIndex = index;
     this.currentReviewItem = this.filteredResults[index];
+    this.resetControlCaches();
   }
 
   previousReview() {
     if (this.currentReviewIndex > 0) {
       this.currentReviewIndex--;
       this.currentReviewItem = this.filteredResults[this.currentReviewIndex];
+      this.resetControlCaches();
     }
   }
 
@@ -121,6 +150,7 @@ export class ValidationReviewComponent implements OnInit {
     if (this.currentReviewIndex < this.filteredResults.length - 1) {
       this.currentReviewIndex++;
       this.currentReviewItem = this.filteredResults[this.currentReviewIndex];
+      this.resetControlCaches();
     }
   }
 
@@ -617,5 +647,221 @@ export class ValidationReviewComponent implements OnInit {
     a.download = filename;
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  // ============ CONTROL SEARCH & FILTER ============
+
+  /** NIST 800-53 control family names */
+  private readonly CONTROL_FAMILIES: { [key: string]: string } = {
+    'AC': 'Access Control',
+    'AT': 'Awareness and Training',
+    'AU': 'Audit and Accountability',
+    'CA': 'Assessment, Authorization, and Monitoring',
+    'CM': 'Configuration Management',
+    'CP': 'Contingency Planning',
+    'IA': 'Identification and Authentication',
+    'IR': 'Incident Response',
+    'MA': 'Maintenance',
+    'MP': 'Media Protection',
+    'PE': 'Physical and Environmental Protection',
+    'PL': 'Planning',
+    'PM': 'Program Management',
+    'PS': 'Personnel Security',
+    'PT': 'PII Processing and Transparency',
+    'RA': 'Risk Assessment',
+    'SA': 'System and Services Acquisition',
+    'SC': 'System and Communications Protection',
+    'SI': 'System and Information Integrity',
+    'SR': 'Supply Chain Risk Management'
+  };
+
+  /** Quick filter tags for common security concepts */
+  getQuickFilterTags(): string[] {
+    return [
+      'endpoint', 'detection', 'monitor', 'malware', 'response',
+      'logging', 'alert', 'protect', 'prevent', 'analyze'
+    ];
+  }
+
+  /**
+   * Get all unique CTID controls for current review item
+   */
+  getUniqueCtidControls(): string[] {
+    if (!this.currentReviewItem) return [];
+    return [...new Set(this.currentReviewItem.ctidTechniques.flatMap(t => t.ctidControls))];
+  }
+
+  /**
+   * Build enriched control list with full details for current item
+   */
+  private buildEnrichedControls(): EnrichedControl[] {
+    if (!this.currentReviewItem) return [];
+    
+    const controlIds = this.getUniqueCtidControls();
+    const enriched: EnrichedControl[] = [];
+    
+    for (const id of controlIds) {
+      const control = this.ctidService.getControl(id);
+      const family = id.split('-')[0];
+      
+      // Find which techniques this control is recommended for
+      const techniques = this.currentReviewItem.ctidTechniques
+        .filter(t => t.ctidControls.includes(id))
+        .map(t => t.techniqueId);
+      
+      enriched.push({
+        id,
+        name: control?.name || id,
+        description: control?.description || '',
+        family,
+        techniques
+      });
+    }
+    
+    return enriched;
+  }
+
+  /**
+   * Get controls grouped by family
+   */
+  getGroupedControls(): ControlFamily[] {
+    // Rebuild cache if needed
+    if (this.enrichedControlsCache.length === 0 || 
+        this.enrichedControlsCache[0]?.id !== this.getUniqueCtidControls()[0]) {
+      this.enrichedControlsCache = this.buildEnrichedControls();
+      this.controlFamiliesCache = [];
+    }
+    
+    if (this.controlFamiliesCache.length > 0) return this.controlFamiliesCache;
+    
+    const familyMap = new Map<string, EnrichedControl[]>();
+    
+    for (const ctrl of this.enrichedControlsCache) {
+      if (!familyMap.has(ctrl.family)) {
+        familyMap.set(ctrl.family, []);
+      }
+      familyMap.get(ctrl.family)!.push(ctrl);
+    }
+    
+    this.controlFamiliesCache = Array.from(familyMap.entries())
+      .map(([id, controls]) => ({
+        id,
+        name: this.CONTROL_FAMILIES[id] || id,
+        count: controls.length,
+        controls: controls.sort((a, b) => a.id.localeCompare(b.id))
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id));
+    
+    return this.controlFamiliesCache;
+  }
+
+  /**
+   * Get list of control families for filter dropdown
+   */
+  getControlFamilies(): { id: string; name: string; count: number }[] {
+    return this.getGroupedControls().map(f => ({
+      id: f.id,
+      name: f.name,
+      count: f.count
+    }));
+  }
+
+  /**
+   * Filter controls by search term and/or family
+   */
+  getFilteredControls(): EnrichedControl[] {
+    if (this.enrichedControlsCache.length === 0) {
+      this.enrichedControlsCache = this.buildEnrichedControls();
+    }
+    
+    let filtered = [...this.enrichedControlsCache];
+    
+    // Filter by family
+    if (this.selectedControlFamily) {
+      filtered = filtered.filter(c => c.family === this.selectedControlFamily);
+    }
+    
+    // Filter by search term
+    if (this.controlSearchTerm) {
+      const term = this.controlSearchTerm.toLowerCase();
+      filtered = filtered.filter(c => 
+        c.id.toLowerCase().includes(term) ||
+        c.name.toLowerCase().includes(term) ||
+        c.description.toLowerCase().includes(term)
+      );
+      
+      // Sort by relevance - name matches first, then description
+      filtered.sort((a, b) => {
+        const aNameMatch = a.name.toLowerCase().includes(term) ? 0 : 1;
+        const bNameMatch = b.name.toLowerCase().includes(term) ? 0 : 1;
+        if (aNameMatch !== bNameMatch) return aNameMatch - bNameMatch;
+        return a.id.localeCompare(b.id);
+      });
+    }
+    
+    return filtered;
+  }
+
+  /**
+   * Apply quick filter tag
+   */
+  applyQuickFilter(tag: string) {
+    this.controlSearchTerm = this.controlSearchTerm === tag ? '' : tag;
+  }
+
+  /**
+   * Clear all control filters
+   */
+  clearControlFilters() {
+    this.controlSearchTerm = '';
+    this.selectedControlFamily = '';
+  }
+
+  /**
+   * Trigger filter update (called on input change)
+   */
+  filterControls() {
+    // Filters are applied via getFilteredControls(), just need to trigger change detection
+  }
+
+  /**
+   * Toggle family expansion state
+   */
+  toggleFamilyExpanded(familyId: string) {
+    if (this.expandedFamilies.has(familyId)) {
+      this.expandedFamilies.delete(familyId);
+    } else {
+      this.expandedFamilies.add(familyId);
+    }
+  }
+
+  /**
+   * Check if family is expanded
+   */
+  isFamilyExpanded(familyId: string): boolean {
+    return this.expandedFamilies.has(familyId);
+  }
+
+  /**
+   * Highlight search term in text
+   */
+  highlightSearchTerm(text: string): SafeHtml {
+    if (!this.controlSearchTerm || !text) return text;
+    
+    const term = this.controlSearchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${term})`, 'gi');
+    const highlighted = text.replace(regex, '<mark>$1</mark>');
+    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+  }
+
+  /**
+   * Reset control caches when review item changes
+   */
+  private resetControlCaches() {
+    this.enrichedControlsCache = [];
+    this.controlFamiliesCache = [];
+    this.controlSearchTerm = '';
+    this.selectedControlFamily = '';
+    this.expandedFamilies.clear();
   }
 }
