@@ -689,6 +689,21 @@ export class ValidationReviewComponent implements OnInit {
   }
 
   /**
+   * Get your CSF mappings with full descriptions for list view
+   */
+  getYourCsfWithDetails(): { id: string; description: string }[] {
+    if (!this.currentReviewItem) return [];
+    
+    return this.currentReviewItem.yourNistCsfMappings.map(csfId => {
+      const nistItem = this.controlFramework.nistItems.find(item => item.subcategory.id === csfId);
+      return {
+        id: csfId,
+        description: nistItem?.subcategory.description || csfId
+      };
+    }).sort((a, b) => a.id.localeCompare(b.id));
+  }
+
+  /**
    * Get CSF subcategory description for tooltip
    */
   getCsfDescription(csfId: string): string {

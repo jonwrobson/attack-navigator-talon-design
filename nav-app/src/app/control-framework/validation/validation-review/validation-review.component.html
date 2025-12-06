@@ -77,13 +77,17 @@
       <div class="mappings-comparison">
         <div class="your-mappings">
           <h4>Your NIST CSF Mappings <span class="edit-hint">(click to remove)</span></h4>
-          <div class="chip-list">
-            <span class="chip csf removable" 
-                  *ngFor="let csf of currentReviewItem.yourNistCsfMappings"
-                  (click)="removeCsfMapping(csf)"
-                  [matTooltip]="getCsfDescription(csf)">
-              {{csf}} <mat-icon class="remove-icon">close</mat-icon>
-            </span>
+          <div class="csf-list your-csf-list">
+            <div class="csf-item removable" 
+                 *ngFor="let item of getYourCsfWithDetails()"
+                 (click)="removeCsfMapping(item.id)">
+              <span class="csf-id">{{item.id}}</span>
+              <span class="csf-desc">{{item.description}}</span>
+              <mat-icon class="remove-icon">close</mat-icon>
+            </div>
+            <div class="empty-message" *ngIf="currentReviewItem.yourNistCsfMappings.length === 0">
+              No CSF mappings yet
+            </div>
           </div>
           <h5>→ Resolves to 800-53:</h5>
           <div class="chip-list">
