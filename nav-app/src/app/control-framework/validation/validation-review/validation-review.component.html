@@ -1,0 +1,386 @@
+<div class="validation-container">
+  <!-- Header with summary -->
+  <div class="validation-header">
+    <h2>Mapping Validation Review</h2>
+    <p class="description">Compare your curated Mitigation → NIST CSF mappings against MITRE CTID's curated data</p>
+    
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="loadValidation()" [disabled]="loading">
+        <mat-icon>{{loading ? 'hourglass_empty' : 'refresh'}}</mat-icon>
+        {{loading ? 'Loading...' : 'Load / Refresh Data'}}
+      </button>
+      <button mat-raised-button (click)="exportToExcel()" [disabled]="results.length === 0" class="export-btn">
+        <mat-icon>download</mat-icon>
+        Export to Excel
+      </button>
+      <button mat-stroked-button (click)="exportGapsCsv()" [disabled]="results.length === 0" class="export-btn">
+        <mat-icon>warning</mat-icon>
+        Export Gaps CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="summary">
+    <div class="summary-card total">
+      <div class="card-value">{{summary.totalMitigations}}</div>
+      <div class="card-label">Total Mitigations</div>
+    </div>
+    <div class="summary-card validated">
+      <div class="card-value">{{summary.validated}}</div>
+      <div class="card-label">Validated (≥80%)</div>
+    </div>
+    <div class="summary-card review">
+      <div class="card-value">{{summary.needsReview}}</div>
+      <div class="card-label">Needs Review (50-80%)</div>
+    </div>
+    <div class="summary-card gap">
+      <div class="card-value">{{summary.gaps}}</div>
+      <div class="card-label">Gaps (&lt;50%)</div>
+    </div>
+    <div class="summary-card pending">
+      <div class="card-value">{{summary.pending}}</div>
+      <div class="card-label">Pending (No CTID data)</div>
+    </div>
+    <div class="summary-card coverage">
+      <div class="card-value">{{summary.averageCoverage}}%</div>
+      <div class="card-label">Average Coverage</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <mat-tab-group *ngIf="results.length > 0" (selectedTabChange)="filterByStatus($event)">
+    <mat-tab label="All ({{results.length}})"></mat-tab>
+    <mat-tab label="Gaps ({{getCountByStatus('gap')}})"></mat-tab>
+    <mat-tab label="Needs Review ({{getCountByStatus('needs-review')}})"></mat-tab>
+    <mat-tab label="Validated ({{getCountByStatus('validated')}})"></mat-tab>
+    <mat-tab label="Pending ({{getCountByStatus('pending')}})"></mat-tab>
+  </mat-tab-group>
+
+  <!-- Step-by-step Review Mode -->
+  <div class="review-mode" *ngIf="reviewMode && currentReviewItem">
+    <div class="review-progress">
+      <span>Reviewing {{currentReviewIndex + 1}} of {{filteredResults.length}}</span>
+      <mat-progress-bar mode="determinate" [value]="((currentReviewIndex + 1) / filteredResults.length) * 100"></mat-progress-bar>
+    </div>
+    
+    <div class="review-card">
+      <div class="review-header">
+        <span class="mitigation-id">{{currentReviewItem.mitigationId}}</span>
+        <span class="status-badge" [ngClass]="currentReviewItem.status">{{currentReviewItem.status | uppercase}}</span>
+        <span class="coverage">{{currentReviewItem.coveragePercent}}% coverage</span>
+      </div>
+      
+      <h3>{{currentReviewItem.mitigationName}}</h3>
+      <p class="mitigation-desc">{{currentReviewItem.mitigationDescription}}</p>
+      
+      <div class="mappings-comparison">
+        <div class="your-mappings">
+          <h4>Your NIST CSF Mappings <span class="edit-hint">(click to remove)</span></h4>
+          <div class="csf-list your-csf-list">
+            <div class="csf-item removable" 
+                 *ngFor="let item of getYourCsfWithDetails()"
+                 (click)="removeCsfMapping(item.id)">
+              <span class="csf-id">{{item.id}}</span>
+              <span class="csf-desc">{{item.description}}</span>
+              <mat-icon class="remove-icon">close</mat-icon>
+            </div>
+            <div class="empty-message" *ngIf="currentReviewItem.yourNistCsfMappings.length === 0">
+              No CSF mappings yet
+            </div>
+          </div>
+          <div class="resolves-section">
+            <h5>→ Resolves to 800-53:</h5>
+            <div class="chip-list">
+              <span class="chip control" 
+                    *ngFor="let ctrl of currentReviewItem.your80053Controls"
+                    [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ctid-mappings">
+          <h4>CTID Recommended Controls <span class="control-count">({{uniqueCtidControlIds.length}} unique)</span></h4>
+          
+          <!-- Search and Filter Bar -->
+          <div class="control-search-bar">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search controls (e.g., XDR, endpoint, detection)</mat-label>
+              <input matInput [(ngModel)]="controlSearchTerm" (ngModelChange)="filterControls()" placeholder="Type to search...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="family-filter">
+              <mat-label>Control Family</mat-label>
+              <mat-select [(ngModel)]="selectedControlFamily" (selectionChange)="filterControls()">
+                <mat-option value="">All Families</mat-option>
+                <mat-option *ngFor="let family of controlFamilyList" [value]="family.id">
+                  {{family.id}} - {{family.name}} ({{family.count}})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Quick Filter Tags -->
+          <div class="quick-filters">
+            <span class="quick-filter-label">Quick filters:</span>
+            <button mat-stroked-button class="quick-filter-btn" 
+                    *ngFor="let tag of quickFilterTags"
+                    [class.active]="controlSearchTerm === tag"
+                    (click)="applyQuickFilter(tag)">
+              {{tag}}
+            </button>
+          </div>
+
+          <!-- Grouped Controls View -->
+          <div class="controls-grouped" *ngIf="!controlSearchTerm && !selectedControlFamily">
+            <div class="control-family-group" *ngFor="let family of groupedControls">
+              <div class="family-header" (click)="toggleFamilyExpanded(family.id)">
+                <mat-icon>{{isFamilyExpanded(family.id) ? 'expand_more' : 'chevron_right'}}</mat-icon>
+                <span class="family-id">{{family.id}}</span>
+                <span class="family-name">{{family.name}}</span>
+                <span class="family-count">({{family.controls.length}})</span>
+              </div>
+              <div class="family-controls" *ngIf="isFamilyExpanded(family.id)">
+                <div class="control-item" *ngFor="let ctrl of family.controls"
+                     (click)="showAddMappingDialog(ctrl.id)"
+                     [class.already-mapped]="isControlInYourMappings(ctrl.id)">
+                  <div class="control-header">
+                    <span class="control-id">{{ctrl.id}}</span>
+                    <mat-icon class="mapped-icon" *ngIf="isControlInYourMappings(ctrl.id)">check_circle</mat-icon>
+                    <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl.id)">add_circle_outline</mat-icon>
+                  </div>
+                  <div class="control-name">{{ctrl.name}}</div>
+                  <div class="control-desc-preview">{{ctrl.description | slice:0:150}}...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtered/Search Results View -->
+          <div class="controls-filtered" *ngIf="controlSearchTerm || selectedControlFamily">
+            <div class="search-results-header">
+              <span>{{filteredControls.length}} controls found</span>
+              <button mat-button (click)="clearControlFilters()">Clear filters</button>
+            </div>
+            <div class="control-item" *ngFor="let ctrl of filteredControls; trackBy: trackByControlId"
+                 (click)="showAddMappingDialog(ctrl.id)"
+                 [class.already-mapped]="isControlInYourMappings(ctrl.id)"
+                 [class.search-match]="controlSearchTerm">
+              <div class="control-header">
+                <span class="control-id">{{ctrl.id}}</span>
+                <span class="control-family-badge">{{ctrl.family}}</span>
+                <mat-icon class="mapped-icon" *ngIf="isControlInYourMappings(ctrl.id)">check_circle</mat-icon>
+                <mat-icon class="add-icon" *ngIf="!isControlInYourMappings(ctrl.id)">add_circle_outline</mat-icon>
+              </div>
+              <div class="control-name" [innerHTML]="highlightSearchTerm(ctrl.name)"></div>
+              <div class="control-desc-preview" [innerHTML]="highlightSearchTerm(ctrl.description | slice:0:200)">...</div>
+              <div class="control-techniques">
+                <span class="technique-tag" *ngFor="let tech of ctrl.techniques">{{tech}}</span>
+              </div>
+            </div>
+            <div class="no-results" *ngIf="filteredControls.length === 0">
+              <mat-icon>search_off</mat-icon>
+              <p>No controls match your search. Try different keywords like "monitor", "detect", "protect", "response".</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Mapping Dialog -->
+      <div class="add-mapping-panel" *ngIf="showAddPanel">
+        <div class="panel-header">
+          <h4>800-53 Control: <strong>{{selectedControlToAdd}}</strong></h4>
+          <button mat-icon-button (click)="closeAddPanel()" class="close-btn">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <p class="control-desc">{{getControlDescription(selectedControlToAdd)}}</p>
+        
+        <!-- Check if already covered -->
+        <div class="already-covered" *ngIf="isControlInYourMappings(selectedControlToAdd)">
+          <mat-icon>check_circle</mat-icon>
+          <span>This control is already covered by your mappings!</span>
+        </div>
+
+        <!-- Show which of YOUR CSF mappings include this control -->
+        <div class="your-coverage" *ngIf="getYourCsfForControl(selectedControlToAdd).length > 0">
+          <h5>Your CSF mappings that include this control:</h5>
+          <div class="csf-list">
+            <div class="csf-item existing" *ngFor="let item of getYourCsfDetailsForControl(selectedControlToAdd)">
+              <span class="csf-id">{{item.id}}</span>
+              <span class="csf-desc">{{item.description}}</span>
+              <mat-icon class="check-icon">check_circle</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Show CSF options to add -->
+        <div class="add-options">
+          <h5>Add a CSF mapping to cover this control:</h5>
+          <p class="hint">Select a CSF subcategory that references {{selectedControlToAdd}}:</p>
+          
+          <!-- Grouped by CSF Function -->
+          <div class="csf-grouped" *ngFor="let group of getGroupedCsfForControl(selectedControlToAdd)">
+            <div class="csf-function-header">
+              <span class="function-id">{{group.functionId}}</span>
+              <span class="function-name">{{group.functionName}}</span>
+              <span class="function-count">({{group.items.length}})</span>
+            </div>
+            <div class="csf-list">
+              <div class="csf-item" 
+                   *ngFor="let item of group.items" 
+                   [class.addable]="!isCsfAlreadyMapped(item.id)"
+                   [class.already-added]="isCsfAlreadyMapped(item.id)"
+                   (click)="!isCsfAlreadyMapped(item.id) && addCsfMapping(item.id)">
+                <span class="csf-id">{{item.id}}</span>
+                <span class="csf-desc">{{item.description}}</span>
+                <mat-icon class="add-icon" *ngIf="!isCsfAlreadyMapped(item.id)">add_circle_outline</mat-icon>
+                <mat-icon class="check-icon" *ngIf="isCsfAlreadyMapped(item.id)">check_circle</mat-icon>
+              </div>
+            </div>
+          </div>
+          
+          <div class="no-suggestions" *ngIf="getSuggestedCsfForControl(selectedControlToAdd).length === 0">
+            No CSF subcategories directly reference this 800-53 control.
+            You may need to add a custom mapping.
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <button mat-button (click)="closeAddPanel()">Close</button>
+        </div>
+      </div>
+      
+      <div class="analysis">
+        <div class="analysis-section matching" *ngIf="currentReviewItem.matchingControls.length > 0">
+          <h5><mat-icon>check_circle</mat-icon> Matching ({{currentReviewItem.matchingControls.length}})</h5>
+          <div class="chip-list">
+            <span class="chip match" 
+                  *ngFor="let ctrl of currentReviewItem.matchingControls"
+                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
+          </div>
+        </div>
+        
+        <div class="analysis-section missing" *ngIf="currentReviewItem.missingFromYours.length > 0">
+          <h5><mat-icon>warning</mat-icon> Missing from yours ({{currentReviewItem.missingFromYours.length}}) <span class="edit-hint">(click to add)</span></h5>
+          <div class="chip-list">
+            <span class="chip missing addable" 
+                  *ngFor="let ctrl of currentReviewItem.missingFromYours"
+                  (click)="showAddMappingDialog(ctrl)"
+                  [matTooltip]="getControlDescription(ctrl)">
+              {{ctrl}} <mat-icon class="add-icon">add</mat-icon>
+            </span>
+          </div>
+        </div>
+        
+        <div class="analysis-section unique" *ngIf="currentReviewItem.uniqueToYours.length > 0">
+          <h5><mat-icon>star</mat-icon> Unique to yours ({{currentReviewItem.uniqueToYours.length}})</h5>
+          <p class="suggestion-hint">These are in your mappings but not in CTID. This may be intentional.</p>
+          <div class="chip-list">
+            <span class="chip unique" 
+                  *ngFor="let ctrl of currentReviewItem.uniqueToYours"
+                  [matTooltip]="getControlDescription(ctrl)">{{ctrl}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Status Indicator -->
+      <div class="review-status-indicator" *ngIf="isReviewed(currentReviewItem.mitigationId) || isIgnored(currentReviewItem.mitigationId)">
+        <mat-icon *ngIf="isReviewed(currentReviewItem.mitigationId)">check_circle</mat-icon>
+        <mat-icon *ngIf="isIgnored(currentReviewItem.mitigationId)">block</mat-icon>
+        <span *ngIf="isReviewed(currentReviewItem.mitigationId)">Marked as Reviewed</span>
+        <span *ngIf="isIgnored(currentReviewItem.mitigationId)">Marked as Ignored</span>
+        <button mat-button (click)="clearItemStatus(currentReviewItem.mitigationId)">Clear</button>
+      </div>
+      
+      <div class="review-actions">
+        <button mat-button (click)="previousReview()" [disabled]="currentReviewIndex === 0">
+          <mat-icon>arrow_back</mat-icon> Previous
+        </button>
+        
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="markItemReviewed(currentReviewItem.mitigationId); nextReview()">
+            <mat-icon>done</mat-icon> Accept & Next
+          </button>
+          <button mat-stroked-button color="warn" (click)="markItemIgnored(currentReviewItem.mitigationId); nextReview()">
+            <mat-icon>block</mat-icon> Ignore
+          </button>
+        </div>
+        
+        <button mat-button (click)="nextReview()" [disabled]="currentReviewIndex >= filteredResults.length - 1">
+          Skip <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+
+      <button mat-button class="exit-review-btn" (click)="exitReviewMode()">
+        <mat-icon>close</mat-icon> Exit Review Mode
+      </button>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div class="results-list" *ngIf="!reviewMode && filteredResults.length > 0">
+    <button mat-raised-button color="accent" (click)="startReview()" class="start-review-btn">
+      <mat-icon>play_arrow</mat-icon> Start Step-by-Step Review
+    </button>
+    
+    <table mat-table [dataSource]="filteredResults" class="validation-table">
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let item">
+          <span class="status-badge" [ngClass]="item.status">{{item.status}}</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="mitigationId">
+        <th mat-header-cell *matHeaderCellDef>Mitigation</th>
+        <td mat-cell *matCellDef="let item">
+          <strong>{{item.mitigationId}}</strong><br>
+          <small>{{item.mitigationName}}</small>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="coverage">
+        <th mat-header-cell *matHeaderCellDef>Coverage</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="coverage-bar">
+            <div class="coverage-fill" [style.width.%]="item.coveragePercent" [ngClass]="item.status"></div>
+          </div>
+          <span>{{item.coveragePercent}}%</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="yourMappings">
+        <th mat-header-cell *matHeaderCellDef>Your CSF</th>
+        <td mat-cell *matCellDef="let item">{{item.yourNistCsfMappings.length}} subcategories</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="ctidControls">
+        <th mat-header-cell *matHeaderCellDef>CTID Controls</th>
+        <td mat-cell *matCellDef="let item">{{getTotalCtidControls(item)}} controls</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item; let i = index">
+          <button mat-icon-button (click)="reviewSingle(i)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          [ngClass]="row.status"
+          (click)="reviewSingle(filteredResults.indexOf(row))"></tr>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && results.length === 0">
+    <mat-icon>assessment</mat-icon>
+    <h3>No validation data loaded</h3>
+    <p>Click "Load / Refresh Data" to fetch CTID mappings and compare against your curated data.</p>
+  </div>
+</div>
