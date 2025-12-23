@@ -141,3 +141,18 @@ tr.mitigations-component-element-row:not(.mitigations-component-expanded-row):ac
 // .mitigations-component-buttongroup {
   
 // }
+
+.no-scores-message {
+  padding: 20px;
+  margin: 16px 0;
+  border-left: 4px solid #ff9800;
+  border-radius: 4px;
+  @include adaptive-color('background-color', #f5f5f5, color(dark-3));
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    @include adaptive-color('color', #555, on-color(dark));
+  }
+}
