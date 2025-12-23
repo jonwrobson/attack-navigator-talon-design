@@ -91,4 +91,8 @@ export class MitigationsComponent implements OnInit {
 
     IdAccessor(element: scoredMitigationVM): string { return element.mitigation.attackID }
     nameAccessor(element: scoredMitigationVM): string { return element.mitigation.name }
+
+    public shouldShowNoScoresMessage(): boolean {
+        return this.sortScoredMitigationsBy('score').length === 0;
+    }
 }

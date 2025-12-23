@@ -46,4 +46,21 @@ describe("MitigationsComponent", () => {
     (expect(component) as any).toBeTruthy();
   });
 
+  it('should return true when shouldShowNoScoresMessage is called and scoredMitigations is empty', () => {
+    component.viewModel.scoredMitigations = [];
+    expect(component.shouldShowNoScoresMessage()).toBe(true);
+  });
+
+  it('should return false when shouldShowNoScoresMessage is called and scoredMitigations has items', () => {
+    const mockMitigation = {
+      attackID: 'M1234',
+      name: 'Test Mitigation',
+      relatedTechniques: () => []
+    };
+    component.viewModel.scoredMitigations = [
+      { count: 1, mitigation: mockMitigation as any, score: 10 }
+    ];
+    expect(component.shouldShowNoScoresMessage()).toBe(false);
+  });
+
 })
