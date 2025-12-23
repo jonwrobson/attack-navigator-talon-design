@@ -93,6 +93,6 @@ export class MitigationsComponent implements OnInit {
     nameAccessor(element: scoredMitigationVM): string { return element.mitigation.name }
 
     public shouldShowNoScoresMessage(): boolean {
-        return this.sortScoredMitigationsBy('score').length === 0;
+        return this.viewModel.scoredMitigations.length === 0;
     }
 }
