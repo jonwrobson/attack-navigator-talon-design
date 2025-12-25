@@ -3,9 +3,8 @@
     <mat-button-toggle value="mitigations">Mitigations</mat-button-toggle>
     <mat-button-toggle value="FNIST">Filtered NIST</mat-button-toggle>
     <mat-button-toggle value="NIST">NIST</mat-button-toggle>
-    <mat-button-toggle value="validate">Validate Mappings</mat-button-toggle>
   </mat-button-toggle-group>
-  <button class="mappings-dialog-content-button" mat-raised-button (click)='clickExportAll()' *ngIf="mappingKey !== 'validate'">Export All
+  <button class="mappings-dialog-content-button" mat-raised-button (click)='clickExportAll()'>Export All
     Mappings</button>
 </h1>
 <div mat-dialog-content class="mappings-dialog-content">
@@ -121,8 +120,6 @@
 
   <nist-mappings [data]="mappingKey ==='FNIST' ? nistFiltered() : allNist()"
     *ngIf='mappingKey === "NIST" || mappingKey ==="FNIST"'> </nist-mappings>
-
-  <validation-review [viewModel]="viewModel" *ngIf='mappingKey === "validate"'></validation-review>
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button color="primary" mat-dialog-close cdkFocusInitial>Close</button>
