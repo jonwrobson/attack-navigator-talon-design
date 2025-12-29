@@ -1,8 +1,7 @@
-import { ViewModelsService } from '../services/viewmodels.service';
-import { ViewModel } from '../classes';
-import { Technique } from '../classes/stix';
-import { DataService } from '../services/data.service';
-import * as Excel from 'exceljs/dist/exceljs.min.js';
+import { ViewModel } from '../viewmodels.service';
+import { Technique } from '../data.service';
+import * as Excel from 'exceljs/dist/es5/exceljs.browser';
+import * as is from 'is_js';
 import { ControlFramework } from '../control-framework/control-framework';
 import { TechniqueWithMappings } from "../control-framework/TechniqueWithMappings";
 
@@ -112,13 +111,16 @@ export class MappingsExporter {
   }
 
   public saveBlob(blob, filename) {
-    // Modern browsers - IE no longer supported
-    var svgUrl = URL.createObjectURL(blob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = filename
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    if (is.ie()) { //internet explorer
+      (window.navigator as any).msSaveBlob(blob, filename)
+    } else {
+      var svgUrl = URL.createObjectURL(blob);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = svgUrl;
+      downloadLink.download = filename
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
   }
 }
