@@ -103,6 +103,18 @@ export class AttackChainService {
     }
 
     /**
+     * Validates that a technique ID is in the correct format to prevent path traversal
+     * @param techniqueId - The technique ID to validate
+     * @returns true if valid, false otherwise
+     */
+    private isValidTechniqueId(techniqueId: string): boolean {
+        // ATT&CK technique IDs follow pattern: T[0-9]{4}(\.[0-9]{3})?
+        // Examples: T1078, T1078.001
+        const pattern = /^T[0-9]{4}(\.[0-9]{3})?$/;
+        return pattern.test(techniqueId);
+    }
+
+    /**
      * Load chain data for a specific technique
      * Results are cached after the first load
      * 
@@ -110,6 +122,11 @@ export class AttackChainService {
      * @returns Observable of technique chains, or null if technique not in index or on error
      */
     getChains(techniqueId: string): Observable<TechniqueChains | null> {
+        // Validate technique ID format to prevent path traversal
+        if (!this.isValidTechniqueId(techniqueId)) {
+            return of(null);
+        }
+
         // Check if technique is in index first
         if (this.indexData && !this.hasChains(techniqueId)) {
             return of(null);

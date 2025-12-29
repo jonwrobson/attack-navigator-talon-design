@@ -187,6 +187,25 @@ describe('AttackChainService', () => {
             const req = httpMock.expectOne(`${baseUrl}T1566.json`);
             req.error(new ProgressEvent('error'), { status: 404 });
         });
+
+        it('should return null for invalid technique ID format', (done) => {
+            service.getChains('../../../etc/passwd').subscribe((chains) => {
+                expect(chains).toBeNull();
+                done();
+            });
+
+            // No HTTP request should be made
+        });
+
+        it('should accept valid technique ID with sub-technique', (done) => {
+            service.getChains('T1078.001').subscribe((chains) => {
+                expect(chains).toBeNull(); // Returns null due to 404
+                done();
+            });
+
+            const req = httpMock.expectOne(`${baseUrl}T1078.001.json`);
+            req.error(new ProgressEvent('error'), { status: 404 });
+        });
     });
 
     describe('clearCache', () => {
