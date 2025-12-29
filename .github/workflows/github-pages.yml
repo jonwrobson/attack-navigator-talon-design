@@ -6,6 +6,8 @@ on:
 
 jobs:
   deploy-to-gh-pages:
+    # Only run on the upstream MITRE repository, not on forks
+    if: github.repository == 'mitre-attack/attack-navigator'
     runs-on: ubuntu-latest
     permissions:
       contents: write
