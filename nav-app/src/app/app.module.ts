@@ -66,6 +66,7 @@ import { ChangelogComponent } from './changelog/changelog.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ListInputComponent } from './list-input/list-input.component';
 import { ConfigService } from './services/config.service';
+import { AttackChainTreeComponent } from './attack-chain-tree/attack-chain-tree.component';
 
 @NgModule({
     declarations: [
@@ -102,6 +103,7 @@ import { ConfigService } from './services/config.service';
         ChangelogComponent,
         ListInputComponent,
         LayerSettingsComponent,
+        AttackChainTreeComponent,
     ],
     imports: [
         BrowserModule,
