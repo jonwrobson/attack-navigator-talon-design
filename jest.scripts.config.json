@@ -1,0 +1,19 @@
+{
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/tests/scripts"],
+  "testMatch": [
+    "**/tests/scripts/**/*.test.js"
+  ],
+  "transform": {},
+  "moduleFileExtensions": ["js", "json"],
+  "collectCoverageFrom": [
+    "scripts/lib/**/*.js"
+  ],
+  "coverageDirectory": "coverage-scripts",
+  "coverageReporters": [
+    "text",
+    "lcov"
+  ],
+  "testTimeout": 30000,
+  "verbose": true
+}
