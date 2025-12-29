@@ -5,7 +5,11 @@
     <mappings-dialog-button [viewModel]="viewModel">Mappings</mappings-dialog-button>
   </div>
 
-  <div *ngIf="sortScoredMitigationsBy('score').length > 0" class="mitigation-component-container">
+  <div *ngIf="shouldShowNoScoresMessage()" class="no-scores-message">
+    <p>Please assign scores to techniques to see mitigations.</p>
+  </div>
+
+  <div *ngIf="!shouldShowNoScoresMessage()" class="mitigation-component-container">
     <div class="mitigations-component-element-header">
       Mitigations By Score
     </div>

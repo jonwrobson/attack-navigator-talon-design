@@ -15,3 +15,13 @@ nav-app/dist_unzip/
 
 # Local VS Code settings
 .vscode/
+
+# Node modules and coverage
+node_modules/
+coverage-scripts/
+
+# STIX data cache
+scripts/.cache/
+
+# Generated attack chain data files
+nav-app/src/assets/attack-chains/
