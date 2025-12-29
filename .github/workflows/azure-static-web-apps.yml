@@ -101,11 +101,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: nav-app/package-lock.json
 
-      - name: Install and Build
+      - name: Install and Build for Production
+        if: github.ref == 'refs/heads/master'
         working-directory: nav-app
         run: |
           npm ci --legacy-peer-deps
-          npm run build
+          npm run build -- --configuration production
+
+      - name: Install and Build for UAT
+        if: github.ref == 'refs/heads/uat'
+        working-directory: nav-app
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build -- --configuration uat
 
       - name: Deploy to Production (master)
         if: github.ref == 'refs/heads/master'

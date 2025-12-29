@@ -5,6 +5,7 @@ import { ConfigService } from './services/config.service';
 import * as globals from './utils/globals';
 import { IconsService } from './services/icons.service';
 import { deleteCookie, getCookie, hasCookie, setCookie } from './utils/cookies';
+import { environment } from '../environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -59,5 +60,19 @@ export class AppComponent implements OnInit {
             this.user_theme = theme === 'dark' ? 'theme-override-dark' : 'theme-override-light';
             setCookie('is_user_theme_dark', theme === 'dark' ? 'true' : 'false', 180);
         }
+    }
+
+    showEnvironmentBanner(): boolean {
+        return environment.environmentName === 'uat' || environment.environmentName === 'production';
+    }
+
+    getEnvironmentBannerClass(): string {
+        return environment.environmentName === 'uat' ? 'banner-uat' : 'banner-production';
+    }
+
+    getEnvironmentBannerText(): string {
+        return environment.environmentName === 'uat' 
+            ? '⚠️ UAT Environment - Testing Only' 
+            : '✓ Production Environment';
     }
 }

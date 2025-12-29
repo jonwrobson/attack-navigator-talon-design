@@ -1,8 +1,36 @@
 @import '../colors.scss';
 
+.environment-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 16px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    z-index: 10000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    &.banner-uat {
+        background-color: #ff9800;
+        color: #000;
+    }
+
+    &.banner-production {
+        background-color: #4caf50;
+        color: #fff;
+    }
+}
+
 .app-container {
     @include adaptive-color('background-color', color(body), color(dark-1));
     height: 100vh;
+    padding-top: 0;
+
+    .environment-banner ~ & {
+        padding-top: 32px;
+    }
 }
 
 .nav-app {
