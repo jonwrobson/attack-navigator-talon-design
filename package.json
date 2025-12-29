@@ -1,0 +1,15 @@
+{
+  "name": "attack-navigator-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for ATT&CK Navigator including STIX data processing",
+  "type": "module",
+  "scripts": {
+    "test:scripts": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.scripts.config.json"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
