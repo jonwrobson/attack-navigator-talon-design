@@ -4,7 +4,8 @@
   "description": "Scripts for ATT&CK Navigator including STIX data processing",
   "type": "module",
   "scripts": {
-    "test:scripts": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.scripts.config.json"
+    "test:scripts": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.scripts.config.json",
+    "generate-chains": "node scripts/generate-attack-chains.js"
   },
   "devDependencies": {
     "jest": "^29.7.0"

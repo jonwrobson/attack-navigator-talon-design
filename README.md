@@ -69,6 +69,60 @@ _Note: `ng build --configuration production` does not currently work for ATT&CK 
 	- [Mobile ATT&CK](https://github.com/mitre-attack/attack-stix-data/raw/master/mobile-attack/mobile-attack.json).
 	- [ICS ATT&CK](https://github.com/mitre-attack/attack-stix-data/raw/master/ics-attack/ics-attack.json).
 
+### Generating Attack Chain Data
+
+The Navigator includes a script to generate attack chain visualization data from MITRE ATT&CK STIX data. This creates static JSON files showing how threat groups and campaigns use techniques in their attack paths.
+
+#### Basic Usage
+
+```bash
+# Generate chain data with default settings
+npm run generate-chains
+
+# Generate with custom output directory
+node scripts/generate-attack-chains.js --output ./custom-dir
+
+# Force fresh download of STIX data
+node scripts/generate-attack-chains.js --no-cache
+
+# Show detailed progress information
+node scripts/generate-attack-chains.js --verbose
+```
+
+#### CLI Options
+
+* `--output, -o` - Output directory (default: `nav-app/src/assets/attack-chains`)
+* `--no-cache` - Force re-download of STIX data, ignoring cache
+* `--verbose, -v` - Show detailed progress information
+* `--help, -h` - Display help message
+
+#### Output
+
+The script generates:
+- One JSON file per technique containing attack chain data
+- An `index.json` file with metadata about all generated files
+- Files are minified for optimal web delivery
+
+Example output:
+```
+Attack Chain Generator v1.0.0
+=============================
+Fetching STIX data from attack-stix-data...
+  ✓ Downloaded enterprise-attack.json (35.0 MB)
+Parsing STIX bundle...
+  ✓ Found 835 techniques, 187 groups, 52 campaigns
+Generating chains...
+  ✓ Processing techniques... [835/835]
+Writing output files...
+  ✓ Written 488 chain files (skipped 347 with no chains)
+  ✓ Written index.json
+
+Summary:
+  Files generated: 488
+  Total size: 17.7 MB
+  Time elapsed: 1.2s
+```
+
 ## Documentation
 
 When viewing the Navigator in a browser, click on the **?** icon in the upper right corner to view the in-app documentation.
