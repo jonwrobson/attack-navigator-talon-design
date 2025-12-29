@@ -1,0 +1,51 @@
+<div class="campaign-popup" 
+     [class.visible]="isVisible()"
+     [ngStyle]="getPopupStyle()"
+     *ngIf="campaign">
+    
+    <div class="popup-header">
+        <h3 class="campaign-name">{{ campaign.name }}</h3>
+        <button class="close-button" 
+                (click)="close()"
+                aria-label="Close popup"
+                type="button">
+            ✕
+        </button>
+    </div>
+
+    <div class="popup-body">
+        <div class="campaign-section" *ngIf="campaign.description">
+            <h4>Description</h4>
+            <p class="campaign-description">{{ campaign.description }}</p>
+        </div>
+
+        <div class="campaign-section campaign-dates">
+            <h4>Timeline</h4>
+            <div class="date-row">
+                <span class="date-label">First Seen:</span>
+                <span class="first-seen">{{ formatDate(campaign.firstSeen) }}</span>
+            </div>
+            <div class="date-row">
+                <span class="date-label">Last Seen:</span>
+                <span class="last-seen">{{ formatDate(campaign.lastSeen) }}</span>
+            </div>
+        </div>
+
+        <div class="campaign-section campaign-stats">
+            <h4>Statistics</h4>
+            <div class="stat-row">
+                <span class="stat-label">Associated Techniques:</span>
+                <span class="technique-count">{{ campaign.techniqueCount }}</span>
+            </div>
+        </div>
+
+        <div class="campaign-section campaign-link-section">
+            <a [href]="getCampaignUrl()" 
+               class="campaign-link"
+               target="_blank" 
+               rel="noopener noreferrer">
+                View on MITRE ATT&CK →
+            </a>
+        </div>
+    </div>
+</div>

@@ -69,6 +69,7 @@ import { ConfigService } from './services/config.service';
 import { AttackChainService } from './services/attack-chain.service';
 import { AttackChainTreeComponent } from './attack-chain-tree/attack-chain-tree.component';
 import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-viewer.component';
+import { CampaignPopupComponent } from './attack-chain-tree/campaign-popup/campaign-popup.component';
 
 @NgModule({
     declarations: [
@@ -107,6 +108,7 @@ import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-v
         LayerSettingsComponent,
         AttackChainTreeComponent,
         AttackChainViewerComponent,
+        CampaignPopupComponent,
     ],
     imports: [
         BrowserModule,
