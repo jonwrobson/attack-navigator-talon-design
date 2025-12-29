@@ -13,8 +13,8 @@ been known to use. Layers can be created interactively within the Navigator or g
 visualized via the Navigator.
 
 Bug reports and feature requests can be submitted to
-our <a href="https://github.com/mitre-attack/attack-navigator/issues">GitHub Issue Tracker</a>. The source code for the
-ATT&CK Navigator can be retrieved from our <a href="https://github.com/mitre-attack/attack-navigator">GitHub
+our <a href="https://github.com/jonwrobson/attack-nav-talon/issues">GitHub Issue Tracker</a>. The source code for the
+ATT&CK Navigator can be retrieved from our <a href="https://github.com/jonwrobson/attack-nav-talon">GitHub
 repository</a>.
 
 <!-- sections -->
@@ -535,9 +535,9 @@ You can click the "add another layer link" button to specify additional default 
 a layer link you've already added to remove it.
 
 The following is an example ATT&CK Navigator URL with the default layer specified to be the *Bear APTs layer
-from <a href="https://github.com/mitre-attack/attack-navigator">our github
+from <a href="https://github.com/jonwrobson/attack-nav-talon">our github
 repo</a>:  
-<code><https://mitre-attack.github.io/attack-navigator/enterprise/><b>#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fmitre%2Fattack-navigator%2Fmaster%2Flayers%2Fdata%2Fsamples%2FBear_APT.json</b></code>
+<code><https://jonwrobson.github.io/attack-nav-talon/><b>#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fjonwrobson%2Fattack-nav-talon%2Fmaster%2Flayers%2Fsamples%2FBear_APT.json</b></code>
 
 Users will not be prompted to upgrade default layers to the current version of ATT&CK if they are outdated.
 
@@ -552,7 +552,7 @@ assets/config.json</code>.
 
 The following is an example ATT&CK Navigator URL with the ability to download the layer and add comments
 disabled:  
-<code><https://mitre-attack.github.io/attack-navigator/enterprise/><b>#download_layer=false&comments=false</b></code>
+<code><https://jonwrobson.github.io/attack-nav-talon/><b>#download_layer=false&comments=false</b></code>
 
 # ![Rendering Layers as SVG](nav-app/src/assets/icons/ic_camera_alt_black_24px.svg)Rendering Layers as SVG
 

@@ -6,7 +6,7 @@ The principal feature of the Navigator is the ability for users to define layers
 
 ## Usage
 
-The ATT&CK Navigator is hosted live via GitHub Pages. [You can find a live instance of the current version of the Navigator here](https://mitre-attack.github.io/attack-navigator). You can read more about how to use the application itself in the [USAGE](/USAGE.md) document (which is mirrored in the in-app help page).
+The ATT&CK Navigator is hosted live via GitHub Pages. [You can find a live instance of the current version of the Navigator here](https://jonwrobson.github.io/attack-nav-talon). You can read more about how to use the application itself in the [USAGE](/USAGE.md) document (which is mirrored in the in-app help page).
 
 Version 4.0+ of the ATT&CK Navigator supports all ATT&CK domains in a single instance of the application instead of requiring a different instance for each domain. Additionally, older versions of ATT&CK can be loaded in the application. The ATT&CK Navigator supports ATT&CK versions 4+. Older versions do not work in the application since their data model is too outdated.
 
@@ -20,9 +20,9 @@ Please see [Install and Run](#Install-and-Run) for information on how to get the
 
 **Important Note:** Layer files uploaded when visiting our Navigator instance hosted on GitHub Pages are **NOT** being stored on the server side, as the Navigator is a client-side only application. However, we still recommend installing and running your own instance of the ATT&CK Navigator if your layer files contain any sensitive content.
 
-Use our [GitHub Issue Tracker](https://github.com/mitre-attack/attack-navigator/issues) to let us know of any bugs or others issues that you encounter. We also encourage pull requests if you've extended the Navigator in a cool way and want to share back to the community!
+Use our [GitHub Issue Tracker](https://github.com/jonwrobson/attack-nav-talon/issues) to let us know of any bugs or others issues that you encounter. We also encourage pull requests if you've extended the Navigator in a cool way and want to share back to the community!
 
-*See [CONTRIBUTING.md](https://github.com/mitre-attack/attack-navigator/blob/master/CONTRIBUTING.md) for more information on making contributions to the ATT&CK Navigator.*
+*See [CONTRIBUTING.md](https://github.com/jonwrobson/attack-nav-talon/blob/master/CONTRIBUTING.md) for more information on making contributions to the ATT&CK Navigator.*
 
 ## Requirements
 
