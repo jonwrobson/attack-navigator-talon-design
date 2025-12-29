@@ -8,6 +8,7 @@
 import { jest } from '@jest/globals';
 import fs from 'fs/promises';
 import path from 'path';
+import os from 'os';
 
 // Helper to create a minimal chain data for testing
 const createTestChainData = (techniqueId, name, tactic, chainCount = 1) => ({
@@ -41,14 +42,13 @@ const createMockParser = () => {
 
 describe('Attack Chain Writer', () => {
   let writeChainFiles, TEST_OUTPUT_DIR;
-  const ORIGINAL_OUTPUT_DIR = '/home/runner/work/attack-navigator-talon-design/attack-navigator-talon-design/nav-app/src/assets/attack-chains';
 
   beforeAll(async () => {
     const chainWriter = await import('../../scripts/lib/chain-writer.js');
     writeChainFiles = chainWriter.writeChainFiles;
     
     // Use a test directory instead of the actual output directory
-    TEST_OUTPUT_DIR = '/tmp/test-chain-output';
+    TEST_OUTPUT_DIR = path.join(os.tmpdir(), 'test-chain-output');
   });
 
   beforeEach(async () => {

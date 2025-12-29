@@ -9,11 +9,17 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Default output directory for chain files
+ * Relative to the project root
  */
-export const DEFAULT_OUTPUT_DIR = '/home/runner/work/attack-navigator-talon-design/attack-navigator-talon-design/nav-app/src/assets/attack-chains';
+export const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, '../../nav-app/src/assets/attack-chains');
 
 /**
  * Ensures the output directory exists, creating it if necessary
