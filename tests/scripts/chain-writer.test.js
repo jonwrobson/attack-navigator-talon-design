@@ -5,7 +5,6 @@
  * One file per technique, plus an index file with metadata.
  */
 
-import { jest } from '@jest/globals';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';

@@ -27,13 +27,7 @@ export const DEFAULT_OUTPUT_DIR = path.resolve(__dirname, '../../nav-app/src/ass
  * @returns {Promise<void>}
  */
 async function ensureOutputDirectory(outputDir) {
-  try {
-    await fs.mkdir(outputDir, { recursive: true });
-  } catch (err) {
-    if (err.code !== 'EEXIST') {
-      throw err;
-    }
-  }
+  await fs.mkdir(outputDir, { recursive: true });
 }
 
 /**
