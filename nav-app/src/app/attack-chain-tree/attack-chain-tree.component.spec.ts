@@ -77,7 +77,9 @@ describe('AttackChainTreeComponent', () => {
 
             const badge = fixture.nativeElement.querySelector('.score-badge');
             expect(badge).toBeTruthy();
-            expect(badge?.textContent).toContain('3');
+            
+            const scoreText = fixture.nativeElement.querySelector('.score-text');
+            expect(scoreText?.textContent).toContain('3');
         });
 
         it('should hide score badge when no score', () => {
@@ -264,7 +266,9 @@ describe('AttackChainTreeComponent', () => {
 
             badge = fixture.nativeElement.querySelector('.score-badge');
             expect(badge).toBeTruthy();
-            expect(badge?.textContent).toContain('5');
+            
+            const scoreText = fixture.nativeElement.querySelector('.score-text');
+            expect(scoreText?.textContent).toContain('5');
         });
     });
 });

@@ -137,7 +137,7 @@ export class AttackChainTreeComponent implements OnChanges, AfterViewInit {
                 }
                 return classes.join(' ');
             })
-            .attr('d', d => generateEdgePath(d.source, d.target))
+            .attr('d', d => generateEdgePath(d.source, d.target, this.config))
             .attr('fill', 'none')
             .attr('stroke', '#999')
             .attr('stroke-width', 2);
@@ -145,8 +145,8 @@ export class AttackChainTreeComponent implements OnChanges, AfterViewInit {
         // Edge label (campaign count)
         edgeGroup.append('text')
             .attr('class', 'edge-label')
-            .attr('x', d => calculateEdgeLabelPosition(d.source, d.target).x)
-            .attr('y', d => calculateEdgeLabelPosition(d.source, d.target).y)
+            .attr('x', d => calculateEdgeLabelPosition(d.source, d.target, this.config).x)
+            .attr('y', d => calculateEdgeLabelPosition(d.source, d.target, this.config).y)
             .attr('text-anchor', 'middle')
             .attr('dy', '0.3em')
             .text(this.chain.campaignCount);
@@ -168,13 +168,16 @@ export class AttackChainTreeComponent implements OnChanges, AfterViewInit {
             .attr('transform', d => `translate(${d.x}, ${d.y})`)
             .on('click', (event, d) => this.onNodeClick(event, d));
 
+        const halfWidth = this.config.nodeWidth / 2;
+        const halfHeight = this.config.nodeHeight / 2;
+
         // Node rectangle
         nodeGroup.append('rect')
             .attr('class', 'node-rect')
-            .attr('x', -60)
-            .attr('y', -40)
-            .attr('width', 120)
-            .attr('height', 80)
+            .attr('x', -halfWidth)
+            .attr('y', -halfHeight)
+            .attr('width', this.config.nodeWidth)
+            .attr('height', this.config.nodeHeight)
             .attr('rx', 5)
             .attr('ry', 5);
 

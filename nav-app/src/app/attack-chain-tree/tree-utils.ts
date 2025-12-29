@@ -96,12 +96,14 @@ export function layoutTree(
  * Generates SVG path data for edges between nodes
  * @param source Source node
  * @param target Target node
+ * @param config Tree configuration for consistent sizing
  * @returns SVG path string
  */
-export function generateEdgePath(source: TreeNode, target: TreeNode): string {
-    const sourceX = source.x + 60; // Adjust for node width/2
+export function generateEdgePath(source: TreeNode, target: TreeNode, config: TreeConfig): string {
+    const nodeHalfWidth = config.nodeWidth / 2;
+    const sourceX = source.x + nodeHalfWidth;
     const sourceY = source.y;
-    const targetX = target.x - 60;
+    const targetX = target.x - nodeHalfWidth;
     const targetY = target.y;
     
     const midX = (sourceX + targetX) / 2;
@@ -131,11 +133,13 @@ export function getNodeClass(node: ChainNode, anySelected: boolean): string {
  * Calculates the position for an edge label
  * @param source Source node
  * @param target Target node
+ * @param config Tree configuration for consistent sizing
  * @returns Position object with x and y coordinates
  */
-export function calculateEdgeLabelPosition(source: TreeNode, target: TreeNode): { x: number; y: number } {
+export function calculateEdgeLabelPosition(source: TreeNode, target: TreeNode, config: TreeConfig): { x: number; y: number } {
+    const nodeHalfWidth = config.nodeWidth / 2;
     return {
-        x: (source.x + target.x) / 2 + 60,
+        x: (source.x + target.x) / 2 + nodeHalfWidth,
         y: (source.y + target.y) / 2
     };
 }
