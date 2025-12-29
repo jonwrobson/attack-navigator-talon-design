@@ -67,6 +67,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ListInputComponent } from './list-input/list-input.component';
 import { ConfigService } from './services/config.service';
 import { AttackChainTreeComponent } from './attack-chain-tree/attack-chain-tree.component';
+import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-viewer.component';
 
 @NgModule({
     declarations: [
@@ -104,6 +105,7 @@ import { AttackChainTreeComponent } from './attack-chain-tree/attack-chain-tree.
         ListInputComponent,
         LayerSettingsComponent,
         AttackChainTreeComponent,
+        AttackChainViewerComponent,
     ],
     imports: [
         BrowserModule,

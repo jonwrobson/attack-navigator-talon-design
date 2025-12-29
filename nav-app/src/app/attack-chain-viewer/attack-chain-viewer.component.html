@@ -1,0 +1,104 @@
+<div class="attack-chain-viewer" role="dialog" aria-labelledby="viewer-title" aria-describedby="viewer-description">
+    <!-- Header -->
+    <div class="viewer-header">
+        <div class="header-content">
+            <h2 id="viewer-title" class="viewer-title">
+                Attack Chains: {{ techniqueChains?.id }} {{ techniqueChains?.name }}
+            </h2>
+            <button 
+                class="close-button" 
+                (click)="onClose()"
+                aria-label="Close attack chain viewer"
+                title="Close">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <p id="viewer-description" class="chain-summary" *ngIf="!loading && techniqueChains">
+            {{ chainCount }} chain{{ chainCount !== 1 ? 's' : '' }} from {{ groupCount }} group{{ groupCount !== 1 ? 's' : '' }}
+        </p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="loading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading attack chains...</p>
+    </div>
+
+    <!-- No Chains Message -->
+    <div class="no-chains-message" *ngIf="!loading && !techniqueChains">
+        <mat-icon>info</mat-icon>
+        <p>No attack chains found for this technique.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="viewer-content" *ngIf="!loading && techniqueChains">
+        <!-- Filter and Controls -->
+        <div class="controls-bar">
+            <div class="filter-container">
+                <mat-icon class="filter-icon">search</mat-icon>
+                <input 
+                    type="text" 
+                    class="filter-input"
+                    placeholder="Filter by group name..."
+                    [(ngModel)]="groupFilter"
+                    (ngModelChange)="onFilterChange()"
+                    aria-label="Filter chains by group name">
+            </div>
+            <button 
+                class="apply-scores-button"
+                [disabled]="selectedNodes.size === 0"
+                (click)="applyScores()"
+                aria-label="Apply scores to selected techniques"
+                title="Apply +1 score to selected techniques">
+                Apply Scores ({{ selectedNodes.size }} selected)
+            </button>
+        </div>
+
+        <!-- Chain Groups -->
+        <div class="chain-groups" *ngIf="filteredGroups.length > 0">
+            <div 
+                class="chain-group" 
+                *ngFor="let group of filteredGroups; let groupIndex = index"
+                [attr.aria-expanded]="!group.collapsed">
+                
+                <!-- Group Header -->
+                <div 
+                    class="group-header"
+                    (click)="toggleGroupCollapse(groupIndex)"
+                    (keydown.enter)="toggleGroupCollapse(groupIndex)"
+                    (keydown.space)="toggleGroupCollapse(groupIndex)"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Toggle ' + group.groupName + ' chains'"
+                    [attr.aria-expanded]="!group.collapsed">
+                    <mat-icon class="expand-icon">
+                        {{ group.collapsed ? 'chevron_right' : 'expand_more' }}
+                    </mat-icon>
+                    <span class="group-name">{{ group.groupName }}</span>
+                    <span class="campaign-count">({{ group.chains.length }} campaign{{ group.chains.length !== 1 ? 's' : '' }})</span>
+                </div>
+
+                <!-- Group Chains -->
+                <div class="group-chains" *ngIf="!group.collapsed">
+                    <div 
+                        class="chain-container" 
+                        *ngFor="let chain of group.chains; let chainIndex = index">
+                        <app-attack-chain-tree
+                            [chain]="chain"
+                            [scores]="getCurrentScores()"
+                            (nodeSelected)="onNodeSelected($event, groupIndex, chainIndex)"
+                            role="img"
+                            [attr.aria-label]="'Attack chain for ' + group.groupName + ', campaign ' + (chainIndex + 1)">
+                        </app-attack-chain-tree>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Message (after filtering) -->
+        <div class="no-results-message" *ngIf="filteredGroups.length === 0">
+            <mat-icon>filter_list_off</mat-icon>
+            <p>No groups match the filter "{{ groupFilter }}"</p>
+        </div>
+    </div>
+</div>
