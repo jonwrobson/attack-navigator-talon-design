@@ -37,7 +37,10 @@ export let mitigationNist = [
     "nist": [
       "DE.CM-1",
       "DE.CM-4",
-      "RS.AN-1"
+      "RS.AN-1",
+      "RS.AN-3",
+      "RS.MI-2",
+      "PR.DS-6"
     ]
   },
   {
@@ -50,7 +53,11 @@ export let mitigationNist = [
       "DE.CM-1",
       "PR.AC-7",
       "PR.AT-2",
-      "PR.DS-5"
+      "PR.DS-5",
+      "PR.IP-2",
+      "PR.DS-7",
+      "ID.RA-1",
+      "PR.AT-1"
     ]
   },
   {
@@ -92,7 +99,15 @@ export let mitigationNist = [
       "description": "Use capabilities to prevent suspicious behavior patterns from occurring on endpoint systems. This could include suspicious process, file, API call, etc. behavior.",
       "url": "https://attack.mitre.org/mitigations/M1040"
     },
-    "nist": []
+    "nist": [
+      "DE.CM-1",
+      "DE.CM-4",
+      "DE.CM-7",
+      "RS.AN-1",
+      "PR.IP-1",
+      "PR.PT-3",
+      "PR.DS-6"
+    ]
   },
   {
     "mitigation": {
@@ -100,7 +115,13 @@ export let mitigationNist = [
       "description": "Use secure methods to boot a system and verify the integrity of the operating system and loading mechanisms.",
       "url": "https://attack.mitre.org/mitigations/M1046"
     },
-    "nist": []
+    "nist": [
+      "PR.DS-6",
+      "PR.DS-8",
+      "PR.IP-1",
+      "DE.CM-1",
+      "PR.PT-3"
+    ]
   },
   {
     "mitigation": {
@@ -114,7 +135,9 @@ export let mitigationNist = [
       "RS.AN-1",
       "PR.AC-4",
       "PR.AC-1",
-      "PR.AT-2"
+      "PR.AT-2",
+      "PR.DS-6",
+      "PR.IP-1"
     ]
   },
   {
@@ -127,7 +150,11 @@ export let mitigationNist = [
       "PR.AC-7",
       "PR.AC-4",
       "PR.AC-1",
-      "PR.AT-2"
+      "PR.AT-2",
+      "PR.DS-5",
+      "DE.CM-1",
+      "DE.CM-3",
+      "PR.IP-1"
     ]
   },
   {
@@ -138,7 +165,10 @@ export let mitigationNist = [
     },
     "nist": [
       "PR.IP-4",
-      "PR.DS-5"
+      "PR.DS-5",
+      "PR.DS-1",
+      "RC.RP-1",
+      "PR.AC-4"
     ]
   },
   {
@@ -194,7 +224,12 @@ export let mitigationNist = [
       "description": "Prevent modification of environment variables by unauthorized users and groups.",
       "url": "https://attack.mitre.org/mitigations/M1039"
     },
-    "nist": []
+    "nist": [
+      "PR.AC-4",
+      "PR.IP-1",
+      "PR.PT-3",
+      "DE.CM-7"
+    ]
   },
   {
     "mitigation": {
@@ -206,7 +241,10 @@ export let mitigationNist = [
       "DE.CM-1",
       "RS.AN-1",
       "DE.CM-7",
-      "DE.CM-4"
+      "DE.CM-4",
+      "PR.IP-1",
+      "PR.PT-3",
+      "PR.DS-6"
     ]
   },
   {
@@ -280,7 +318,11 @@ export let mitigationNist = [
       "url": "https://attack.mitre.org/mitigations/M1033"
     },
     "nist": [
-      "PR.PT-1"
+      "PR.PT-1",
+      "PR.PT-3",
+      "PR.IP-1",
+      "PR.AC-4",
+      "DE.CM-7"
     ]
   },
   {
@@ -420,7 +462,11 @@ export let mitigationNist = [
       "PR.AC-7",
       "PR.AC-4",
       "PR.AC-1",
-      "PR.AT-2"
+      "PR.AT-2",
+      "PR.DS-6",
+      "PR.IP-1",
+      "DE.CM-1",
+      "DE.CM-7"
     ]
   },
   {
@@ -464,7 +510,13 @@ export let mitigationNist = [
       "description": "Prevent abuse of library loading mechanisms in the operating system and software to load untrusted code by configuring appropriate library loading mechanisms and investigating potential vulnerable software.",
       "url": "https://attack.mitre.org/mitigations/M1044"
     },
-    "nist": []
+    "nist": [
+      "PR.IP-1",
+      "PR.PT-3",
+      "PR.DS-6",
+      "DE.CM-7",
+      "DE.CM-1"
+    ]
   },
   {
     "mitigation": {
@@ -474,7 +526,11 @@ export let mitigationNist = [
     },
     "nist": [
       "DE.CM-1",
-      "RS.AN-1"
+      "RS.AN-1",
+      "PR.AC-4",
+      "PR.IP-1",
+      "PR.PT-3",
+      "DE.CM-7"
     ]
   },
   {
@@ -499,7 +555,11 @@ export let mitigationNist = [
       "url": "https://attack.mitre.org/mitigations/M1020"
     },
     "nist": [
-      "DE.CM-1"
+      "DE.CM-1",
+      "DE.CM-7",
+      "PR.PT-4",
+      "PR.DS-2",
+      "RS.AN-1"
     ]
   },
   {
@@ -512,7 +572,10 @@ export let mitigationNist = [
       "DE.CM-1",
       "DE.CM-7",
       "DE.CM-4",
-      "RS.AN-1"
+      "RS.AN-1",
+      "PR.IP-1",
+      "PR.IP-3",
+      "PR.PT-3"
     ]
   },
   {
@@ -525,7 +588,10 @@ export let mitigationNist = [
       "DE.CM-1",
       "DE.CM-7",
       "RS.AN-1",
-      "DE.CM-4"
+      "DE.CM-4",
+      "ID.RA-2",
+      "ID.RA-3",
+      "RS.AN-5"
     ]
   },
   {

@@ -1,0 +1,1069 @@
+@use '../../../../styles' as *;
+
+.validation-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.validation-header {
+  margin-bottom: 24px;
+  
+  h2 {
+    margin: 0 0 8px 0;
+    @include adaptive-color(color, #1a1a1a, #ffffff);
+  }
+  
+  .description {
+    @include adaptive-color(color, #666, #aaa);
+    margin-bottom: 16px;
+  }
+}
+
+// Summary Cards
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  @include adaptive-color(background, #f5f5f5, #2a2a2a);
+  
+  .card-value {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  
+  .card-label {
+    font-size: 12px;
+    @include adaptive-color(color, #666, #aaa);
+    margin-top: 4px;
+  }
+  
+  &.validated .card-value { color: #4caf50; }
+  &.review .card-value { color: #ff9800; }
+  &.gap .card-value { color: #f44336; }
+  &.pending .card-value { @include adaptive-color(color, #999, #666); }
+  &.coverage .card-value { color: #2196f3; }
+}
+
+// Status Badges
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  &.validated {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+  }
+  &.needs-review {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+  }
+  &.gap {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+  }
+  &.pending {
+    @include adaptive-color(background, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+    @include adaptive-color(color, #999, #666);
+  }
+}
+
+// Review Mode
+.review-mode {
+  .review-progress {
+    margin-bottom: 16px;
+    
+    span {
+      font-size: 14px;
+      @include adaptive-color(color, #666, #aaa);
+    }
+    
+    mat-progress-bar {
+      margin-top: 8px;
+    }
+  }
+}
+
+.review-card {
+  @include adaptive-color(background, #fff, #1e1e1e);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    
+    .mitigation-id {
+      font-size: 14px;
+      font-weight: 600;
+      @include adaptive-color(color, #1976d2, #64b5f6);
+    }
+    
+    .coverage {
+      margin-left: auto;
+      font-weight: 600;
+      @include adaptive-color(color, #666, #aaa);
+    }
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    @include adaptive-color(color, #1a1a1a, #fff);
+  }
+  
+  .mitigation-desc {
+    @include adaptive-color(color, #666, #aaa);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+}
+
+// Mappings Comparison
+.mappings-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+  
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    @include adaptive-color(color, #1a1a1a, #fff);
+  }
+  
+  h5 {
+    margin: 12px 0 8px 0;
+    font-size: 12px;
+    @include adaptive-color(color, #666, #aaa);
+  }
+}
+
+.your-mappings, .ctid-mappings {
+  padding: 16px;
+  border-radius: 8px;
+  @include adaptive-color(background, #f8f9fa, #252525);
+}
+
+// Your NIST CSF Mappings list styling
+.your-mappings {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  
+  h4 {
+    flex-shrink: 0;
+  }
+  
+  .your-csf-list {
+    @include adaptive-color(background, rgba(255,255,255,0.5), rgba(0,0,0,0.2));
+    border-radius: 6px;
+    margin-top: 8px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 100px;
+    
+    .csf-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid;
+      @include adaptive-color(border-color, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .csf-id {
+        font-weight: 600;
+        font-size: 12px;
+        min-width: 70px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        @include adaptive-color(background, #e3f2fd, #1565c0);
+        @include adaptive-color(color, #1565c0, #e3f2fd);
+      }
+      
+      .csf-desc {
+        flex: 1;
+        font-size: 12px;
+        line-height: 1.4;
+        @include adaptive-color(color, #333, #ddd);
+      }
+      
+      .remove-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        opacity: 0.4;
+        flex-shrink: 0;
+        transition: opacity 0.2s, color 0.2s;
+        @include adaptive-color(color, #666, #999);
+      }
+      
+      &.removable {
+        cursor: pointer;
+        transition: background 0.2s;
+        
+        &:hover {
+          @include adaptive-color(background, #ffebee, rgba(244, 67, 54, 0.2));
+          
+          .csf-id {
+            @include adaptive-color(background, #ffcdd2, #b71c1c);
+            @include adaptive-color(color, #c62828, #ef9a9a);
+          }
+          
+          .csf-desc {
+            @include adaptive-color(color, #c62828, #ef9a9a);
+          }
+          
+          .remove-icon {
+            opacity: 1;
+            color: #f44336;
+          }
+        }
+      }
+    }
+    
+    .empty-message {
+      font-size: 12px;
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+      @include adaptive-color(color, #999, #777);
+    }
+  }
+  
+  .resolves-section {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid;
+    @include adaptive-color(border-color, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+    
+    h5 {
+      margin: 0 0 8px 0;
+    }
+  }
+}
+
+.technique-controls {
+  margin-bottom: 12px;
+  
+  .technique-id {
+    font-size: 12px;
+    font-weight: 500;
+    @include adaptive-color(color, #666, #aaa);
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+// Chips
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.csf {
+    @include adaptive-color(background, #e3f2fd, #1565c0);
+    @include adaptive-color(color, #1565c0, #e3f2fd);
+  }
+  
+  &.control {
+    @include adaptive-color(background, #f3e5f5, #7b1fa2);
+    @include adaptive-color(color, #7b1fa2, #f3e5f5);
+  }
+  
+  &.ctid {
+    @include adaptive-color(background, #fff3e0, #e65100);
+    @include adaptive-color(color, #e65100, #fff3e0);
+  }
+  
+  &.match {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+  }
+  
+  &.missing {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+  }
+  
+  &.unique {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+  }
+}
+
+// Analysis Section
+.analysis {
+  border-top: 1px solid;
+  @include adaptive-color(border-color, #eee, #333);
+  padding-top: 16px;
+  
+  .analysis-section {
+    margin-bottom: 16px;
+    
+    h5 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+    
+    .suggestion-hint {
+      font-size: 12px;
+      @include adaptive-color(color, #666, #999);
+      margin: 4px 0 8px 26px;
+      font-style: italic;
+    }
+    
+    &.matching h5 { color: #4caf50; }
+    &.missing h5 { color: #f44336; }
+    &.unique h5 { color: #2196f3; }
+  }
+}
+
+// Review Status Indicator
+.review-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  @include adaptive-color(background, #e8f5e9, #1b5e20);
+  
+  mat-icon {
+    color: #4caf50;
+  }
+  
+  span {
+    flex: 1;
+    font-weight: 500;
+    @include adaptive-color(color, #2e7d32, #a5d6a7);
+  }
+}
+
+// Review Actions
+.review-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid;
+  @include adaptive-color(border-color, #eee, #333);
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.exit-review-btn {
+  display: block;
+  margin: 16px auto 0;
+  @include adaptive-color(color, #666, #999);
+}
+
+// Export buttons
+.export-btn {
+  margin-left: 8px;
+}
+
+// Table Styles
+.validation-table {
+  width: 100%;
+  @include adaptive-color(background, #fff, #1e1e1e);
+  
+  tr.mat-mdc-row {
+    cursor: pointer;
+    
+    &:hover {
+      @include adaptive-color(background, #f5f5f5, #2a2a2a);
+    }
+    
+    &.gap {
+      @include adaptive-color(background, rgba(244, 67, 54, 0.05), rgba(244, 67, 54, 0.1));
+    }
+  }
+  
+  th.mat-mdc-header-cell {
+    @include adaptive-color(color, #666, #aaa);
+    font-weight: 600;
+  }
+  
+  td.mat-mdc-cell {
+    @include adaptive-color(color, #333, #ddd);
+  }
+}
+
+.coverage-bar {
+  width: 100px;
+  height: 8px;
+  border-radius: 4px;
+  @include adaptive-color(background, #eee, #333);
+  overflow: hidden;
+  margin-bottom: 4px;
+  
+  .coverage-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    
+    &.validated { background: #4caf50; }
+    &.needs-review { background: #ff9800; }
+    &.gap { background: #f44336; }
+    &.pending { background: #9e9e9e; }
+  }
+}
+
+.start-review-btn {
+  margin-bottom: 16px;
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    @include adaptive-color(color, #ccc, #444);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    @include adaptive-color(color, #666, #aaa);
+    margin: 0 0 8px 0;
+  }
+  
+  p {
+    @include adaptive-color(color, #999, #666);
+  }
+}
+
+// Tab styling
+::ng-deep .mat-mdc-tab-group {
+  margin-bottom: 24px;
+}
+
+// Edit hints
+.edit-hint {
+  font-size: 11px;
+  font-weight: 400;
+  font-style: italic;
+  @include adaptive-color(color, #999, #777);
+}
+
+// Clickable/Actionable chips
+.chip {
+  &.removable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    
+    .remove-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+    
+    &:hover {
+      @include adaptive-color(background, #ffcdd2, #c62828);
+      @include adaptive-color(color, #c62828, #ffcdd2);
+      
+      .remove-icon {
+        opacity: 1;
+      }
+    }
+  }
+  
+  &.addable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    
+    .add-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+    
+    .check-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #4caf50;
+    }
+    
+    &:hover:not(.already-mapped) {
+      @include adaptive-color(background, #c8e6c9, #2e7d32);
+      @include adaptive-color(color, #2e7d32, #c8e6c9);
+      
+      .add-icon {
+        opacity: 1;
+      }
+    }
+    
+    &.already-mapped {
+      opacity: 0.7;
+      cursor: default;
+    }
+  }
+}
+
+// Add Mapping Panel
+.add-mapping-panel {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 8px;
+  @include adaptive-color(background, #e8f5e9, #1b5e20);
+  border: 2px solid #4caf50;
+  
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    
+    h4 {
+      margin: 0;
+      @include adaptive-color(color, #2e7d32, #c8e6c9);
+      
+      strong {
+        @include adaptive-color(color, #1b5e20, #a5d6a7);
+        font-size: 16px;
+      }
+    }
+    
+    .close-btn {
+      margin: -8px -8px 0 0;
+      @include adaptive-color(color, #558b2f, #aed581);
+    }
+  }
+  
+  .control-desc {
+    font-size: 13px;
+    @include adaptive-color(color, #558b2f, #aed581);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  
+  .already-covered {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    @include adaptive-color(background, #c8e6c9, #2e7d32);
+    
+    mat-icon {
+      color: #4caf50;
+    }
+    
+    span {
+      font-weight: 500;
+      @include adaptive-color(color, #1b5e20, #e8f5e9);
+    }
+  }
+  
+  .your-coverage, .add-options {
+    margin-bottom: 12px;
+    
+    h5 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      @include adaptive-color(color, #33691e, #c5e1a5);
+    }
+    
+    .hint {
+      font-size: 12px;
+      @include adaptive-color(color, #689f38, #aed581);
+      margin-bottom: 12px;
+    }
+  }
+  
+  // CSF Function Group Headers
+  .csf-grouped {
+    margin-bottom: 12px;
+    
+    .csf-function-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px 6px 0 0;
+      @include adaptive-color(background, #c8e6c9, #2e7d32);
+      
+      .function-id {
+        font-weight: 700;
+        font-size: 14px;
+        @include adaptive-color(color, #1b5e20, #a5d6a7);
+      }
+      
+      .function-name {
+        font-size: 13px;
+        @include adaptive-color(color, #33691e, #c8e6c9);
+      }
+      
+      .function-count {
+        margin-left: auto;
+        font-size: 12px;
+        @include adaptive-color(color, #558b2f, #aed581);
+      }
+    }
+  }
+  
+  // CSF List View
+  .csf-list {
+    @include adaptive-color(background, rgba(255,255,255,0.5), rgba(0,0,0,0.2));
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+    
+    &.your-csf-list {
+      border-radius: 6px;
+      margin-top: 8px;
+      max-height: 200px;
+    }
+    
+    .empty-message {
+      font-size: 12px;
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+      @include adaptive-color(color, #999, #777);
+    }
+  }
+  
+  .csf-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid;
+    @include adaptive-color(border-color, rgba(0,0,0,0.1), rgba(255,255,255,0.1));
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .csf-id {
+      font-weight: 600;
+      font-size: 12px;
+      min-width: 70px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      @include adaptive-color(background, #e8f5e9, #1b5e20);
+      @include adaptive-color(color, #2e7d32, #a5d6a7);
+    }
+    
+    .csf-desc {
+      flex: 1;
+      font-size: 12px;
+      line-height: 1.4;
+      @include adaptive-color(color, #33691e, #c8e6c9);
+    }
+    
+    .check-icon {
+      color: #4caf50;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    .add-icon {
+      @include adaptive-color(color, #689f38, #aed581);
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    
+    &.addable {
+      cursor: pointer;
+      transition: background 0.2s;
+      
+      &:hover {
+        @include adaptive-color(background, #a5d6a7, #388e3c);
+        
+        .add-icon {
+          opacity: 1;
+          color: #4caf50;
+        }
+      }
+    }
+    
+    &.existing {
+      @include adaptive-color(background, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
+    }
+    
+    &.already-added {
+      @include adaptive-color(background, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.25));
+      cursor: default;
+      
+      .csf-id {
+        @include adaptive-color(background, #c8e6c9, #2e7d32);
+      }
+      
+      .csf-desc {
+        @include adaptive-color(color, #558b2f, #a5d6a7);
+      }
+      
+      .check-icon {
+        color: #4caf50;
+      }
+    }
+    
+    &.removable {
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      
+      .remove-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        opacity: 0.4;
+        transition: opacity 0.2s, color 0.2s;
+        @include adaptive-color(color, #666, #999);
+      }
+      
+      &:hover {
+        @include adaptive-color(background, #ffebee, rgba(244, 67, 54, 0.2));
+        @include adaptive-color(border-color, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.4));
+        
+        .csf-id {
+          @include adaptive-color(background, #ffcdd2, #b71c1c);
+          @include adaptive-color(color, #c62828, #ef9a9a);
+        }
+        
+        .csf-desc {
+          @include adaptive-color(color, #c62828, #ef9a9a);
+        }
+        
+        .remove-icon {
+          opacity: 1;
+          color: #f44336;
+        }
+      }
+    }
+  }
+  
+  .no-suggestions {
+    font-size: 12px;
+    font-style: italic;
+    padding: 12px;
+    @include adaptive-color(color, #7cb342, #9ccc65);
+  }
+  
+  .panel-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(76, 175, 80, 0.3);
+  }
+}
+
+// ============ CONTROL SEARCH & FILTER ============
+
+.control-count {
+  font-weight: 400;
+  font-size: 13px;
+  @include adaptive-color(color, #666, #999);
+}
+
+.control-search-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  
+  .search-field {
+    flex: 1;
+  }
+  
+  .family-filter {
+    width: 280px;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.quick-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  
+  .quick-filter-label {
+    font-size: 12px;
+    @include adaptive-color(color, #666, #999);
+  }
+  
+  .quick-filter-btn {
+    font-size: 11px;
+    padding: 2px 10px;
+    min-height: 24px;
+    line-height: 1;
+    border-radius: 12px;
+    
+    &.active {
+      @include adaptive-color(background, #e3f2fd, #1565c0);
+      @include adaptive-color(color, #1565c0, #e3f2fd);
+    }
+  }
+}
+
+// Grouped Controls View
+.controls-grouped {
+  max-height: 500px;
+  overflow-y: auto;
+  
+  .control-family-group {
+    margin-bottom: 4px;
+    border-radius: 8px;
+    @include adaptive-color(background, #f5f5f5, #2a2a2a);
+    overflow: hidden;
+  }
+  
+  .family-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    @include adaptive-color(background, #e0e0e0, #333);
+    transition: background 0.2s;
+    
+    &:hover {
+      @include adaptive-color(background, #d0d0d0, #3a3a3a);
+    }
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      @include adaptive-color(color, #666, #999);
+    }
+    
+    .family-id {
+      font-weight: 700;
+      font-size: 14px;
+      @include adaptive-color(color, #1976d2, #64b5f6);
+    }
+    
+    .family-name {
+      font-size: 13px;
+      @include adaptive-color(color, #333, #ddd);
+    }
+    
+    .family-count {
+      margin-left: auto;
+      font-size: 12px;
+      @include adaptive-color(color, #666, #999);
+    }
+  }
+  
+  .family-controls {
+    padding: 8px;
+  }
+}
+
+// Control Item Card
+.control-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  @include adaptive-color(background, #fff, #1e1e1e);
+  border: 1px solid;
+  @include adaptive-color(border-color, #e0e0e0, #3a3a3a);
+  transition: all 0.2s;
+  
+  &:hover {
+    @include adaptive-color(background, #e8f5e9, #1b3d20);
+    @include adaptive-color(border-color, #4caf50, #4caf50);
+    transform: translateX(4px);
+  }
+  
+  &.already-mapped {
+    @include adaptive-color(background, #f5f5f5, #252525);
+    opacity: 0.7;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+  
+  &.search-match {
+    @include adaptive-color(border-color, #2196f3, #2196f3);
+    
+    mark {
+      background: #ffeb3b;
+      color: #333;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+  }
+  
+  .control-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    
+    .control-id {
+      font-weight: 700;
+      font-size: 13px;
+      @include adaptive-color(color, #7b1fa2, #ce93d8);
+    }
+    
+    .control-family-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      @include adaptive-color(background, #e3f2fd, #1565c0);
+      @include adaptive-color(color, #1565c0, #e3f2fd);
+    }
+    
+    .mapped-icon {
+      margin-left: auto;
+      color: #4caf50;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    .add-icon {
+      margin-left: auto;
+      @include adaptive-color(color, #9e9e9e, #616161);
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  
+  .control-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    @include adaptive-color(color, #333, #eee);
+  }
+  
+  .control-desc-preview {
+    font-size: 12px;
+    line-height: 1.4;
+    @include adaptive-color(color, #666, #999);
+    max-height: 40px;
+    overflow: hidden;
+  }
+  
+  .control-techniques {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    
+    .technique-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      @include adaptive-color(background, #fff3e0, #e65100);
+      @include adaptive-color(color, #e65100, #fff3e0);
+    }
+  }
+}
+
+// Filtered/Search Results View
+.controls-filtered {
+  max-height: 500px;
+  overflow-y: auto;
+  
+  .search-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid;
+    @include adaptive-color(border-color, #e0e0e0, #3a3a3a);
+    
+    span {
+      font-size: 13px;
+      @include adaptive-color(color, #666, #999);
+    }
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 32px 16px;
+    
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      @include adaptive-color(color, #ccc, #444);
+      margin-bottom: 12px;
+    }
+    
+    p {
+      font-size: 13px;
+      @include adaptive-color(color, #666, #999);
+    }
+  }
+}
