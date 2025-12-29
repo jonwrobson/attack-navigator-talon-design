@@ -22,3 +22,6 @@ coverage-scripts/
 
 # STIX data cache
 scripts/.cache/
+
+# Generated attack chain data files
+nav-app/src/assets/attack-chains/
