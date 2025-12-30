@@ -241,6 +241,97 @@ describe('AttackChainViewerComponent', () => {
 
             expect(component.selectedNodes.size).toBe(0);
         });
+
+        it('should apply +1 to each selected technique in the view model', fakeAsync(() => {
+            // Setup mock TechniqueVMs in the view model
+            const mockDataService = jasmine.createSpyObj('DataService', ['getDomain']);
+            component.viewModel = new ViewModel('test', 'test-uid', 'test-domain', mockDataService);
+            
+            // Create mock TechniqueVMs for the techniques in the chain
+            const tvm1 = { 
+                technique_tactic_union_id: 'T1566^initial-access',
+                score: '', 
+                scoreColor: ''
+            } as any;
+            const tvm2 = { 
+                technique_tactic_union_id: 'T1078^defense-evasion',
+                score: '5', 
+                scoreColor: ''
+            } as any;
+            const tvm3 = { 
+                technique_tactic_union_id: 'T1021^lateral-movement',
+                score: '', 
+                scoreColor: ''
+            } as any;
+            
+            component.viewModel.techniqueVMs.set('T1566^initial-access', tvm1);
+            component.viewModel.techniqueVMs.set('T1078^defense-evasion', tvm2);
+            component.viewModel.techniqueVMs.set('T1021^lateral-movement', tvm3);
+            
+            spyOn(component.viewModel, 'updateScoreColor');
+            
+            // Select nodes from the second chain (includes all three techniques)
+            component.onNodeSelected(['T1189', 'T1078', 'T1021'], 0, 1);
+            component.applyScores();
+            
+            // Verify scores were updated
+            expect(tvm1.score).toBe(''); // T1566 not selected
+            expect(tvm2.score).toBe('6'); // T1078: 5 + 1 = 6
+            expect(tvm3.score).toBe('1'); // T1021: 0 + 1 = 1
+            
+            // Verify updateScoreColor was called for updated techniques
+            expect(component.viewModel.updateScoreColor).toHaveBeenCalledTimes(2);
+        }));
+
+        it('should handle techniques with no existing score', fakeAsync(() => {
+            // Setup mock TechniqueVMs
+            const mockDataService = jasmine.createSpyObj('DataService', ['getDomain']);
+            component.viewModel = new ViewModel('test', 'test-uid', 'test-domain', mockDataService);
+            
+            const tvm = { 
+                technique_tactic_union_id: 'T1078^defense-evasion',
+                score: '', 
+                scoreColor: ''
+            } as any;
+            
+            component.viewModel.techniqueVMs.set('T1078^defense-evasion', tvm);
+            spyOn(component.viewModel, 'updateScoreColor');
+            
+            component.onNodeSelected(['T1078'], 0, 0);
+            component.applyScores();
+            
+            expect(tvm.score).toBe('1');
+            expect(component.viewModel.updateScoreColor).toHaveBeenCalledWith(tvm);
+        }));
+
+        it('should not fail when viewModel is not provided', () => {
+            component.viewModel = null;
+            component.onNodeSelected(['T1078'], 0, 0);
+            
+            expect(() => component.applyScores()).not.toThrow();
+        });
+
+        it('should handle techniques not in the current view', fakeAsync(() => {
+            // Setup mock with some but not all techniques
+            const mockDataService = jasmine.createSpyObj('DataService', ['getDomain']);
+            component.viewModel = new ViewModel('test', 'test-uid', 'test-domain', mockDataService);
+            
+            const tvm = { 
+                technique_tactic_union_id: 'T1078^defense-evasion',
+                score: '2', 
+                scoreColor: ''
+            } as any;
+            
+            component.viewModel.techniqueVMs.set('T1078^defense-evasion', tvm);
+            
+            // Select multiple nodes but only one exists in view model
+            component.onNodeSelected(['T1566', 'T1078', 'T9999'], 0, 1);
+            component.applyScores();
+            
+            // Should update the one that exists
+            expect(tvm.score).toBe('3');
+            // Should not throw error for missing techniques
+        }));
     });
 
     describe('Close functionality', () => {

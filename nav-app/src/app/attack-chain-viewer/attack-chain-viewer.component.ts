@@ -182,13 +182,54 @@ export class AttackChainViewerComponent implements OnInit, OnDestroy {
      * Apply scores to selected techniques
      */
     applyScores(): void {
+        if (!this.viewModel) {
+            console.warn('Cannot apply scores: viewModel is not available');
+            return;
+        }
+
+        // Collect all selected nodes with their tactic context
+        const selectedNodesWithTactics: Array<{id: string, tactic: string}> = [];
+        for (const group of this.filteredGroups) {
+            for (const chain of group.chains) {
+                for (const node of chain.path) {
+                    if (node.selected) {
+                        selectedNodesWithTactics.push({
+                            id: node.id,
+                            tactic: node.tactic
+                        });
+                    }
+                }
+            }
+        }
+
+        // Apply +1 to each selected technique's score
+        for (const node of selectedNodesWithTactics) {
+            const technique_tactic_id = `${node.id}^${node.tactic}`;
+            
+            // Check if this technique exists in the view model
+            if (this.viewModel.hasTechniqueVM_id(technique_tactic_id)) {
+                const tvm = this.viewModel.getTechniqueVM_id(technique_tactic_id);
+                
+                // Get current score (handle empty string or non-numeric values)
+                let currentScore = 0;
+                if (tvm.score !== '' && !isNaN(Number(tvm.score))) {
+                    currentScore = Number(tvm.score);
+                }
+                
+                // Add +1 to the score
+                const newScore = currentScore + 1;
+                tvm.score = String(newScore);
+                
+                // Update the score color to reflect the visual change
+                this.viewModel.updateScoreColor(tvm);
+            }
+        }
+
+        // Emit scores for compatibility with potential parent handlers
         const scores = new Map<string, number>();
-        
-        // Add +1 score for each selected technique
         for (const techniqueId of this.selectedNodes) {
             scores.set(techniqueId, 1);
         }
-
         this.scoresApplied.emit(scores);
         
         // Clear selection
@@ -229,8 +270,11 @@ export class AttackChainViewerComponent implements OnInit, OnDestroy {
         
         if (this.viewModel && this.viewModel.techniqueVMs) {
             for (const [id, tvm] of this.viewModel.techniqueVMs) {
-                if (tvm.score !== undefined && tvm.score !== null) {
-                    scores.set(id, tvm.score);
+                if (tvm.score !== undefined && tvm.score !== null && tvm.score !== '') {
+                    const scoreNum = Number(tvm.score);
+                    if (!isNaN(scoreNum)) {
+                        scores.set(id, scoreNum);
+                    }
                 }
             }
         }
