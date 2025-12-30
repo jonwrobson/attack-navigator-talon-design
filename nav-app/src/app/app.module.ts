@@ -66,6 +66,10 @@ import { ChangelogComponent } from './changelog/changelog.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ListInputComponent } from './list-input/list-input.component';
 import { ConfigService } from './services/config.service';
+import { AttackChainService } from './services/attack-chain.service';
+import { AttackChainTreeComponent } from './attack-chain-tree/attack-chain-tree.component';
+import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-viewer.component';
+import { CampaignPopupComponent } from './attack-chain-tree/campaign-popup/campaign-popup.component';
 
 @NgModule({
     declarations: [
@@ -102,6 +106,9 @@ import { ConfigService } from './services/config.service';
         ChangelogComponent,
         ListInputComponent,
         LayerSettingsComponent,
+        AttackChainTreeComponent,
+        AttackChainViewerComponent,
+        CampaignPopupComponent,
     ],
     imports: [
         BrowserModule,
@@ -139,6 +146,7 @@ import { ConfigService } from './services/config.service';
         Title,
         ConfigService,
         CtidValidationService,
+        AttackChainService,
         {
             provide: APP_INITIALIZER,
             useFactory: (configService: ConfigService) => {

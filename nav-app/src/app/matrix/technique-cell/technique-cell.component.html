@@ -17,5 +17,6 @@
         [technique]="technique"
         [tactic]="tactic"
         [viewModel]="viewModel"
-        (close)="showContextmenu = false; onMouseLeave()"></app-contextmenu>
+        (close)="showContextmenu = false; onMouseLeave()"
+        (openAttackChainViewer)="onOpenAttackChainViewer($event)"></app-contextmenu>
 </div>

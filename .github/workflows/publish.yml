@@ -10,8 +10,8 @@ on:
 
 jobs:
   docker:
-    # Only run on the upstream MITRE repository, not on forks
-    if: github.repository == 'mitre-attack/attack-navigator'
+    # Only run on the jonwrobson/attack-nav-talon repository
+    if: github.repository == 'jonwrobson/attack-nav-talon'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/mitre-attack/attack-navigator
+            ghcr.io/jonwrobson/attack-nav-talon
           tags: |
             # set latest tag for master branch
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}

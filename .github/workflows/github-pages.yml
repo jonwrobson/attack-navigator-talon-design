@@ -6,8 +6,8 @@ on:
 
 jobs:
   deploy-to-gh-pages:
-    # Only run on the upstream MITRE repository, not on forks
-    if: github.repository == 'mitre-attack/attack-navigator'
+    # Only run on the jonwrobson/attack-nav-talon repository
+    if: github.repository == 'jonwrobson/attack-nav-talon'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Build Navigator
-        run: npm run build -- --configuration production,googleAnalytics --aot=false --build-optimizer=false --base-href=https://mitre-attack.github.io/attack-navigator/
+        run: npm run build -- --configuration production,googleAnalytics --aot=false --build-optimizer=false --base-href=https://jonwrobson.github.io/attack-nav-talon/
 
       - name: Download and extract Navigator v2
         uses: robinraju/release-downloader@v1.10
@@ -65,5 +65,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./nav-app/dist

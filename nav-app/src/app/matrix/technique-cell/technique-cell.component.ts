@@ -16,6 +16,7 @@ export class TechniqueCellComponent extends Cell implements OnInit {
     @Output() highlight = new EventEmitter<any>(); // emit with the highlighted technique, or null to unhighlight
     @Output() unhighlight = new EventEmitter<any>();
     @Output() leftclick = new EventEmitter<any>(); // emit with the selected technique and the modifier keys
+    @Output() openAttackChainViewer = new EventEmitter<string>(); // emit with technique ID to open attack chain viewer
 
     public get isCellPinned(): boolean {
         return this.viewModelsService.pinnedCell === this.viewModel.getTechniqueVM(this.technique, this.tactic).technique_tactic_union_id;
@@ -85,6 +86,10 @@ export class TechniqueCellComponent extends Cell implements OnInit {
     public onRightClick(event) {
         if (!this.isCellPinned) this.viewModelsService.pinnedCell = '';
         this.showContextmenu = true;
+    }
+
+    public onOpenAttackChainViewer(techniqueId: string) {
+        this.openAttackChainViewer.emit(techniqueId);
     }
 
     // return css classes for a technique

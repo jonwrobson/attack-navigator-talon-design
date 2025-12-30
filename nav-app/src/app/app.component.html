@@ -1,4 +1,7 @@
 <div [ngClass]="user_theme">
+    <div class="environment-banner" *ngIf="showEnvironmentBanner()" [ngClass]="getEnvironmentBannerClass()">
+        {{ getEnvironmentBannerText() }}
+    </div>
     <div class="app-container">
         <main>
             <div class="nav-app">
