@@ -247,6 +247,56 @@ Cypress.Commands.add('assertMatrixLayout', (layout: 'side' | 'flat' | 'mini') =>
   }
 });
 
+Cypress.Commands.add('openAttackChainViewer', (techniqueId?: string) => {
+  // If a specific technique ID is provided, try to find and use it
+  const selector = techniqueId
+    ? `.technique-cell[data-technique-id="${techniqueId}"], .cell[data-technique-id="${techniqueId}"]`
+    : '.technique-cell, .cell';
+
+  // Right-click on the technique to open context menu
+  cy.get(selector, { timeout: 15000 })
+    .first()
+    .rightclick({ force: true });
+
+  // Wait for context menu to appear
+  cy.get('.contextmenu', { timeout: 10000 }).should('be.visible');
+
+  // Check if "view attack chains" option is available
+  cy.get('body').then(($body) => {
+    if ($body.find('.contextMenu-button:contains("view attack chains")').length > 0) {
+      // Click "View Attack Chains"
+      cy.get('.contextMenu-button')
+        .contains('view attack chains')
+        .click({ force: true });
+
+      // Wait for attack chain viewer to open
+      cy.get('.attack-chain-viewer', { timeout: 15000 }).should('be.visible');
+    } else {
+      // If not available on first technique, try a commonly used technique (T1078)
+      cy.log('Attack chains not available for selected technique, trying T1078');
+      cy.get('body').click(0, 0); // Close existing context menu
+      
+      cy.get('.technique-cell[data-technique-id*="T1078"], .cell[data-technique-id*="T1078"]', { timeout: 15000 })
+        .first()
+        .rightclick({ force: true });
+      
+      cy.get('.contextmenu', { timeout: 10000 }).should('be.visible');
+      
+      cy.get('body').then(($body2) => {
+        if ($body2.find('.contextMenu-button:contains("view attack chains")').length > 0) {
+          cy.get('.contextMenu-button')
+            .contains('view attack chains')
+            .click({ force: true });
+          
+          cy.get('.attack-chain-viewer', { timeout: 15000 }).should('be.visible');
+        } else {
+          cy.log('Warning: Could not find a technique with attack chains available');
+        }
+      });
+    }
+  });
+});
+
 // Declare custom commands for TypeScript
 declare global {
   namespace Cypress {
@@ -264,6 +314,7 @@ declare global {
       toggleFeature(feature: string): Cypress.Chainable;
       verifyTechniqueTooltip(techniqueId?: string): Cypress.Chainable;
       assertMatrixLayout(layout: 'side' | 'flat' | 'mini'): Cypress.Chainable;
+      openAttackChainViewer(techniqueId?: string): Cypress.Chainable;
     }
   }
 }
