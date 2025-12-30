@@ -30,6 +30,7 @@
         <div class="contextMenu-section">
             <div class="contextMenu-button" (click)="viewTechnique()">view technique</div>
             <div class="contextMenu-button" (click)="viewTactic()">view tactic</div>
+            <div class="contextMenu-button" *ngIf="hasAttackChains()" (click)="viewAttackChains()">view attack chains</div>
         </div>
         <div class="contextMenu-section" *ngIf="configService.contextMenuItems.length > 0">
             <div
