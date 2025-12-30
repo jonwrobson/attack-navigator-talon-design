@@ -282,6 +282,234 @@ The following is an example iframe which embeds our [*Bear APTs](layers/samples/
 <iframe src="https://mitre-attack.github.io/attack-navigator/enterprise/#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fmitre%2Fattack-navigator%2Fmaster%2Flayers%2Fdata%2Fsamples%2FBear_APT.json&tabs=false&selecting_techniques=false" width="1000" height="500"></iframe>
 ```
 
+## Attack Chain Visualization
+
+The ATT&CK Navigator includes an attack chain visualization feature that displays how threat groups use techniques as part of complete attack paths. Attack chains are generated from STIX data and show the sequential flow of techniques ordered by tactic.
+
+### Regenerating Attack Chain Data
+
+Attack chain data is pre-generated from the MITRE ATT&CK STIX bundle and stored as static JSON files in `nav-app/src/assets/attack-chains/`. To regenerate this data:
+
+#### Using the Generation Script
+
+```bash
+# From the project root directory
+cd scripts
+node generate-attack-chains.js
+```
+
+The script will:
+1. Fetch the latest MITRE ATT&CK Enterprise STIX bundle
+2. Parse techniques, groups, and campaigns
+3. Generate attack chains for each technique
+4. Write output files to `nav-app/src/assets/attack-chains/`
+
+#### Script Options
+
+```bash
+# Show help and all options
+node generate-attack-chains.js --help
+
+# Custom output directory
+node generate-attack-chains.js --output /path/to/output
+
+# Force fresh download (ignore cache)
+node generate-attack-chains.js --no-cache
+
+# Verbose output with detailed progress
+node generate-attack-chains.js --verbose
+```
+
+The script caches downloaded STIX data to speed up repeated runs. Use `--no-cache` to force a fresh download.
+
+#### When to Regenerate
+
+Regenerate attack chain data when:
+- A new version of ATT&CK is released
+- You want to use a custom STIX bundle
+- Attack chain data needs to be updated with latest threat intelligence
+- You're developing or testing attack chain features
+
+### Data Format Specification
+
+Attack chain data consists of two types of files:
+
+#### Index File (`index.json`)
+
+Contains metadata about all generated chain files:
+
+```json
+{
+  "generated": "2024-12-30T09:00:00.000Z",
+  "attackVersion": "14.1",
+  "techniqueCount": 156,
+  "techniques": [
+    {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "chainCount": 42,
+      "fileSize": 15234
+    }
+  ]
+}
+```
+
+#### Technique Files (`<TECHNIQUE_ID>.json`)
+
+Each technique with documented usage has its own file:
+
+```json
+{
+  "id": "T1078",
+  "name": "Valid Accounts",
+  "tactic": "initial-access",
+  "chains": [
+    {
+      "group": {
+        "id": "G0016",
+        "name": "APT29"
+      },
+      "campaigns": [
+        {
+          "id": "C0021",
+          "name": "C0021"
+        }
+      ],
+      "campaignCount": 1,
+      "path": [
+        {
+          "id": "T1595",
+          "name": "Active Scanning",
+          "tactic": "reconnaissance",
+          "tacticOrder": 1
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "initial-access",
+          "tacticOrder": 3,
+          "selected": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Key Fields:**
+- `path`: Array of techniques ordered by `tacticOrder` (kill chain position)
+- `selected`: Boolean flag marking the technique that was right-clicked
+- `campaignCount`: Number of campaigns where this chain was observed
+- `tacticOrder`: Numeric order in ATT&CK kill chain (1=reconnaissance, 14=impact)
+
+### Component Architecture
+
+The attack chain visualization consists of three main Angular components:
+
+#### AttackChainService (`services/attack-chain.service.ts`)
+
+Service that loads chain data from static JSON files with caching.
+
+**Key Methods:**
+- `loadIndex()`: Loads index.json with metadata
+- `getChains(techniqueId)`: Loads chains for a specific technique
+- `hasChains(techniqueId)`: Checks if technique has chain data
+
+**Caching Strategy:**
+- Index is loaded once and cached
+- Individual technique files are loaded on-demand
+- Uses RxJS `shareReplay(1)` for observable caching
+
+#### AttackChainViewerComponent (`attack-chain-viewer/`)
+
+Container component that displays the modal viewer with filtering and scoring.
+
+**Key Features:**
+- Group filtering with debounced search input
+- Expand/collapse group headers
+- Technique selection tracking
+- Score application to selected techniques
+
+**Inputs:**
+- `techniqueId`: ATT&CK ID of technique to display chains for
+- `viewModel`: Current layer view model for score tracking
+
+**Outputs:**
+- `scoresApplied`: Emits map of technique IDs to score increments
+- `close`: Emits when viewer is closed
+
+#### AttackChainTreeComponent (`attack-chain-tree/`)
+
+Renders individual attack chains as interactive tree visualizations using D3.js.
+
+**Key Features:**
+- Tree layout with nodes ordered by tactic
+- Visual indicators for selected technique and scores
+- Click handlers for technique selection
+- Responsive SVG rendering
+
+**Node Visualization:**
+- Selected technique marked with ★
+- Scored techniques shown with filled circle (●)
+- Unscored techniques shown with empty circle (○)
+- Campaign counts displayed on edges
+
+### Testing
+
+#### Unit Tests
+
+```bash
+# Run all unit tests
+cd nav-app
+npm test
+
+# Run specific test suites
+npm test -- --include='**/attack-chain*.spec.ts'
+```
+
+Test files:
+- `services/attack-chain.service.spec.ts` - Service tests
+- `attack-chain-viewer/attack-chain-viewer.component.spec.ts` - Viewer tests
+- `attack-chain-tree/attack-chain-tree.component.spec.ts` - Tree component tests
+
+#### E2E Tests
+
+```bash
+# Run E2E tests
+cd nav-app
+npm run e2e
+
+# Run specific E2E test
+npx cypress run --spec 'cypress/e2e/attack-chain-visualization.cy.ts'
+```
+
+E2E test coverage includes:
+- Opening attack chain viewer from context menu
+- Filtering chains by group name
+- Expanding and collapsing group sections
+- Selecting techniques in chains
+- Applying scores to selected techniques
+
+#### Script Tests
+
+```bash
+# Run script unit tests
+cd tests
+npm test scripts/
+```
+
+Script test files:
+- `tests/scripts/chain-generator.test.js` - Chain generation logic
+- `tests/scripts/chain-writer.test.js` - File writing logic
+- `tests/scripts/generate-attack-chains.test.js` - CLI integration
+
+### Development Tips
+
+1. **Local Testing:** Use `--no-cache` when testing script changes to ensure fresh data
+2. **Performance:** Chain files are lazy-loaded; only opened techniques fetch their data
+3. **Custom Data:** To use custom STIX bundles, modify `scripts/lib/stix-fetcher.js`
+4. **Debugging:** Set `DEBUG=1` environment variable for verbose error output
+
 ## Related MITRE Work
 
 ### CTI

@@ -468,6 +468,7 @@ technique will bring up a context menu with more options:
   Note that currently selected sub-techniques will remain selected if the control is disabled when using this option.
 - <b>view technique:</b> For more information / details on the technique.
 - <b>view tactic:</b> For more information / details on the tactic.
+- <b>view attack chains:</b> Opens the attack chain viewer showing how threat groups use this technique as part of their full attack paths. See <a href="#attack-chain-visualization">Attack Chain Visualization</a> for more details. This option is only available for techniques that have documented usage by threat groups.
 - <b>user assigned links:</b> List of links assigned to the technique by the user. These links will open a new browser tab directed to the
 specified URL. See <a href="#assigning-links-to-techniques">Assigning Links to Techniques</a> for more details.
 
@@ -513,6 +514,78 @@ additional information about the object in question.
 
 Buttons labelled 'select all' and 'deselect all' are provided to quickly select/deselect all techniques in the results
 area. You can use this in conjunction with the search input to select all results which match the given query.
+
+# Attack Chain Visualization
+
+The Attack Chain Visualization feature provides interactive visualization of how threat groups use techniques as part of their complete attack paths. Attack chains show the sequential flow of techniques used by specific threat groups and campaigns, ordered by their position in the ATT&CK kill chain (tactics).
+
+## Opening the Attack Chain Viewer
+
+To view attack chains for a technique:
+
+1. **Right-click** on any technique in the matrix to open the context menu
+2. Select **"view attack chains"** from the menu (this option only appears for techniques that have documented usage by threat groups)
+3. The attack chain viewer will open in a modal overlay displaying all available attack chains
+
+If a technique has no documented usage by threat groups in campaigns, the "view attack chains" option will not be available in the context menu.
+
+## Understanding Attack Chains
+
+Each attack chain shows:
+
+- **Threat Group:** The APT group or threat actor that used the technique
+- **Campaign Count:** Number of documented campaigns where this attack path was observed
+- **Attack Path:** A visual tree showing the sequence of techniques used, ordered by tactic (reconnaissance → initial access → execution → etc.)
+- **Selected Technique:** The technique you right-clicked is highlighted with a star (★) in the chain
+- **Score Indicators:** Techniques that have scores in your current layer are marked with a filled circle (●), while unscored techniques show an empty circle (○)
+
+The attack path visualization uses a tree structure where:
+- Each node represents a technique
+- Nodes are ordered top-to-bottom by their position in the ATT&CK kill chain
+- Lines connecting nodes show the campaign count on the edge
+- The selected technique (the one you clicked) is highlighted for easy reference
+
+## Filtering and Navigating Chains
+
+### Group Filtering
+
+Use the filter input at the top of the viewer to search for specific threat groups:
+
+1. Type in the **filter input** to search by group name (e.g., "APT28", "Lazarus")
+2. The filter applies automatically after a brief delay (debounced for performance)
+3. Only groups matching your search term will be displayed
+4. Clear the filter to show all groups again
+
+### Expanding and Collapsing Groups
+
+- **Click on a group header** to expand or collapse that group's attack chains
+- The chevron icon (► or ▼) indicates the current state
+- Groups show the number of campaigns in parentheses
+- Use this to focus on specific threat actors of interest
+
+## Applying Scores from Attack Chains
+
+The attack chain viewer allows you to apply scores to techniques based on the attack paths you're reviewing:
+
+1. **Click on technique nodes** in the attack chain trees to select them
+2. Selected techniques are tracked at the top of the viewer (shows count)
+3. Click **"Apply Scores"** button to add +1 to the score of each selected technique in your current layer
+4. Scores are applied cumulatively - clicking "Apply Scores" multiple times will continue incrementing
+
+**Common Use Cases:**
+- **Threat prioritization:** Select techniques used by threat groups relevant to your organization
+- **Coverage analysis:** Build up scores based on observed attack patterns to identify gaps
+- **Red team planning:** Select techniques from real-world attack chains to create realistic scenarios
+
+**Tips:**
+- Techniques that already have scores are indicated with a filled circle (●) in the visualization
+- You can select techniques across multiple groups before applying scores
+- The score count in the button shows how many techniques you've selected
+- Applied scores persist in your layer and can be saved with your layer file
+
+## Closing the Viewer
+
+Click the **X button** in the top-right corner or press **Escape** to close the attack chain viewer and return to the matrix view.
 
 # Toolbar Controls
 

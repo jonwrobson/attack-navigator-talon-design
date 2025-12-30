@@ -8,6 +8,34 @@ Pull requests should target the **develop** branch of the repository.
 
 Also, if you contribute any source code, we need you to agree to the following Developer's Certificate of Origin below.
 
+## Working with Attack Chain Visualization
+
+If you're contributing to the attack chain visualization feature, please note:
+
+### Code Structure
+- **Components:** Located in `nav-app/src/app/attack-chain-viewer/` and `nav-app/src/app/attack-chain-tree/`
+- **Service:** `nav-app/src/app/services/attack-chain.service.ts` handles data loading
+- **Generation Scripts:** `scripts/generate-attack-chains.js` and `scripts/lib/` for data generation
+- **Data Files:** Static JSON files in `nav-app/src/assets/attack-chains/`
+
+### Testing Requirements
+- Add unit tests for component/service changes
+- Add E2E tests for user-facing functionality in `nav-app/cypress/e2e/attack-chain-visualization.cy.ts`
+- Add script tests in `tests/scripts/` for data generation changes
+- Run full test suite before submitting PRs: `npm run test:all`
+
+### Data Generation
+- If modifying chain generation logic, regenerate test data: `node scripts/generate-attack-chains.js`
+- Ensure generated files are minified JSON (no pretty printing)
+- Test with both cached and fresh STIX data (`--no-cache`)
+
+### Documentation
+- Update user documentation in `USAGE.md` for UI/UX changes
+- Update developer documentation in `README.md` for API/architecture changes
+- Add JSDoc comments to new functions and components
+
+See the **Attack Chain Visualization** section in README.md for detailed architecture and development guidance.
+
 ## Developer's Certificate of Origin v1.1
 
 ```text
