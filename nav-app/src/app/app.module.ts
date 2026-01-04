@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -47,6 +48,8 @@ import { AsvsTableComponent } from './mitigations/mappings-dialog/mappings/asvs-
 import { CisTableComponent } from './mitigations/mappings-dialog/mappings/cis-table/cis-table.component';
 import { NistMappingsComponent } from './mitigations/mappings-dialog/mappings/nist-mappings/nist-mappings.component';
 import { TechniqueMappingsComponent } from './mitigations/technique-mappings/technique-mappings.component';
+import { ValidationReviewComponent } from './control-framework/validation/validation-review/validation-review.component';
+import { CtidValidationService } from './control-framework/validation/ctid-validation.service';
 
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { LayerUpgradeComponent } from './layer-upgrade/layer-upgrade.component';
@@ -93,6 +96,7 @@ import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-v
         CisTableComponent,
         NistMappingsComponent,
         TechniqueMappingsComponent,
+        ValidationReviewComponent,
         SidebarComponent,
         LayerUpgradeComponent,
         ChangelogCellComponent,
@@ -114,6 +118,7 @@ import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-v
         MatButtonModule,
         MatIconModule,
         MatProgressSpinnerModule,
+        MatProgressBarModule,
         MatCheckboxModule,
         MatTooltipModule,
         MatMenuModule,
@@ -137,6 +142,7 @@ import { AttackChainViewerComponent } from './attack-chain-viewer/attack-chain-v
     providers: [
         Title,
         ConfigService,
+        CtidValidationService,
         {
             provide: APP_INITIALIZER,
             useFactory: (configService: ConfigService) => {
