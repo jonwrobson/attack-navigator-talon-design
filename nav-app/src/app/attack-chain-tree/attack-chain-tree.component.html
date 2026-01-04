@@ -1,0 +1,26 @@
+<div class="attack-chain-tree-container">
+    <div class="chain-header" *ngIf="chain">
+        <h3>{{ chain.group.name }} ({{ chain.campaignCount }} campaigns)</h3>
+    </div>
+    <div class="tree-container"></div>
+    <div class="legend" *ngIf="chain && chain.path && chain.path.length > 0">
+        <div class="legend-item">
+            <span class="legend-symbol selected">★</span>
+            <span class="legend-text">selected technique</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-symbol has-score">●</span>
+            <span class="legend-text">has score</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-symbol no-score">○</span>
+            <span class="legend-text">no score</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-text">[n]=score badge</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-text">──n──▶=campaign count on edge</span>
+        </div>
+    </div>
+</div>
